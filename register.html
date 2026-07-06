@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --danger:      #D62B2B;
+      --radius:      14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+
+    /* ── Navbar ── */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; text-decoration: none; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; text-decoration: none; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Main layout ── */
+    .register-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* ── Left deco panel ── */
+    .register-deco {
+      background: linear-gradient(160deg, #1B4332 0%, var(--green) 100%);
+      flex: 0 0 38%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .register-deco::after {
+      content: '';
+      font-size: 20rem;
+      position: absolute;
+      right: -3rem;
+      bottom: -3rem;
+      opacity: 0.07;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .deco-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 1.8rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    .deco-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 0.9rem;
+    }
+
+    .deco-headline span { color: var(--gold); }
+
+    .deco-sub {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 290px;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Perks */
+    .deco-perks { list-style: none; padding: 0; margin: 0 0 2rem; }
+    .deco-perks li {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.86rem;
+      padding: 0.28rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .deco-perks li i { color: var(--green-light); font-size: 0.95rem; }
+
+    /* Promo badge */
+    .promo-badge {
+      background: rgba(245,166,35,0.15);
+      border: 1px solid rgba(245,166,35,0.4);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+    .promo-badge i { color: var(--gold); font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .promo-badge-text { font-size: 0.84rem; color: rgba(255,255,255,0.85); }
+    .promo-badge-text strong { color: var(--gold); display: block; margin-bottom: 0.1rem; }
+
+    /* ── Right form panel ── */
+    .register-form-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2.5rem 2rem;
+      background: var(--cream);
+      overflow-y: auto;
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      padding: 2.2rem 2.2rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .form-card-title {
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .form-card-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 1.6rem;
+    }
+
+    /* Step indicator */
+    .step-dots {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      margin-bottom: 1.4rem;
+    }
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #E0DDD6;
+      transition: background 0.2s, width 0.2s;
+    }
+    .step-dot.active { background: var(--green); width: 24px; border-radius: 4px; }
+    .step-dot.done   { background: var(--green-light); }
+    .step-label { font-size: 0.78rem; color: var(--muted); margin-left: 0.4rem; }
+
+    /* Step panels */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* Fields */
+    .field-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+    .field-label .optional {
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .field-wrap { position: relative; margin-bottom: 1rem; }
+
+    .field-input {
+      width: 100%;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.65rem 2.6rem 0.65rem 0.95rem;
+      font-size: 0.91rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--charcoal);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field-input:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
+    }
+
+    .field-input.is-invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(214,43,43,0.1);
+    }
+
+    .field-input.is-valid {
+      border-color: var(--green-light);
+      padding-right: 2.6rem;
+    }
+
+    .field-icon {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .field-icon.muted  { color: #CCC; }
+    .field-icon.valid  { color: var(--green-light); }
+    .field-icon.invalid{ color: var(--danger); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .toggle-pw:hover { color: var(--green); }
+
+    .field-error {
+      font-size: 0.77rem;
+      color: var(--danger);
+      margin-top: -0.65rem;
+      margin-bottom: 0.5rem;
+      display: none;
+    }
+
+    .field-hint {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: -0.65rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Password strength */
+    .pw-strength-bar {
+      height: 4px;
+      border-radius: 4px;
+      background: #E0DDD6;
+      margin-top: -0.5rem;
+      margin-bottom: 0.4rem;
+      overflow: hidden;
+    }
+    .pw-strength-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s, background 0.3s;
+      width: 0%;
+    }
+    .pw-strength-label {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    /* Checkbox */
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.84rem;
+      color: var(--charcoal);
+      margin-bottom: 0.8rem;
+    }
+    .check-row input[type=checkbox] {
+      accent-color: var(--green);
+      width: 15px;
+      height: 15px;
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+    .check-row a { color: var(--green); font-weight: 600; text-decoration: none; }
+    .check-row a:hover { color: var(--gold-dark); }
+
+    /* Phone prefix */
+    .phone-group { display: flex; gap: 0; }
+    .phone-prefix {
+      border: 1.5px solid #E0DDD6;
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: #F9F5EE;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .phone-group .field-input {
+      border-radius: 0 10px 10px 0;
+      border-left: none;
+    }
+    .phone-group .field-input:focus { border-color: var(--green-light); }
+
+    /* Buttons */
+    .btn-next, .btn-submit {
+      width: 100%;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .btn-next:hover, .btn-submit:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn-next:disabled, .btn-submit:disabled { background: #CCC; cursor: default; transform: none; }
+
+    .btn-back {
+      width: 100%;
+      background: none;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn-back:hover { border-color: var(--green); color: var(--green); }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert */
+    .form-alert {
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.84rem;
+      margin-bottom: 1rem;
+      display: none;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .form-alert.error   { background: #FFE8E8; color: var(--danger); border: 1px solid #FFCCCC; }
+    .form-alert.success { background: #D9F5E5; color: var(--green);  border: 1px solid #B2E5CC; }
+    .form-alert.show    { display: flex; }
+
+    /* Success screen */
+    .success-screen {
+      text-align: center;
+      padding: 1rem 0;
+      display: none;
+    }
+    .success-icon {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #D9F5E5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.2rem;
+      font-size: 2.2rem;
+      color: var(--green);
+    }
+    .success-screen h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .success-screen p  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    .btn-go {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-go:hover { background: var(--gold-dark); color: #fff; }
+
+    /* OR divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.1rem 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: #E0DDD6; }
+
+    /* Social buttons */
+    .btn-social {
+      width: 100%;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.6rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      background: #fff;
+      color: var(--charcoal);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 0.6rem;
+    }
+    .btn-social:hover { background: #F9F5EE; border-color: #CCC; }
+
+    /* Login link */
+    .login-link-row {
+      text-align: center;
+      margin-top: 1.2rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .login-link-row a { color: var(--green); font-weight: 700; text-decoration: none; }
+    .login-link-row a:hover { color: var(--gold-dark); }
+
+    /* ── Footer ── */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 2rem 0 1.2rem; font-size: 0.85rem; }
+    .footer-bottom  { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.9rem; margin-right: 0.3rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+
+    @media (max-width: 767px) {
+      .register-deco { display: none; }
+      .register-form-panel { padding: 2rem 1.2rem; }
+      .form-card { padding: 1.8rem 1.4rem; }
+    }
+  </style>
+
+  <!-- ═══ BOMBASTIC FEATURES CSS ═══ -->
+  <style>
+  /* ── Announcement ticker ── */
+  .announce-bar {
+    background: linear-gradient(90deg, #1a3a28, #2D6A4F, #1a3a28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .announce-track span { padding: 0 3rem; color: var(--gold); }
+  .announce-track span b { color: #fff; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── Flash sale ribbon ── */
+  .flash-banner {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+  .flash-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+    animation: sheen 2.5s ease-in-out infinite;
+  }
+  @keyframes sheen { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+  .flash-timer { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.12em; color: #FFD700; }
+
+  /* ── Scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-left.visible  { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── "Live buyers" notification ── */
+  .live-notif {
+    position: fixed; bottom: 7rem; left: 1.2rem;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+    max-width: 270px; z-index: 9998;
+    transform: translateX(-130%);
+    transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .live-notif.show { transform: translateX(0); }
+  .live-notif .notif-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .live-notif .notif-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .live-notif .notif-dot { width:8px; height:8px; background:#27ae60; border-radius:50%; flex-shrink:0; animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  /* ── Success order popup ── */
+  .order-success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .order-success-overlay.show { opacity: 1; pointer-events: all; }
+  .order-success-card {
+    background: #fff; border-radius: 24px;
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .order-success-overlay.show .order-success-card { transform: scale(1); }
+  .order-success-card .tick-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.3rem; font-size: 2.2rem; color: #fff;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+    animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+  }
+  @keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .order-success-card h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color: var(--charcoal); margin-bottom:0.5rem; }
+  .order-success-card p  { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+  .order-success-card .order-id { font-family:monospace; background:#f4f4f4; border-radius:8px; padding:0.3rem 0.8rem; font-size:0.85rem; font-weight:700; color:var(--green); display:inline-block; margin:0.6rem 0; }
+  .order-success-card .confetti-strip { position:absolute; top:0; left:0; right:0; height:6px; background: linear-gradient(90deg,#F5A623,#27ae60,#3498db,#e74c3c,#F5A623); }
+  .order-progress { width:100%; background:#eee; border-radius:100px; height:6px; margin:1.1rem 0 0.4rem; overflow:hidden; }
+  .order-progress-bar { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:100px; width:0%; transition:width 0.1s linear; }
+  .order-dismiss { font-size:0.75rem; color:var(--muted); margin-top:0.8rem; }
+
+  /* ── Product card hover glow ── */
+  .prod-card { transition: transform 0.22s, box-shadow 0.22s; }
+  .prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px rgba(45,106,79,0.18) !important; }
+
+  /* ── Sparkle badge on cards ── */
+  .badge-hot {
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; font-size:0.65rem; font-weight:800;
+    padding:0.2rem 0.55rem; border-radius:100px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+  @keyframes badge-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.5)} 50%{box-shadow:0 0 0 6px rgba(231,76,60,0)} }
+
+  /* ── Confetti canvas ── */
+  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:999998; }
+  </style>
+
+</head>
+<body>
+
+  <!-- ═ Announcement ticker ═ -->
+  <div class="announce-bar">
+    <div class="announce-track">
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+    </div>
+  </div>
+
+  <!-- ═ Flash sale banner ═ -->
+  <div class="flash-banner">
+    🔥 FLASH SALE ENDS IN &nbsp; <span class="flash-timer" id="flash-timer">03:47:12</span> &nbsp; — Up to <b>30% OFF</b> selected products!
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem;color:#fff;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-1">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="login.html" class="nav-icon-btn" aria-label="Login">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════
+       REGISTER WRAPPER
+  ══════════════════════════════════ -->
+  <div class="register-wrapper">
+
+    <!-- Left decorative panel -->
+    <div class="register-deco">
+      <a href="index.html" class="deco-brand"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Pinenas</a>
+      <h2 class="deco-headline">Join the<br/><span>Pineapple</span><br/>Family.</h2>
+      <p class="deco-sub">Create your free account and enjoy a sweeter shopping experience from day one.</p>
+      <ul class="deco-perks">
+        <li><i class="bi bi-bag-check-fill"></i> Track all your orders in one place</li>
+        <li><i class="bi bi-heart-fill"></i> Save items to your personal wishlist</li>
+        <li><i class="bi bi-star-fill"></i> Leave reviews on products you love</li>
+        <li><i class="bi bi-lightning-fill"></i> Faster checkout with saved address</li>
+        <li><i class="bi bi-bell-fill"></i> Early access to new products &amp; sales</li>
+      </ul>
+      <div class="promo-badge">
+        <i class="bi bi-gift-fill"></i>
+        <div class="promo-badge-text">
+          <strong>🎉 New Member Welcome Gift</strong>
+          Get 15% off your first order with code <strong>PINENAS15</strong> after registering.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="register-form-panel">
+      <div class="form-card">
+
+        <!-- Normal title (hidden on success) -->
+        <div id="formHeader">
+          <h2 class="form-card-title">Create Account</h2>
+          <p class="form-card-sub">Already have an account? <a href="login.html" style="color:var(--green);font-weight:700;text-decoration:none;">Sign in</a></p>
+        </div>
+
+        <!-- Step dots -->
+        <div class="step-dots" id="stepDots">
+          <div class="step-dot active" id="dot1"></div>
+          <div class="step-dot" id="dot2"></div>
+          <div class="step-dot" id="dot3"></div>
+          <span class="step-label" id="stepLabel">Step 1 of 3 — Personal Details</span>
+        </div>
+
+        <!-- Alert -->
+        <div class="form-alert" id="formAlert" role="alert">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          <span id="formAlertMsg"></span>
+        </div>
+
+        <!-- ══════════════════════
+             STEP 1 — Personal Info
+        ══════════════════════ -->
+        <div class="step-panel active" id="step1">
+
+          <div class="row g-2 mb-0">
+            <div class="col-6">
+              <label class="field-label" for="firstName">First Name</label>
+              <div class="field-wrap">
+                <input class="field-input" type="text" id="firstName"
+                       placeholder="Ahmad" autocomplete="given-name" maxlength="50" />
+                <i class="bi bi-person field-icon muted" id="icon-firstName"></i>
+              </div>
+              <div class="field-error" id="err-firstName"></div>
+            </div>
+            <div class="col-6">
+              <label class="field-label" for="lastName">Last Name</label>
+              <div class="field-wrap">
+                <input class="field-input" type="text" id="lastName"
+                       placeholder="Razali" autocomplete="family-name" maxlength="50" />
+                <i class="bi bi-person field-icon muted" id="icon-lastName"></i>
+              </div>
+              <div class="field-error" id="err-lastName"></div>
+            </div>
+          </div>
+
+          <label class="field-label" for="email">Email Address</label>
+          <div class="field-wrap">
+            <input class="field-input" type="email" id="email"
+                   placeholder="you@example.com" autocomplete="email" maxlength="100" />
+            <i class="bi bi-envelope field-icon muted" id="icon-email"></i>
+          </div>
+          <div class="field-error" id="err-email"></div>
+
+          <label class="field-label" for="phone">
+            Phone Number <span class="optional">(optional)</span>
+          </label>
+          <div class="phone-group field-wrap">
+            <div class="phone-prefix">🇲🇾 +60</div>
+            <input class="field-input" type="tel" id="phone"
+                   placeholder="12-345 6789" autocomplete="tel" maxlength="15" />
+          </div>
+          <div class="field-error" id="err-phone"></div>
+
+          <label class="field-label" for="dob">
+            Date of Birth <span class="optional">(optional — for birthday treats)</span>
+          </label>
+          <div class="field-wrap">
+            <input class="field-input" type="date" id="dob" autocomplete="bday" />
+            <i class="bi bi-calendar field-icon muted"></i>
+          </div>
+
+          <button class="btn-next" onclick="goStep(2)">
+            Continue <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+
+        </div>
+
+
+        <!-- ══════════════════════
+             STEP 2 — Password
+        ══════════════════════ -->
+        <div class="step-panel" id="step2">
+
+          <label class="field-label" for="password">Password</label>
+          <div class="field-wrap">
+            <input class="field-input" type="password" id="password"
+                   placeholder="Create a strong password" autocomplete="new-password" maxlength="128"
+                   oninput="checkStrength(this.value)" />
+            <button class="toggle-pw" type="button" onclick="togglePw('password', this)" aria-label="Toggle password">
+              <i class="bi bi-eye-slash"></i>
+            </button>
+          </div>
+          <div class="field-error" id="err-password"></div>
+
+          <!-- Strength bar -->
+          <div class="pw-strength-bar">
+            <div class="pw-strength-fill" id="strengthFill"></div>
+          </div>
+          <div class="pw-strength-label" id="strengthLabel">Enter a password</div>
+
+          <!-- Requirements checklist -->
+          <div style="display:flex;flex-direction:column;gap:0.2rem;margin-bottom:1rem;">
+            <div class="req-row" id="req-len"  style="font-size:0.78rem;color:#CCC;display:flex;gap:0.4rem;align-items:center;"><i class="bi bi-circle"></i> At least 8 characters</div>
+            <div class="req-row" id="req-upper" style="font-size:0.78rem;color:#CCC;display:flex;gap:0.4rem;align-items:center;"><i class="bi bi-circle"></i> One uppercase letter</div>
+            <div class="req-row" id="req-num"   style="font-size:0.78rem;color:#CCC;display:flex;gap:0.4rem;align-items:center;"><i class="bi bi-circle"></i> One number</div>
+            <div class="req-row" id="req-sym"   style="font-size:0.78rem;color:#CCC;display:flex;gap:0.4rem;align-items:center;"><i class="bi bi-circle"></i> One special character (!@#$…)</div>
+          </div>
+
+          <label class="field-label" for="confirmPassword">Confirm Password</label>
+          <div class="field-wrap">
+            <input class="field-input" type="password" id="confirmPassword"
+                   placeholder="Re-enter your password" autocomplete="new-password" maxlength="128"
+                   oninput="checkConfirm()" />
+            <button class="toggle-pw" type="button" onclick="togglePw('confirmPassword', this)" aria-label="Toggle confirm password">
+              <i class="bi bi-eye-slash"></i>
+            </button>
+          </div>
+          <div class="field-error" id="err-confirmPassword"></div>
+
+          <button class="btn-next" onclick="goStep(3)">
+            Continue <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+          <button class="btn-back" onclick="goStep(1)">
+            <i class="bi bi-arrow-left me-1"></i> Back
+          </button>
+
+        </div>
+
+
+        <!-- ══════════════════════
+             STEP 3 — Address & Terms
+        ══════════════════════ -->
+        <div class="step-panel" id="step3">
+
+          <label class="field-label" for="address1">
+            Delivery Address <span class="optional">(optional — speeds up checkout)</span>
+          </label>
+          <div class="field-wrap">
+            <input class="field-input" type="text" id="address1"
+                   placeholder="Street address, unit number" autocomplete="address-line1" maxlength="120" />
+            <i class="bi bi-geo-alt field-icon muted"></i>
+          </div>
+
+          <div class="row g-2 mb-0">
+            <div class="col-6">
+              <label class="field-label" for="city">City</label>
+              <div class="field-wrap">
+                <input class="field-input" type="text" id="city"
+                       placeholder="Kuala Lumpur" autocomplete="address-level2" maxlength="60" />
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="field-label" for="postcode">Postcode</label>
+              <div class="field-wrap">
+                <input class="field-input" type="text" id="postcode"
+                       placeholder="50000" maxlength="10" />
+              </div>
+              <div class="field-error" id="err-postcode"></div>
+            </div>
+          </div>
+
+          <label class="field-label" for="state">State</label>
+          <div class="field-wrap">
+            <select class="field-input" id="state" style="cursor:pointer;" autocomplete="address-level1">
+              <option value="">Select state…</option>
+              <option>Johor</option>
+              <option>Kedah</option>
+              <option>Kelantan</option>
+              <option>Kuala Lumpur</option>
+              <option>Labuan</option>
+              <option>Melaka</option>
+              <option>Negeri Sembilan</option>
+              <option>Pahang</option>
+              <option>Perak</option>
+              <option>Perlis</option>
+              <option>Pulau Pinang</option>
+              <option>Putrajaya</option>
+              <option>Sabah</option>
+              <option>Sarawak</option>
+              <option>Selangor</option>
+              <option>Terengganu</option>
+            </select>
+            <i class="bi bi-chevron-down field-icon muted" style="pointer-events:none;"></i>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="check-row">
+            <input type="checkbox" id="newsletter" checked />
+            <label for="newsletter">
+              Subscribe to our newsletter for exclusive deals, new arrivals, and pineapple inspiration 🍍
+            </label>
+          </div>
+
+          <!-- Terms -->
+          <div class="check-row">
+            <input type="checkbox" id="agreeTerms" />
+            <label for="agreeTerms">
+              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> <span style="color:var(--danger);">*</span>
+            </label>
+          </div>
+          <div class="field-error" id="err-terms"></div>
+
+          <!-- Age confirmation -->
+          <div class="check-row">
+            <input type="checkbox" id="agreeAge" />
+            <label for="agreeAge">
+              I confirm I am at least 18 years old <span style="color:var(--danger);">*</span>
+            </label>
+          </div>
+          <div class="field-error" id="err-age"></div>
+
+          <button class="btn-submit" id="btnSubmit" onclick="doRegister()">
+            <span id="btnSubmitText"><i class="bi bi-person-check me-1"></i> Create My Account</span>
+            <div class="spinner" id="submitSpinner"></div>
+          </button>
+          <button class="btn-back" onclick="goStep(2)">
+            <i class="bi bi-arrow-left me-1"></i> Back
+          </button>
+
+        </div>
+
+
+        <!-- ══════════════════════
+             SUCCESS SCREEN
+        ══════════════════════ -->
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon">
+            <i class="bi bi-check-lg"></i>
+          </div>
+          <h3>Welcome to Pinenas! 🍍</h3>
+          <p id="successMsg">Your account has been created. You're now logged in.</p>
+
+          <div style="background:#FFF8EC;border:1px solid #FFE4B0;border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:1.5rem;text-align:left;">
+            <div style="font-size:0.82rem;color:#7A5C00;font-weight:700;margin-bottom:0.2rem;">🎁 Your welcome gift is ready!</div>
+            <div style="font-size:0.88rem;color:#7A5C00;">Use code <strong>PINENAS15</strong> at checkout for 15% off your first order.</div>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-center flex-wrap">
+            <a href="products.html" class="btn-go">Start Shopping</a>
+            <a href="account.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.75rem 1.6rem;border:1.5px solid var(--green);color:var(--green);border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;transition:background 0.2s;"
+               onmouseover="this.style.background='#EAF4EE'" onmouseout="this.style.background='transparent'">
+              <i class="bi bi-person-circle"></i> My Account
+            </a>
+          </div>
+        </div>
+
+        <!-- Social option (steps 1–3 only) -->
+        <div id="socialSection">
+          <div class="or-divider">or sign up with</div>
+          <button class="btn-social" onclick="socialRegister('Google')">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Sign up with Google
+          </button>
+          <button class="btn-social" onclick="socialRegister('Facebook')">
+            <i class="bi bi-facebook" style="color:#1877F2;font-size:1.1rem;"></i>
+            Sign up with Facebook
+          </button>
+        </div>
+
+        <!-- Login link -->
+        <div class="login-link-row" id="loginLinkRow">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <span style="font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:1.2rem;"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Pinenas</span>
+          <span style="margin-left:1rem;">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr"  class="social-icon" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9"   class="social-icon" target="_blank" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+            <a href="https://wa.me/60123456789"     class="social-icon" target="_blank" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          </span>
+        </div>
+        <div style="font-size:0.82rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI Chat FAB -->
+  <button style="position:fixed;bottom:1.8rem;right:1.8rem;z-index:1050;width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;border:none;box-shadow:0 4px 16px rgba(45,106,79,0.45);font-size:1.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="window.location.href='index.html'" aria-label="AI Chat">
+    <i class="bi bi-chat-dots-fill"></i>
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /* ═══════════════════════════════════
+     INIT
+  ═══════════════════════════════════ */
+  (function init() {
+    // Cart badge
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+    // Redirect if already logged in
+    const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+    if (user) {
+      window.location.href = user.role === 'admin' ? 'admin.html' : 'account.html';
+    }
+
+    // Attach live validation listeners
+    ['firstName','lastName','email','phone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('blur',  () => validateField(id));
+        el.addEventListener('input', () => clearFieldErr(id));
+      }
+    });
+  })();
+
+  /* ═══════════════════════════════════
+     STEP NAVIGATION
+  ═══════════════════════════════════ */
+  let currentStep = 1;
+
+  function goStep(to) {
+    clearAlert();
+
+    // Validate current step before advancing
+    if (to > currentStep) {
+      if (!validateStep(currentStep)) return;
+    }
+
+    currentStep = to;
+
+    // Show/hide panels
+    [1,2,3].forEach(n => {
+      document.getElementById(`step${n}`).classList.toggle('active', n === to);
+    });
+
+    // Update dots
+    [1,2,3].forEach(n => {
+      const dot = document.getElementById(`dot${n}`);
+      dot.classList.remove('active','done');
+      if (n === to)    dot.classList.add('active');
+      if (n  < to)     dot.classList.add('done');
+    });
+
+    // Label
+    const labels = { 1:'Step 1 of 3 — Personal Details', 2:'Step 2 of 3 — Set Password', 3:'Step 3 of 3 — Address & Terms' };
+    document.getElementById('stepLabel').textContent = labels[to];
+
+    // Social & login link: hide on step 2/3
+    document.getElementById('socialSection').style.display = to === 1 ? '' : 'none';
+    document.getElementById('loginLinkRow').style.display  = to === 1 ? '' : 'none';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ═══════════════════════════════════
+     VALIDATION
+  ═══════════════════════════════════ */
+  function validateStep(step) {
+    let ok = true;
+
+    if (step === 1) {
+      if (!validateField('firstName')) ok = false;
+      if (!validateField('lastName'))  ok = false;
+      if (!validateField('email'))     ok = false;
+      if (document.getElementById('phone').value.trim()) {
+        if (!validateField('phone')) ok = false;
+      }
+    }
+
+    if (step === 2) {
+      if (!validateField('password'))        ok = false;
+      if (!validateField('confirmPassword')) ok = false;
+    }
+
+    return ok;
+  }
+
+  function validateField(id) {
+    const el  = document.getElementById(id);
+    const val = el ? el.value.trim() : '';
+    let msg = '';
+
+    switch (id) {
+      case 'firstName':
+        if (!val)          msg = 'First name is required.';
+        else if (val.length < 2) msg = 'Must be at least 2 characters.';
+        break;
+      case 'lastName':
+        if (!val)          msg = 'Last name is required.';
+        else if (val.length < 2) msg = 'Must be at least 2 characters.';
+        break;
+      case 'email':
+        if (!val)          msg = 'Email address is required.';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) msg = 'Enter a valid email address.';
+        else {
+          // Check duplicate
+          const users = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+          if (users.some(u => u.email.toLowerCase() === val.toLowerCase())) {
+            msg = 'This email is already registered. <a href="login.html" style="color:var(--danger);font-weight:700;">Sign in instead?</a>';
+          }
+        }
+        break;
+      case 'phone':
+        if (val && !/^[0-9\s\-]{8,15}$/.test(val)) msg = 'Enter a valid Malaysian phone number.';
+        break;
+      case 'password':
+        if (!val)             msg = 'Password is required.';
+        else if (val.length < 8) msg = 'Password must be at least 8 characters.';
+        break;
+      case 'confirmPassword': {
+        const pw = document.getElementById('password').value;
+        if (!val)   msg = 'Please confirm your password.';
+        else if (val !== pw) msg = 'Passwords do not match.';
+        break;
+      }
+    }
+
+    if (msg) {
+      showFieldErr(id, msg);
+      if (el) el.classList.add('is-invalid');
+      setFieldIcon(id, 'invalid');
+      return false;
+    } else {
+      clearFieldErr(id);
+      if (el) { el.classList.remove('is-invalid'); el.classList.add('is-valid'); }
+      setFieldIcon(id, 'valid');
+      return true;
+    }
+  }
+
+  function showFieldErr(id, msg) {
+    const el = document.getElementById(`err-${id}`);
+    if (el) { el.innerHTML = msg; el.style.display = 'block'; }
+  }
+
+  function clearFieldErr(id) {
+    const el = document.getElementById(`err-${id}`);
+    if (el) { el.textContent = ''; el.style.display = 'none'; }
+    const input = document.getElementById(id);
+    if (input) input.classList.remove('is-invalid');
+  }
+
+  function setFieldIcon(id, state) {
+    const icon = document.getElementById(`icon-${id}`);
+    if (!icon) return;
+    icon.className = icon.className.replace(/\b(muted|valid|invalid)\b/g, '').trim();
+    icon.classList.add(state);
+    if (state === 'valid')   icon.className = icon.className.replace(/bi-[^\s]+/, 'bi-check-circle-fill');
+    if (state === 'invalid') icon.className = icon.className.replace(/bi-[^\s]+/, 'bi-exclamation-circle-fill');
+  }
+
+  /* ═══════════════════════════════════
+     PASSWORD STRENGTH
+  ═══════════════════════════════════ */
+  function checkStrength(val) {
+    const reqs = {
+      'req-len':   val.length >= 8,
+      'req-upper': /[A-Z]/.test(val),
+      'req-num':   /[0-9]/.test(val),
+      'req-sym':   /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(val),
+    };
+
+    let score = Object.values(reqs).filter(Boolean).length;
+
+    // Update requirement rows
+    Object.entries(reqs).forEach(([id, met]) => {
+      const row = document.getElementById(id);
+      if (!row) return;
+      row.style.color = met ? 'var(--green-light)' : '#CCC';
+      row.querySelector('i').className = met ? 'bi bi-check-circle-fill' : 'bi bi-circle';
+    });
+
+    // Strength bar
+    const fill  = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    const configs = [
+      { w:'0%',   bg:'#E0DDD6', text:'Enter a password' },
+      { w:'25%',  bg:'var(--danger)',     text:'Weak' },
+      { w:'50%',  bg:'var(--gold)',       text:'Fair' },
+      { w:'75%',  bg:'#4AABF0',           text:'Good' },
+      { w:'100%', bg:'var(--green-light)',text:'Strong 💪' },
+    ];
+    const c = configs[Math.max(0, val.length === 0 ? 0 : score)];
+    fill.style.width      = val.length === 0 ? '0%' : c.w;
+    fill.style.background = c.bg;
+    label.textContent     = c.text;
+    label.style.color     = val.length === 0 ? 'var(--muted)' : c.bg;
+  }
+
+  function checkConfirm() {
+    const pw  = document.getElementById('password').value;
+    const cpw = document.getElementById('confirmPassword').value;
+    if (!cpw) return;
+    if (pw === cpw) {
+      clearFieldErr('confirmPassword');
+      document.getElementById('confirmPassword').classList.add('is-valid');
+    } else {
+      showFieldErr('confirmPassword', 'Passwords do not match.');
+      document.getElementById('confirmPassword').classList.add('is-invalid');
+    }
+  }
+
+  /* ═══════════════════════════════════
+     REGISTRATION SUBMIT
+  ═══════════════════════════════════ */
+  function doRegister() {
+    clearAlert();
+    let ok = true;
+
+    // Terms
+    if (!document.getElementById('agreeTerms').checked) {
+      const el = document.getElementById('err-terms');
+      el.textContent = 'You must agree to the Terms of Service.';
+      el.style.display = 'block';
+      ok = false;
+    } else {
+      document.getElementById('err-terms').style.display = 'none';
+    }
+
+    // Age
+    if (!document.getElementById('agreeAge').checked) {
+      const el = document.getElementById('err-age');
+      el.textContent = 'You must confirm you are at least 18 years old.';
+      el.style.display = 'block';
+      ok = false;
+    } else {
+      document.getElementById('err-age').style.display = 'none';
+    }
+
+    // Postcode format
+    const pc = document.getElementById('postcode').value.trim();
+    if (pc && !/^\d{5}$/.test(pc)) {
+      document.getElementById('err-postcode').textContent = 'Enter a valid 5-digit postcode.';
+      document.getElementById('err-postcode').style.display = 'block';
+      ok = false;
+    } else {
+      document.getElementById('err-postcode').style.display = 'none';
+    }
+
+    if (!ok) return;
+
+    // Show spinner
+    setSubmitLoading(true);
+
+    setTimeout(() => {
+      setSubmitLoading(false);
+
+      // Build user object
+      const users = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+      const newUser = {
+        id:         Date.now(),
+        name:       `${document.getElementById('firstName').value.trim()} ${document.getElementById('lastName').value.trim()}`,
+        firstName:  document.getElementById('firstName').value.trim(),
+        lastName:   document.getElementById('lastName').value.trim(),
+        email:      document.getElementById('email').value.trim().toLowerCase(),
+        password:   document.getElementById('password').value,  // plain-text for demo; hash in production
+        phone:      document.getElementById('phone').value.trim(),
+        dob:        document.getElementById('dob').value,
+        address: {
+          line1:    document.getElementById('address1').value.trim(),
+          city:     document.getElementById('city').value.trim(),
+          postcode: document.getElementById('postcode').value.trim(),
+          state:    document.getElementById('state').value,
+        },
+        newsletter: document.getElementById('newsletter').checked,
+        role:       'customer',
+        createdAt:  new Date().toISOString(),
+        orders:     [],
+      };
+
+      // Save to users list
+      users.push(newUser);
+      localStorage.setItem('pinenas_users', JSON.stringify(users));
+
+      // Auto login (session)
+      const session = { id: newUser.id, name: newUser.name, email: newUser.email, role: 'customer' };
+      localStorage.setItem('pinenas_user', JSON.stringify(session));
+
+      // Show success
+      showSuccess(newUser.firstName);
+
+    }, 1200);
+  }
+
+  function showSuccess(firstName) {
+    // Hide form elements
+    document.getElementById('formHeader').style.display = 'none';
+    document.getElementById('stepDots').style.display   = 'none';
+    document.getElementById('formAlert').classList.remove('show');
+    [1,2,3].forEach(n => document.getElementById(`step${n}`).classList.remove('active'));
+    document.getElementById('socialSection').style.display = 'none';
+    document.getElementById('loginLinkRow').style.display  = 'none';
+
+    // Show success
+    document.getElementById('successMsg').textContent = `Welcome, ${firstName}! Your account is ready and you're now logged in.`;
+    document.getElementById('successScreen').style.display = 'block';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ═══════════════════════════════════
+     SOCIAL (placeholder)
+  ═══════════════════════════════════ */
+  function socialRegister(provider) {
+    showAlert('error', `${provider} sign-up is not yet configured. Please register with email.`);
+  }
+
+  /* ═══════════════════════════════════
+     HELPERS
+  ═══════════════════════════════════ */
+  function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.querySelector('i').className = isText ? 'bi bi-eye-slash' : 'bi bi-eye';
+  }
+
+  function setSubmitLoading(on) {
+    const btn     = document.getElementById('btnSubmit');
+    const spinner = document.getElementById('submitSpinner');
+    const text    = document.getElementById('btnSubmitText');
+    btn.disabled          = on;
+    spinner.style.display = on ? 'block' : 'none';
+    text.style.display    = on ? 'none'  : 'flex';
+  }
+
+  function showAlert(type, msg) {
+    const el = document.getElementById('formAlert');
+    el.className = `form-alert ${type} show`;
+    el.querySelector('span').innerHTML = msg;
+    el.querySelector('i').className = type === 'error'
+      ? 'bi bi-exclamation-circle-fill'
+      : 'bi bi-check-circle-fill';
+  }
+
+  function clearAlert() {
+    document.getElementById('formAlert').classList.remove('show');
+  }
+
+  /* Enter key on last field of each step */
+  document.getElementById('dob').addEventListener('keydown', e => { if (e.key === 'Enter') goStep(2); });
+  document.getElementById('confirmPassword').addEventListener('keydown', e => { if (e.key === 'Enter') goStep(3); });
+  </script>
+
+
+  <!-- ═ Live buyer notification ═ -->
+  <div class="live-notif" id="live-notif">
+    <div class="notif-avatar">A</div>
+    <div>
+      <div><b class="notif-name">Amirah R.</b> <span class="notif-product">just bought Pineapple Jam</span></div>
+      <div class="notif-sub"><span class="notif-dot" style="display:inline-block;width:7px;height:7px;background:#27ae60;border-radius:50;margin-right:4px;vertical-align:middle;"></span><span class="notif-time">2 min ago</span></div>
+    </div>
+  </div>
+
+  <!-- ═ Order success overlay ═ -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-card">
+      <div class="confetti-strip"></div>
+      <div class="tick-circle">✓</div>
+      <h3>Order Placed!</h3>
+      <p>Thank you, <b class="order-user">Customer</b>!<br>Your pineapple goodness is on its way 🍍</p>
+      <div class="order-id">Order ID: <span class="order-id-val">PN-XXXXXX</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);">Estimated delivery: <b>2–3 business days</b></p>
+      <div class="order-progress"><div class="order-progress-bar"></div></div>
+      <div class="order-dismiss">Auto-dismissing…</div>
+    </div>
+  </div>
+
+  <!-- ═ Confetti canvas ═ -->
+  <canvas id="confetti-canvas"></canvas>
+
+
+  <!-- ═══ BOMBASTIC FEATURES JS ═══ -->
+  <script>
+  // ── Flash sale countdown ──
+  function initFlashTimer() {
+    const el = document.getElementById('flash-timer');
+    if (!el) return;
+    const end = Date.now() + (3*3600 + 47*60 + 12)*1000;
+    setInterval(() => {
+      const left = Math.max(0, end - Date.now());
+      const h = String(Math.floor(left/3600000)).padStart(2,'0');
+      const m = String(Math.floor((left%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+
+  // ── Scroll reveal ──
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+  }
+
+  // ── Floating cart badge ──
+  function updateFloatBadge() {
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const total = cart.reduce((s,i) => s + (i.qty||1), 0);
+    const badge = document.getElementById('float-badge');
+    if (badge) { badge.textContent = total; badge.style.display = total ? 'flex' : 'none'; }
+  }
+
+  // ── Live buyer notifications ──
+  const LIVE_BUYERS = [
+    { name:'Amirah R.', product:'Pineapple Jam (500g)', time:'2 min ago' },
+    { name:'Hafiz M.',  product:'Fresh Pineapple Slices', time:'5 min ago' },
+    { name:'Nurul A.',  product:'Pineapple Enzyme Drink', time:'8 min ago' },
+    { name:'Syafiq K.', product:'Dried Pineapple Rings', time:'11 min ago' },
+    { name:'Liyana T.', product:'Pineapple Skincare Set', time:'14 min ago' },
+  ];
+  let liveBuyerIdx = 0;
+  function showLiveNotif() {
+    const notif = document.getElementById('live-notif');
+    if (!notif) return;
+    const b = LIVE_BUYERS[liveBuyerIdx % LIVE_BUYERS.length];
+    liveBuyerIdx++;
+    notif.querySelector('.notif-name').textContent = b.name;
+    notif.querySelector('.notif-product').textContent = `just bought ${b.product}`;
+    notif.querySelector('.notif-time').textContent = b.time;
+    notif.querySelector('.notif-avatar').textContent = b.name[0];
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+  function initLiveNotifs() {
+    setTimeout(() => { showLiveNotif(); setInterval(showLiveNotif, 9000); }, 3500);
+  }
+
+  // ── Confetti ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length:120}, () => ({
+      x: Math.random()*canvas.width, y: -20,
+      r: 6 + Math.random()*8,
+      color: ['#F5A623','#2D6A4F','#27ae60','#3498db','#e74c3c','#9b59b6'][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*4, vy: 3+Math.random()*4,
+      angle: Math.random()*360, va: (Math.random()-0.5)*6,
+      shape: Math.random()>0.5?'rect':'circle'
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle = p.color;
+        if (p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        p.x += p.vx; p.y += p.vy * 0.98; p.angle += p.va;
+      });
+      if (pieces.some(p => p.y < canvas.height)) frame = requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { if(frame) cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 3500);
+  }
+
+  // ── Order success popup ──
+  function showOrderSuccess(userName) {
+    const overlay = document.getElementById('order-success-overlay');
+    if (!overlay) return;
+    const orderId = 'PN-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    overlay.querySelector('.order-id-val').textContent = orderId;
+    overlay.querySelector('.order-user').textContent = userName || 'Customer';
+    overlay.classList.add('show');
+    launchConfetti();
+    // Auto-dismiss progress bar
+    const bar = overlay.querySelector('.order-progress-bar');
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 1;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          // Clear cart after popup gone
+          localStorage.removeItem('pinenas_cart');
+          updateFloatBadge();
+          if (typeof render === 'function') render();
+        }, 300);
+      }
+    }, 45);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initFlashTimer();
+    initReveal();
+    updateFloatBadge();
+    initLiveNotifs();
+    window.addEventListener('storage', updateFloatBadge);
+  });
+  </script>
+
+</body>
+</html>

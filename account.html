@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --danger:      #D62B2B;
+      --radius:      14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); }
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+
+    /* ── Navbar ── */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; position: sticky; top: 0; z-index: 1030; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .search-form .form-control { border-radius: 30px 0 0 30px; border: none; background: rgba(255,255,255,0.15); color: #fff; padding: 0.45rem 1rem; font-size: 0.88rem; width: 200px; }
+    .search-form .form-control::placeholder { color: rgba(255,255,255,0.6); }
+    .search-form .form-control:focus { background: rgba(255,255,255,0.25); box-shadow: none; color: #fff; }
+    .search-form .btn-search { border-radius: 0 30px 30px 0; background: var(--gold); border: none; color: var(--charcoal); padding: 0.45rem 1rem; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb-bar { background: #fff; border-bottom: 1px solid #F0EDE6; padding: 0.7rem 0; }
+    .breadcrumb { margin: 0; font-size: 0.82rem; }
+    .breadcrumb-item a { color: var(--green); text-decoration: none; }
+    .breadcrumb-item.active { color: var(--muted); }
+
+    /* ── Account header banner ── */
+    .account-banner {
+      background: linear-gradient(135deg, var(--green) 0%, #1B4332 100%);
+      padding: 2rem 0;
+    }
+    .avatar-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--charcoal);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      border: 3px solid rgba(255,255,255,0.3);
+    }
+    .account-banner h2 { color: #fff; font-size: 1.4rem; margin: 0; }
+    .account-banner .member-since { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+    .stat-chip {
+      background: rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      text-align: center;
+      min-width: 80px;
+    }
+    .stat-chip .val { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+    .stat-chip .lbl { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 0.1rem; }
+
+    /* ── Sidebar nav ── */
+    .account-sidebar {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      overflow: hidden;
+      position: sticky;
+      top: 80px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.85rem 1.2rem;
+      font-size: 0.9rem; font-weight: 500;
+      color: var(--charcoal);
+      cursor: pointer;
+      border: none; background: none; width: 100%; text-align: left;
+      border-bottom: 1px solid #F8F5EF;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-item:last-child { border-bottom: none; }
+    .sidebar-item i { font-size: 1.05rem; color: var(--muted); width: 20px; text-align: center; transition: color 0.15s; }
+    .sidebar-item:hover { background: #F9F5EE; color: var(--green); }
+    .sidebar-item:hover i { color: var(--green); }
+    .sidebar-item.active { background: #EAF4EE; color: var(--green); font-weight: 700; }
+    .sidebar-item.active i { color: var(--green); }
+    .sidebar-item.danger { color: var(--danger); }
+    .sidebar-item.danger i { color: var(--danger); }
+    .sidebar-item.danger:hover { background: #FFE8E8; }
+    .sidebar-badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: var(--charcoal);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.1rem 0.5rem;
+      border-radius: 20px;
+    }
+
+    /* ── Tab panels ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section card ── */
+    .section-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+    }
+    .section-card-header {
+      padding: 1rem 1.4rem;
+      border-bottom: 1px solid #F0EDE6;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-card-header h5 { margin: 0; font-size: 1rem; font-weight: 700; }
+    .section-card-body { padding: 1.4rem; }
+
+    /* ── Form fields ── */
+    .field-label { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.3rem; display: block; }
+    .field-input {
+      width: 100%; border: 1.5px solid #E0DDD6; border-radius: 10px;
+      padding: 0.6rem 0.95rem; font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+      color: var(--charcoal); background: #fff; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field-input:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(82,183,136,0.15); }
+    .field-input:disabled { background: #F9F5EE; color: var(--muted); cursor: not-allowed; }
+
+    /* ── Buttons ── */
+    .btn-green {
+      background: var(--green); color: #fff; border: none; border-radius: 10px;
+      padding: 0.6rem 1.6rem; font-size: 0.9rem; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-green:hover { background: var(--gold-dark); }
+    .btn-outline {
+      background: none; border: 1.5px solid #E0DDD6; border-radius: 10px;
+      padding: 0.55rem 1.2rem; font-size: 0.88rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; color: var(--muted); cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green); }
+    .btn-danger-outline {
+      background: none; border: 1.5px solid #FFCCCC; border-radius: 10px;
+      padding: 0.55rem 1.2rem; font-size: 0.88rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; color: var(--danger); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-danger-outline:hover { background: #FFE8E8; }
+
+    /* ── Order cards ── */
+    .order-card {
+      background: #fff; border-radius: var(--radius); border: 1px solid #F0EDE6;
+      overflow: hidden; margin-bottom: 1rem; transition: box-shadow 0.2s;
+    }
+    .order-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .order-card-header {
+      padding: 0.9rem 1.2rem; background: #F9F5EE;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem;
+      border-bottom: 1px solid #F0EDE6;
+    }
+    .order-id   { font-size: 0.82rem; font-weight: 700; color: var(--charcoal); }
+    .order-date { font-size: 0.78rem; color: var(--muted); }
+    .order-badge {
+      font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.7rem;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .badge-delivered { background: #D9F5E5; color: var(--green); }
+    .badge-shipped   { background: #DBEAFE; color: #1D4ED8; }
+    .badge-processing{ background: #FEF3C7; color: #92400E; }
+    .badge-cancelled { background: #FFE8E8; color: var(--danger); }
+    .order-card-body { padding: 1rem 1.2rem; }
+    .order-item-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.4rem 0; }
+    .order-item-emoji { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .order-item-emoji img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .order-item-name { font-size: 0.88rem; font-weight: 500; flex: 1; }
+    .order-item-qty  { font-size: 0.8rem; color: var(--muted); }
+    .order-item-price{ font-size: 0.88rem; font-weight: 700; color: var(--green); font-family: 'Playfair Display', serif; }
+    .order-total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 0.7rem; border-top: 1px solid #F0EDE6; margin-top: 0.4rem; }
+    .order-total-lbl { font-size: 0.82rem; color: var(--muted); }
+    .order-total-val { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--green); }
+
+    /* ── Wishlist cards ── */
+    .wishlist-card {
+      background: #fff; border-radius: var(--radius); border: 1px solid #F0EDE6;
+      overflow: hidden; transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .wishlist-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.09); transform: translateY(-3px); }
+    .wishlist-card .w-img { background: #F9F5EE; height: 120px; display: flex; align-items: center; justify-content: center; position: relative; }
+    .wishlist-card .w-img img { max-height: 80px; max-width: 70%; object-fit: contain; }
+    .wishlist-card .w-body { padding: 0.8rem; }
+    .w-name  { font-weight: 600; font-size: 0.88rem; text-decoration: none; color: var(--charcoal); display: block; margin-bottom: 0.3rem; }
+    .w-name:hover { color: var(--green); }
+    .w-price { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--green); }
+    .btn-remove-wish { position: absolute; top: 6px; right: 6px; background: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; font-size: 0.8rem; box-shadow: 0 1px 4px rgba(0,0,0,0.1); transition: color 0.15s; }
+    .btn-remove-wish:hover { color: var(--danger); }
+    .btn-add-wish {
+      width: 100%; background: var(--green); color: #fff; border: none; border-radius: 8px;
+      padding: 0.4rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; margin-top: 0.5rem;
+    }
+    .btn-add-wish:hover { background: var(--gold-dark); }
+
+    /* ── Reviews tab ── */
+    .my-review-card {
+      background: #fff; border-radius: var(--radius); border: 1px solid #F0EDE6;
+      padding: 1.1rem 1.3rem; margin-bottom: 0.85rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .review-product-emoji { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .review-product-emoji img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .stars-gold { color: var(--gold); font-size: 0.85rem; }
+    .review-text { font-size: 0.88rem; color: var(--charcoal); line-height: 1.6; margin: 0.3rem 0 0; }
+
+    /* ── Password change ── */
+    .pw-strength-bar  { height: 4px; border-radius: 4px; background: #E0DDD6; margin-top: 0.3rem; overflow: hidden; }
+    .pw-strength-fill { height: 100%; border-radius: 4px; transition: width 0.3s, background 0.3s; width: 0%; }
+
+    /* ── Alert ── */
+    .inline-alert {
+      border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.84rem;
+      display: none; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;
+    }
+    .inline-alert.ok  { background: #D9F5E5; color: var(--green);  border: 1px solid #B2E5CC; }
+    .inline-alert.err { background: #FFE8E8; color: var(--danger); border: 1px solid #FFCCCC; }
+    .inline-alert.show { display: flex; }
+
+    /* ── Empty states ── */
+    .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--muted); }
+    .empty-state .ei { font-size: 3rem; margin-bottom: 0.8rem; }
+    .empty-state h5  { font-size: 1rem; color: var(--charcoal); margin-bottom: 0.3rem; }
+    .empty-state p   { font-size: 0.88rem; }
+
+    /* ── Promo code box ── */
+    .promo-box {
+      background: linear-gradient(135deg, #FFF8EC 0%, #FFFBF2 100%);
+      border: 1.5px dashed var(--gold);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .promo-code {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700; color: var(--green);
+      letter-spacing: 0.08em;
+    }
+    .btn-copy {
+      background: var(--gold); color: var(--charcoal); border: none;
+      border-radius: 8px; padding: 0.4rem 1rem; font-size: 0.82rem;
+      font-weight: 700; cursor: pointer; transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-copy:hover { background: var(--gold-dark); color: #fff; }
+
+    /* ── Chat FAB ── */
+    .chat-fab { position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 1050; width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; border: none; box-shadow: 0 4px 16px rgba(45,106,79,0.45); font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+    .chat-fab:hover { background: var(--green-light); transform: scale(1.08); }
+
+    /* ── Footer ── */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 3rem 0 1.5rem; font-size: 0.88rem; margin-top: 3rem; }
+    .pinenas-footer .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+    .pinenas-footer h6 { color: #fff; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; margin-bottom: 0.35rem; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex !important; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.95rem; margin-right: 0.35rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+
+    .toast-container { z-index: 1055; }
+
+    @media (max-width: 767px) {
+      .account-sidebar { position: static; margin-bottom: 1rem; }
+      .stat-chip { min-width: 60px; }
+    }
+  </style>
+
+  <!-- ═══ BOMBASTIC FEATURES CSS ═══ -->
+  <style>
+  /* ── Announcement ticker ── */
+  .announce-bar {
+    background: linear-gradient(90deg, #1a3a28, #2D6A4F, #1a3a28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .announce-track span { padding: 0 3rem; color: var(--gold); }
+  .announce-track span b { color: #fff; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── Flash sale ribbon ── */
+  .flash-banner {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+  .flash-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+    animation: sheen 2.5s ease-in-out infinite;
+  }
+  @keyframes sheen { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+  .flash-timer { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.12em; color: #FFD700; }
+
+  /* ── Scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-left.visible  { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── "Live buyers" notification ── */
+  .live-notif {
+    position: fixed; bottom: 7rem; left: 1.2rem;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+    max-width: 270px; z-index: 9998;
+    transform: translateX(-130%);
+    transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .live-notif.show { transform: translateX(0); }
+  .live-notif .notif-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .live-notif .notif-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .live-notif .notif-dot { width:8px; height:8px; background:#27ae60; border-radius:50%; flex-shrink:0; animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  /* ── Success order popup ── */
+  .order-success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .order-success-overlay.show { opacity: 1; pointer-events: all; }
+  .order-success-card {
+    background: #fff; border-radius: 24px;
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .order-success-overlay.show .order-success-card { transform: scale(1); }
+  .order-success-card .tick-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.3rem; font-size: 2.2rem; color: #fff;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+    animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+  }
+  @keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .order-success-card h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color: var(--charcoal); margin-bottom:0.5rem; }
+  .order-success-card p  { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+  .order-success-card .order-id { font-family:monospace; background:#f4f4f4; border-radius:8px; padding:0.3rem 0.8rem; font-size:0.85rem; font-weight:700; color:var(--green); display:inline-block; margin:0.6rem 0; }
+  .order-success-card .confetti-strip { position:absolute; top:0; left:0; right:0; height:6px; background: linear-gradient(90deg,#F5A623,#27ae60,#3498db,#e74c3c,#F5A623); }
+  .order-progress { width:100%; background:#eee; border-radius:100px; height:6px; margin:1.1rem 0 0.4rem; overflow:hidden; }
+  .order-progress-bar { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:100px; width:0%; transition:width 0.1s linear; }
+  .order-dismiss { font-size:0.75rem; color:var(--muted); margin-top:0.8rem; }
+
+  /* ── Product card hover glow ── */
+  .prod-card { transition: transform 0.22s, box-shadow 0.22s; }
+  .prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px rgba(45,106,79,0.18) !important; }
+
+  /* ── Sparkle badge on cards ── */
+  .badge-hot {
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; font-size:0.65rem; font-weight:800;
+    padding:0.2rem 0.55rem; border-radius:100px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+  @keyframes badge-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.5)} 50%{box-shadow:0 0 0 6px rgba(231,76,60,0)} }
+
+  /* ── Confetti canvas ── */
+  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:999998; }
+  </style>
+
+</head>
+<body>
+
+  <!-- ═ Announcement ticker ═ -->
+  <div class="announce-bar">
+    <div class="announce-track">
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+    </div>
+  </div>
+
+  <!-- ═ Flash sale banner ═ -->
+  <div class="flash-banner">
+    🔥 FLASH SALE ENDS IN &nbsp; <span class="flash-timer" id="flash-timer">03:47:12</span> &nbsp; — Up to <b>30% OFF</b> selected products!
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+        </ul>
+        <form class="search-form d-flex me-3" action="search.html" method="get">
+          <input class="form-control" type="search" name="q" placeholder="Search products…" />
+          <button class="btn-search" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+        <div class="d-flex align-items-center gap-1">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="account.html" class="nav-icon-btn" aria-label="My Account">
+            <i class="bi bi-person-circle" style="color:var(--gold);"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">My Account</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       ACCOUNT BANNER
+  ══════════════════════════════════ -->
+  <div class="account-banner">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="avatar-circle" id="avatarCircle">?</div>
+        <div class="flex-grow-1">
+          <h2 id="bannerName">Welcome back!</h2>
+          <div class="member-since" id="bannerEmail">—</div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <div class="stat-chip">
+            <div class="val" id="statOrders">0</div>
+            <div class="lbl">Orders</div>
+          </div>
+          <div class="stat-chip">
+            <div class="val" id="statWishlist">0</div>
+            <div class="lbl">Wishlist</div>
+          </div>
+          <div class="stat-chip">
+            <div class="val" id="statReviews">0</div>
+            <div class="lbl">Reviews</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════ -->
+  <div class="container py-4">
+    <div class="row g-4">
+
+      <!-- ── Sidebar ── -->
+      <div class="col-lg-3">
+        <div class="account-sidebar">
+          <button class="sidebar-item active" onclick="switchTab('overview')" id="nav-overview">
+            <i class="bi bi-grid"></i> Overview
+          </button>
+          <button class="sidebar-item" onclick="switchTab('orders')" id="nav-orders">
+            <i class="bi bi-bag"></i> My Orders
+            <span class="sidebar-badge" id="ordersBadge">0</span>
+          </button>
+          <button class="sidebar-item" onclick="switchTab('wishlist')" id="nav-wishlist">
+            <i class="bi bi-heart"></i> Wishlist
+            <span class="sidebar-badge" id="wishlistBadge">0</span>
+          </button>
+          <button class="sidebar-item" onclick="switchTab('reviews')" id="nav-reviews">
+            <i class="bi bi-star"></i> My Reviews
+          </button>
+          <button class="sidebar-item" onclick="switchTab('profile')" id="nav-profile">
+            <i class="bi bi-person"></i> Edit Profile
+          </button>
+          <button class="sidebar-item" onclick="switchTab('address')" id="nav-address">
+            <i class="bi bi-geo-alt"></i> Address Book
+          </button>
+          <button class="sidebar-item" onclick="switchTab('password')" id="nav-password">
+            <i class="bi bi-lock"></i> Change Password
+          </button>
+          <button class="sidebar-item danger" onclick="doLogout()">
+            <i class="bi bi-box-arrow-right"></i> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Content area ── -->
+      <div class="col-lg-9">
+
+        <!-- ════════════════════
+             OVERVIEW TAB
+        ════════════════════ -->
+        <div class="tab-panel active" id="tab-overview">
+
+          <!-- Welcome promo -->
+          <div class="section-card mb-3">
+            <div class="section-card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span style="font-size:1.2rem;">🎁</span>
+                <strong style="font-size:0.95rem;">Your Welcome Gift</strong>
+              </div>
+              <div class="promo-box">
+                <div>
+                  <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.2rem;">Use at checkout for 15% off your first order</div>
+                  <div class="promo-code">PINENAS15</div>
+                </div>
+                <button class="btn-copy ms-auto" onclick="copyPromo('PINENAS15')">
+                  <i class="bi bi-clipboard me-1"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick links -->
+          <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+              <button class="section-card w-100 text-center p-3 border-0 bg-white" style="cursor:pointer;border-radius:var(--radius);border:1px solid #F0EDE6 !important;" onclick="switchTab('orders')">
+                <i class="bi bi-bag" style="font-size:1.5rem;color:var(--green);"></i>
+                <div style="font-size:0.82rem;font-weight:600;margin-top:0.4rem;">My Orders</div>
+              </button>
+            </div>
+            <div class="col-6 col-md-3">
+              <button class="section-card w-100 text-center p-3 border-0 bg-white" style="cursor:pointer;border-radius:var(--radius);border:1px solid #F0EDE6 !important;" onclick="switchTab('wishlist')">
+                <i class="bi bi-heart" style="font-size:1.5rem;color:var(--danger);"></i>
+                <div style="font-size:0.82rem;font-weight:600;margin-top:0.4rem;">Wishlist</div>
+              </button>
+            </div>
+            <div class="col-6 col-md-3">
+              <button class="section-card w-100 text-center p-3 border-0 bg-white" style="cursor:pointer;border-radius:var(--radius);border:1px solid #F0EDE6 !important;" onclick="switchTab('profile')">
+                <i class="bi bi-person" style="font-size:1.5rem;color:var(--gold);"></i>
+                <div style="font-size:0.82rem;font-weight:600;margin-top:0.4rem;">Edit Profile</div>
+              </button>
+            </div>
+            <div class="col-6 col-md-3">
+              <a href="products.html" class="section-card w-100 text-center p-3" style="display:block;text-decoration:none;border-radius:var(--radius);border:1px solid #F0EDE6;background:#fff;">
+                <i class="bi bi-bag-plus" style="font-size:1.5rem;color:var(--green-light);"></i>
+                <div style="font-size:0.82rem;font-weight:600;margin-top:0.4rem;color:var(--charcoal);">Shop Now</div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Recent orders preview -->
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>Recent Orders</h5>
+              <button class="btn-outline" onclick="switchTab('orders')" style="font-size:0.8rem;padding:0.3rem 0.8rem;">View all</button>
+            </div>
+            <div class="section-card-body" id="recentOrdersPreview">
+              <div class="empty-state">
+                <div class="ei">📦</div>
+                <h5>No orders yet</h5>
+                <p>Your orders will appear here after you make a purchase.</p>
+                <a href="products.html" style="color:var(--green);font-weight:700;font-size:0.88rem;text-decoration:none;">Start shopping →</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- ════════════════════
+             ORDERS TAB
+        ════════════════════ -->
+        <div class="tab-panel" id="tab-orders">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>My Orders</h5>
+              <select id="orderFilter" onchange="renderOrders()" style="border:1px solid #E0DDD6;border-radius:8px;padding:0.3rem 0.7rem;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;">
+                <option value="all">All orders</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Processing">Processing</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="section-card-body" id="ordersContainer"></div>
+          </div>
+        </div>
+
+
+        <!-- ════════════════════
+             WISHLIST TAB
+        ════════════════════ -->
+        <div class="tab-panel" id="tab-wishlist">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>My Wishlist</h5>
+              <span style="font-size:0.82rem;color:var(--muted);" id="wishlistCount">0 items</span>
+            </div>
+            <div class="section-card-body">
+              <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="wishlistGrid"></div>
+              <div class="empty-state" id="wishlistEmpty" style="display:none;">
+                <div class="ei">❤️</div>
+                <h5>Your wishlist is empty</h5>
+                <p>Save products you love by clicking the heart icon on product pages.</p>
+                <a href="products.html" style="color:var(--green);font-weight:700;font-size:0.88rem;text-decoration:none;">Browse products →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ════════════════════
+             REVIEWS TAB
+        ════════════════════ -->
+        <div class="tab-panel" id="tab-reviews">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>My Reviews</h5>
+            </div>
+            <div class="section-card-body" id="reviewsContainer">
+              <div class="empty-state">
+                <div class="ei">⭐</div>
+                <h5>No reviews yet</h5>
+                <p>Share your experience! Buy a product and leave a review.</p>
+                <a href="products.html" style="color:var(--green);font-weight:700;font-size:0.88rem;text-decoration:none;">Shop now →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ════════════════════
+             PROFILE TAB
+        ════════════════════ -->
+        <div class="tab-panel" id="tab-profile">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>Edit Profile</h5>
+            </div>
+            <div class="section-card-body">
+
+              <div class="inline-alert" id="profileAlert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span id="profileAlertMsg"></span>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="field-label" for="pFirstName">First Name</label>
+                  <input class="field-input" type="text" id="pFirstName" maxlength="50" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="pLastName">Last Name</label>
+                  <input class="field-input" type="text" id="pLastName" maxlength="50" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="pEmail">Email Address</label>
+                  <input class="field-input" type="email" id="pEmail" maxlength="100" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="pPhone">Phone Number</label>
+                  <input class="field-input" type="tel" id="pPhone" placeholder="+60 12-345 6789" maxlength="20" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="pDob">Date of Birth</label>
+                  <input class="field-input" type="date" id="pDob" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="pGender">Gender <span style="font-weight:400;color:var(--muted);font-size:0.75rem;">(optional)</span></label>
+                  <select class="field-input" id="pGender" style="cursor:pointer;">
+                    <option value="">Prefer not to say</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="pNewsletter" style="accent-color:var(--green);" />
+                    <label class="form-check-label" style="font-size:0.88rem;" for="pNewsletter">
+                      Subscribe to newsletter for deals &amp; new arrivals
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 mt-4">
+                <button class="btn-green" onclick="saveProfile()">
+                  <i class="bi bi-check-lg"></i> Save Changes
+                </button>
+                <button class="btn-outline" onclick="loadProfileFields()">
+                  <i class="bi bi-x"></i> Cancel
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ════════════════════
+             ADDRESS TAB
+        ════════════════════ -->
+        <div class="tab-panel" id="tab-address">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>Address Book</h5>
+            </div>
+            <div class="section-card-body">
+
+              <div class="inline-alert" id="addressAlert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span id="addressAlertMsg"></span>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="field-label" for="aLine1">Street Address</label>
+                  <input class="field-input" type="text" id="aLine1" placeholder="House no., street, area" maxlength="120" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="aCity">City</label>
+                  <input class="field-input" type="text" id="aCity" placeholder="Kuala Lumpur" maxlength="60" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="aPostcode">Postcode</label>
+                  <input class="field-input" type="text" id="aPostcode" placeholder="50000" maxlength="10" />
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="aState">State</label>
+                  <select class="field-input" id="aState" style="cursor:pointer;">
+                    <option value="">Select state…</option>
+                    <option>Johor</option><option>Kedah</option><option>Kelantan</option>
+                    <option>Kuala Lumpur</option><option>Labuan</option><option>Melaka</option>
+                    <option>Negeri Sembilan</option><option>Pahang</option><option>Perak</option>
+                    <option>Perlis</option><option>Pulau Pinang</option><option>Putrajaya</option>
+                    <option>Sabah</option><option>Sarawak</option><option>Selangor</option>
+                    <option>Terengganu</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="field-label" for="aCountry">Country</label>
+                  <input class="field-input" type="text" id="aCountry" value="Malaysia" disabled />
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 mt-4">
+                <button class="btn-green" onclick="saveAddress()">
+                  <i class="bi bi-check-lg"></i> Save Address
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ════════════════════
+             PASSWORD TAB
+        ════════════════════ -->
+        <div class="tab-panel" id="tab-password">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h5>Change Password</h5>
+            </div>
+            <div class="section-card-body">
+
+              <div class="inline-alert" id="pwAlert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span id="pwAlertMsg"></span>
+              </div>
+
+              <div style="max-width:420px;">
+                <div class="mb-3">
+                  <label class="field-label" for="pwCurrent">Current Password</label>
+                  <div style="position:relative;">
+                    <input class="field-input" type="password" id="pwCurrent" placeholder="Your current password" style="padding-right:2.6rem;" />
+                    <button type="button" onclick="togglePw('pwCurrent',this)" style="position:absolute;right:0.85rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;"><i class="bi bi-eye-slash"></i></button>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="field-label" for="pwNew">New Password</label>
+                  <div style="position:relative;">
+                    <input class="field-input" type="password" id="pwNew" placeholder="Create new password" style="padding-right:2.6rem;" oninput="checkNewStrength(this.value)" />
+                    <button type="button" onclick="togglePw('pwNew',this)" style="position:absolute;right:0.85rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;"><i class="bi bi-eye-slash"></i></button>
+                  </div>
+                  <div class="pw-strength-bar mt-2"><div class="pw-strength-fill" id="pwNewFill"></div></div>
+                  <div style="font-size:0.76rem;color:var(--muted);margin-top:0.2rem;" id="pwNewLabel">Enter new password</div>
+                </div>
+                <div class="mb-3">
+                  <label class="field-label" for="pwConfirm">Confirm New Password</label>
+                  <div style="position:relative;">
+                    <input class="field-input" type="password" id="pwConfirm" placeholder="Re-enter new password" style="padding-right:2.6rem;" />
+                    <button type="button" onclick="togglePw('pwConfirm',this)" style="position:absolute;right:0.85rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;"><i class="bi bi-eye-slash"></i></button>
+                  </div>
+                </div>
+                <button class="btn-green" onclick="changePassword()">
+                  <i class="bi bi-lock"></i> Update Password
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="footer-brand mb-2"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo-footer"><span class="brand-text-footer">Pinenas</span></div>
+          <p style="font-size:0.84rem;max-width:270px;">Premium pineapple products, natural and delivered to your door.</p>
+          <div class="mt-3">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr"  class="social-icon" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9"   class="social-icon" target="_blank"><i class="bi bi-tiktok"></i></a>
+            <a href="https://www.twitter.com/pinenas"   class="social-icon" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://wa.me/60123456789"     class="social-icon" target="_blank"><i class="bi bi-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Shop</h6>
+          <a href="products.html">All Products</a>
+          <a href="products.html?featured=1">Featured</a>
+          <a href="products.html?topseller=1">Top Sellers</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Account</h6>
+          <a href="account.html">My Account</a>
+          <a href="cart.html">My Cart</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Info</h6>
+          <a href="#">About</a>
+          <a href="#">Delivery</a>
+          <a href="#">Returns</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Contact</h6>
+          <a href="mailto:hello@pinenas.com"><i class="bi bi-envelope me-1"></i>hello@pinenas.com</a>
+          <a href="tel:+60123456789"><i class="bi bi-telephone me-1"></i>+60 12-345 6789</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI Chat FAB -->
+  <button class="chat-fab" onclick="window.location.href='index.html'" aria-label="AI Chat">
+    <i class="bi bi-chat-dots-fill"></i>
+  </button>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+    <div id="mainToast" class="toast align-items-center text-bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg">Done!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /* ═══════════════════════════════════
+     PRODUCT DATA (for wishlist labels)
+  ═══════════════════════════════════ */
+  const PRODUCTS = [
+    { id:1, img:'whole_sweet_pineapple.png',  name:'Whole Sweet Gold Pineapple',          cat:'fresh',      emoji:'🍍', price:12.90 },
+    { id:2, img:'pre_cut_pineapple_chunk.png',  name:'Pre-Cut Pineapple Chunks 400g',       cat:'fresh',      emoji:'🍍', price:7.90  },
+    { id:3, img:'Pineapple_Slices_in_Syrup_Description.png',  name:'Pineapple Slices in Syrup 300g',      cat:'fresh',      emoji:'🍍', price:5.50  },
+    { id:4, img:'Cold-Pressed_Pineapple_Juice_500ml.png',  name:'Cold-Pressed Pineapple Juice 500ml',  cat:'juice',      emoji:'🥤', price:8.50  },
+    { id:5, img:'Pineapple_Coconut_Sparkling_Water.png',  name:'Pineapple Coconut Sparkling Water',   cat:'juice',      emoji:'🧃', price:6.50  },
+    { id:6, img:'Pineapple_Ginger_Wellness_Shot_60ml.png',  name:'Pineapple Ginger Wellness Shot 60ml', cat:'juice',      emoji:'🥃', price:4.90  },
+    { id:7, img:'Pineapple_Iced_Tea_1L_1.png',  name:'Pineapple Iced Tea 1L',               cat:'juice',      emoji:'🫖', price:9.90  },
+    { id:8, img:'Dry_Pineapple_Rings_No_sugar.png',  name:'Dried Pineapple Rings (No Sugar)',    cat:'snacks',     emoji:'🍫', price:9.90  },
+    { id:9, img:'pineapple_chili_candy.png',  name:'Pineapple Chilli Candy',              cat:'snacks',     emoji:'🍬', price:4.50  },
+    { id:10, img:'Dark_chocolate_bar_80g.png', name:'Pineapple Dark Chocolate Bar 80g',    cat:'snacks',     emoji:'🍫', price:13.90 },
+    { id:11, img:'Artisan_Pineapple_Jam_250g.png', name:'Artisan Pineapple Jam 250g',          cat:'condiments', emoji:'🫙', price:14.00 },
+    { id:12, img:'Pineapple_Sambal_Sauce_200ml.png', name:'Pineapple Sambal Sauce 200ml',        cat:'condiments', emoji:'🌶️', price:11.00 },
+    { id:13, img:'Pineapple_Enzyme_Face_Scrub.png', name:'Pineapple Enzyme Face Scrub',         cat:'skincare',   emoji:'🌿', price:32.00 },
+    { id:14, img:'Pineapple_Vitamin_C_Serum_30ml.png', name:'Pineapple Vitamin C Serum 30ml',      cat:'skincare',   emoji:'💧', price:48.00 },
+    { id:15, img:'Tropical_Treat_gift_box.png', name:'Tropical Treat Gift Box',             cat:'gifts',      emoji:'🎁', price:55.00 },
+    { id:16, img:'Pineapple_Lovers_Bundle.png', name:'Pineapple Lovers Bundle',             cat:'gifts',      emoji:'🎀', price:78.00 },
+    { id:17, img:'PineNas_Concentrated_Pineapple_Syrup.png', name:'PineNas Concentrated Pineapple Syrup', cat:'condiments', emoji:'🍯', price:16.90 },
+    { id:18, img:'PineNas_Pineapple-flavoured_Aromatics.png', name:'PineNas Pineapple-flavoured Aromatics', cat:'gifts', emoji:'🌸', price:24.90 },
+    { id:19, img:'PineNas_Pineapple-based_Supplement.png', name:'PineNas Pineapple-based Supplement', cat:'skincare', emoji:'💊', price:39.90 },
+    { id:20, img:'PineNas_Pineapple-flavoured_Lip_Balm.png', name:'PineNas Pineapple-flavoured Lip Balm', cat:'skincare', emoji:'💄', price:9.90 },
+    { id:21, img:'PineNas_Canned_Pineapple_Chunks.png', name:'PineNas Canned Pineapple Chunks', cat:'fresh', emoji:'🥫', price:6.90 },
+  ];
+
+  function imgFor(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    return (p && p.img) ? p.img : 'logo_for_header_footer.png';
+  }
+
+  /* ═══════════════════════════════════
+     SEED MOCK ORDERS
+  ═══════════════════════════════════ */
+  const SEED_ORDERS = [
+    {
+      id: 'PN-20260601-001',
+      date: '2026-06-01',
+      status: 'Delivered',
+      items: [
+        { id:8, img:'Dry_Pineapple_Rings_No_sugar.png', name:'Dried Pineapple Rings (No Sugar)', emoji:'🍫', qty:2, price:9.90 },
+        { id:4, img:'Cold-Pressed_Pineapple_Juice_500ml.png', name:'Cold-Pressed Pineapple Juice 500ml', emoji:'🥤', qty:1, price:8.50 },
+      ],
+      delivery: 0, sst: 2.27, total: 30.57,
+    },
+    {
+      id: 'PN-20260520-002',
+      date: '2026-05-20',
+      status: 'Delivered',
+      items: [
+        { id:13, img:'Pineapple_Enzyme_Face_Scrub.png', name:'Pineapple Enzyme Face Scrub', emoji:'🌿', qty:1, price:32.00 },
+      ],
+      delivery: 5, sst: 2.96, total: 39.96,
+    },
+    {
+      id: 'PN-20260615-003',
+      date: '2026-06-15',
+      status: 'Shipped',
+      items: [
+        { id:15, img:'Tropical_Treat_gift_box.png', name:'Tropical Treat Gift Box', emoji:'🎁', qty:1, price:55.00 },
+        { id:11, img:'Artisan_Pineapple_Jam_250g.png', name:'Artisan Pineapple Jam 250g', emoji:'🫙', qty:2, price:14.00 },
+      ],
+      delivery: 0, sst: 6.64, total: 89.64,
+    },
+    {
+      id: 'PN-20260625-004',
+      date: '2026-06-25',
+      status: 'Processing',
+      items: [
+        { id:5, img:'Pineapple_Coconut_Sparkling_Water.png', name:'Pineapple Coconut Sparkling Water', emoji:'🧃', qty:4, price:6.50 },
+      ],
+      delivery: 5, sst: 2.08, total: 33.08,
+    },
+  ];
+
+  /* ═══════════════════════════════════
+     STATE
+  ═══════════════════════════════════ */
+  let currentUser = null;
+  let userData    = null;
+
+  /* ═══════════════════════════════════
+     INIT
+  ═══════════════════════════════════ */
+  (function init() {
+    // Cart badge
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+    // Auth guard
+    currentUser = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+    if (!currentUser) {
+      window.location.href = 'login.html?redirect=account.html';
+      return;
+    }
+    if (currentUser.role === 'admin') {
+      window.location.href = 'admin.html';
+      return;
+    }
+
+    // Load full user data
+    const users = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+    userData = users.find(u => u.id === currentUser.id) || {
+      ...currentUser,
+      firstName: currentUser.name.split(' ')[0],
+      lastName:  currentUser.name.split(' ').slice(1).join(' '),
+      phone: '', dob: '', gender: '', newsletter: true,
+      address: { line1:'', city:'', postcode:'', state:'' },
+      orders: [],
+    };
+
+    // Merge seed orders for demo
+    if (!userData._seeded) {
+      userData.orders = [...SEED_ORDERS];
+      userData._seeded = true;
+      saveUserData();
+    }
+
+    // Banner
+    const initials = (userData.firstName?.[0] || '') + (userData.lastName?.[0] || '');
+    document.getElementById('avatarCircle').textContent = initials.toUpperCase() || '?';
+    document.getElementById('bannerName').textContent   = `Welcome back, ${userData.firstName || currentUser.name}!`;
+    document.getElementById('bannerEmail').textContent  = currentUser.email;
+
+    // Stats
+    const wishlist  = JSON.parse(localStorage.getItem('pinenas_wishlist') || '[]');
+    const myReviews = getMyReviews();
+    document.getElementById('statOrders').textContent   = userData.orders?.length || 0;
+    document.getElementById('statWishlist').textContent = wishlist.length;
+    document.getElementById('statReviews').textContent  = myReviews.length;
+    document.getElementById('ordersBadge').textContent  = userData.orders?.length || 0;
+    document.getElementById('wishlistBadge').textContent= wishlist.length;
+
+    // Load all sub-sections
+    loadProfileFields();
+    loadAddressFields();
+    renderRecentOrders();
+    renderOrders();
+    renderWishlist();
+    renderMyReviews();
+
+    // Hash-based tab
+    const hash = window.location.hash.replace('#','');
+    if (hash && document.getElementById(`tab-${hash}`)) switchTab(hash);
+  })();
+
+  /* ═══════════════════════════════════
+     TAB SWITCHING
+  ═══════════════════════════════════ */
+  const TABS = ['overview','orders','wishlist','reviews','profile','address','password'];
+
+  function switchTab(tab) {
+    TABS.forEach(t => {
+      document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
+      document.getElementById(`nav-${t}`)?.classList.toggle('active', t === tab);
+    });
+    window.location.hash = tab;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ═══════════════════════════════════
+     ORDERS
+  ═══════════════════════════════════ */
+  function renderOrders() {
+    const filter   = document.getElementById('orderFilter').value;
+    const orders   = userData.orders || [];
+    const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
+    const el       = document.getElementById('ordersContainer');
+
+    if (!filtered.length) {
+      el.innerHTML = `<div class="empty-state"><div class="ei">📦</div><h5>No orders found</h5><p>No ${filter === 'all' ? '' : filter.toLowerCase()+' '}orders yet.</p></div>`;
+      return;
+    }
+
+    el.innerHTML = filtered.map(o => {
+      const badgeCls = {
+        Delivered:'badge-delivered', Shipped:'badge-shipped',
+        Processing:'badge-processing', Cancelled:'badge-cancelled'
+      }[o.status] || 'badge-processing';
+
+      const itemRows = o.items.map(i => `
+        <div class="order-item-row">
+          <div class="order-item-emoji"><img src="images/${imgFor(i.id)}" alt="${i.name}"></div>
+          <div class="order-item-name">${i.name}</div>
+          <div class="order-item-qty">×${i.qty}</div>
+          <div class="order-item-price">RM ${(i.price * i.qty).toFixed(2)}</div>
+        </div>`).join('');
+
+      return `
+        <div class="order-card">
+          <div class="order-card-header">
+            <div>
+              <div class="order-id">${o.id}</div>
+              <div class="order-date">${formatDate(o.date)}</div>
+            </div>
+            <span class="order-badge ${badgeCls}">${o.status}</span>
+            <div class="ms-auto d-flex gap-2">
+              ${o.status === 'Delivered'
+                ? `<button class="btn-outline" style="font-size:0.76rem;padding:0.25rem 0.7rem;" onclick="reorder(${JSON.stringify(o.items).replace(/"/g,"'")})"><i class="bi bi-arrow-clockwise me-1"></i>Reorder</button>`
+                : ''}
+              ${o.status === 'Processing'
+                ? `<button class="btn-danger-outline" style="font-size:0.76rem;padding:0.25rem 0.7rem;" onclick="cancelOrder('${o.id}')"><i class="bi bi-x me-1"></i>Cancel</button>`
+                : ''}
+            </div>
+          </div>
+          <div class="order-card-body">
+            ${itemRows}
+            <div class="order-total-row">
+              <span class="order-total-lbl">Order total (incl. delivery &amp; SST)</span>
+              <span class="order-total-val">RM ${o.total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderRecentOrders() {
+    const orders = (userData.orders || []).slice(0, 2);
+    const el = document.getElementById('recentOrdersPreview');
+    if (!orders.length) return;
+    el.innerHTML = orders.map(o => {
+      const badgeCls = { Delivered:'badge-delivered', Shipped:'badge-shipped', Processing:'badge-processing', Cancelled:'badge-cancelled' }[o.status] || '';
+      return `<div class="d-flex align-items-center gap-3 py-2" style="border-bottom:1px solid #F8F5EF;">
+        <img src="images/${imgFor(o.items[0].id)}" alt="${o.items[0].name}" style="width:1.4rem;height:1.4rem;object-fit:contain;">
+        <div class="flex-grow-1">
+          <div style="font-size:0.88rem;font-weight:600;">${o.id}</div>
+          <div style="font-size:0.78rem;color:var(--muted);">${formatDate(o.date)} · ${o.items.length} item${o.items.length>1?'s':''}</div>
+        </div>
+        <span class="order-badge ${badgeCls}">${o.status}</span>
+        <span style="font-family:'Playfair Display',serif;font-weight:700;color:var(--green);font-size:0.95rem;">RM ${o.total.toFixed(2)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function reorder(items) {
+    // items is passed as a JS object array from onclick
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    items.forEach(i => {
+      const existing = cart.find(c => c.id === i.id);
+      if (existing) existing.qty += i.qty;
+      else cart.push({ id:i.id, name:i.name, price:i.price, qty:i.qty });
+    });
+    localStorage.setItem('pinenas_cart', JSON.stringify(cart));
+    showToast('🍍 Items added to cart!');
+    document.getElementById('cartCount').textContent = cart.reduce((s,c)=>s+c.qty,0);
+  }
+
+  function cancelOrder(orderId) {
+    if (!confirm(`Cancel order ${orderId}?`)) return;
+    const o = userData.orders.find(o => o.id === orderId);
+    if (o) { o.status = 'Cancelled'; saveUserData(); renderOrders(); renderRecentOrders(); }
+    showToast('Order cancelled.', 'bg-secondary');
+  }
+
+  /* ═══════════════════════════════════
+     WISHLIST
+  ═══════════════════════════════════ */
+  function renderWishlist() {
+    const ids     = JSON.parse(localStorage.getItem('pinenas_wishlist') || '[]');
+    const grid    = document.getElementById('wishlistGrid');
+    const empty   = document.getElementById('wishlistEmpty');
+    const count   = document.getElementById('wishlistCount');
+
+    document.getElementById('statWishlist').textContent  = ids.length;
+    document.getElementById('wishlistBadge').textContent = ids.length;
+    count.textContent = `${ids.length} item${ids.length !== 1 ? 's' : ''}`;
+
+    if (!ids.length) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    const products = ids.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+    grid.innerHTML = products.map(p => `
+      <div class="col">
+        <div class="wishlist-card">
+          <div class="w-img">
+            <img src="images/${p.img}" alt="${p.name}">
+            <button class="btn-remove-wish" onclick="removeWishlist(${p.id})" aria-label="Remove from wishlist">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="w-body">
+            <a href="product-detail.html?id=${p.id}" class="w-name">${p.name}</a>
+            <div class="w-price">RM ${p.price.toFixed(2)}</div>
+            <button class="btn-add-wish" onclick="addWishToCart(${p.id})">
+              <i class="bi bi-bag-plus me-1"></i>Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function removeWishlist(id) {
+    let wl = JSON.parse(localStorage.getItem('pinenas_wishlist') || '[]');
+    wl = wl.filter(i => i !== id);
+    localStorage.setItem('pinenas_wishlist', JSON.stringify(wl));
+    renderWishlist();
+    showToast('Removed from wishlist.', 'bg-secondary');
+  }
+
+  function addWishToCart(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const ex = cart.find(i => i.id === id);
+    if (ex) ex.qty++;
+    else cart.push({ id:p.id, name:p.name, price:p.price, qty:1 });
+    localStorage.setItem('pinenas_cart', JSON.stringify(cart));
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+    showToast(`🍍 ${p.name} added to cart!`);
+  }
+
+  /* ═══════════════════════════════════
+     REVIEWS
+  ═══════════════════════════════════ */
+  function getMyReviews() {
+    const reviews = [];
+    PRODUCTS.forEach(p => {
+      const stored = JSON.parse(localStorage.getItem(`pinenas_reviews_${p.id}`) || '[]');
+      stored.forEach(r => {
+        if (r.name === currentUser?.name) {
+          reviews.push({ ...r, productId: p.id, productName: p.name });
+        }
+      });
+    });
+    return reviews;
+  }
+
+  function renderMyReviews() {
+    const reviews = getMyReviews();
+    const el = document.getElementById('reviewsContainer');
+    document.getElementById('statReviews').textContent = reviews.length;
+
+    if (!reviews.length) {
+      el.innerHTML = `<div class="empty-state"><div class="ei">⭐</div><h5>No reviews yet</h5><p>Share your experience! Buy a product and leave a review.</p><a href="products.html" style="color:var(--green);font-weight:700;font-size:0.88rem;text-decoration:none;">Shop now →</a></div>`;
+      return;
+    }
+
+    el.innerHTML = reviews.map(r => {
+      const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+      return `<div class="my-review-card">
+        <div class="review-product-emoji"><img src="images/${imgFor(r.productId)}" alt="${r.productName}"></div>
+        <div class="flex-grow-1">
+          <a href="product-detail.html?id=${r.productId}" style="font-weight:700;font-size:0.9rem;color:var(--charcoal);text-decoration:none;">${r.productName}</a>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="stars-gold">${stars}</span>
+            <span style="font-size:0.75rem;color:var(--muted);">${formatDate(r.date)}</span>
+          </div>
+          ${r.title ? `<strong style="font-size:0.85rem;display:block;margin-top:0.3rem;">${r.title}</strong>` : ''}
+          <p class="review-text">${r.comment}</p>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ═══════════════════════════════════
+     PROFILE
+  ═══════════════════════════════════ */
+  function loadProfileFields() {
+    if (!userData) return;
+    document.getElementById('pFirstName').value  = userData.firstName  || '';
+    document.getElementById('pLastName').value   = userData.lastName   || '';
+    document.getElementById('pEmail').value      = userData.email      || '';
+    document.getElementById('pPhone').value      = userData.phone      || '';
+    document.getElementById('pDob').value        = userData.dob        || '';
+    document.getElementById('pGender').value     = userData.gender     || '';
+    document.getElementById('pNewsletter').checked = userData.newsletter !== false;
+  }
+
+  function saveProfile() {
+    const fname = document.getElementById('pFirstName').value.trim();
+    const lname = document.getElementById('pLastName').value.trim();
+    const email = document.getElementById('pEmail').value.trim();
+
+    if (!fname || !lname) { showInlineAlert('profileAlert','profileAlertMsg','err','First and last name are required.'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showInlineAlert('profileAlert','profileAlertMsg','err','Please enter a valid email address.'); return; }
+
+    userData.firstName  = fname;
+    userData.lastName   = lname;
+    userData.name       = `${fname} ${lname}`;
+    userData.email      = email;
+    userData.phone      = document.getElementById('pPhone').value.trim();
+    userData.dob        = document.getElementById('pDob').value;
+    userData.gender     = document.getElementById('pGender').value;
+    userData.newsletter = document.getElementById('pNewsletter').checked;
+
+    // Update session
+    currentUser.name  = userData.name;
+    currentUser.email = userData.email;
+    localStorage.setItem('pinenas_user', JSON.stringify(currentUser));
+
+    saveUserData();
+
+    document.getElementById('bannerName').textContent  = `Welcome back, ${fname}!`;
+    document.getElementById('bannerEmail').textContent = email;
+    document.getElementById('avatarCircle').textContent= (fname[0] + lname[0]).toUpperCase();
+
+    showInlineAlert('profileAlert','profileAlertMsg','ok','✅ Profile updated successfully!');
+  }
+
+  /* ═══════════════════════════════════
+     ADDRESS
+  ═══════════════════════════════════ */
+  function loadAddressFields() {
+    const addr = userData.address || {};
+    document.getElementById('aLine1').value    = addr.line1    || '';
+    document.getElementById('aCity').value     = addr.city     || '';
+    document.getElementById('aPostcode').value = addr.postcode || '';
+    document.getElementById('aState').value    = addr.state    || '';
+  }
+
+  function saveAddress() {
+    userData.address = {
+      line1:    document.getElementById('aLine1').value.trim(),
+      city:     document.getElementById('aCity').value.trim(),
+      postcode: document.getElementById('aPostcode').value.trim(),
+      state:    document.getElementById('aState').value,
+    };
+    saveUserData();
+    showInlineAlert('addressAlert','addressAlertMsg','ok','✅ Address saved successfully!');
+  }
+
+  /* ═══════════════════════════════════
+     PASSWORD CHANGE
+  ═══════════════════════════════════ */
+  function changePassword() {
+    const current = document.getElementById('pwCurrent').value;
+    const newPw   = document.getElementById('pwNew').value;
+    const confirm = document.getElementById('pwConfirm').value;
+
+    if (!current) { showInlineAlert('pwAlert','pwAlertMsg','err','Please enter your current password.'); return; }
+    if (userData.password && current !== userData.password) { showInlineAlert('pwAlert','pwAlertMsg','err','Current password is incorrect.'); return; }
+    if (newPw.length < 8) { showInlineAlert('pwAlert','pwAlertMsg','err','New password must be at least 8 characters.'); return; }
+    if (newPw !== confirm) { showInlineAlert('pwAlert','pwAlertMsg','err','New passwords do not match.'); return; }
+
+    userData.password = newPw;
+    saveUserData();
+    document.getElementById('pwCurrent').value = '';
+    document.getElementById('pwNew').value     = '';
+    document.getElementById('pwConfirm').value = '';
+    document.getElementById('pwNewFill').style.width  = '0%';
+    document.getElementById('pwNewLabel').textContent = 'Enter new password';
+    showInlineAlert('pwAlert','pwAlertMsg','ok','✅ Password updated successfully!');
+  }
+
+  function checkNewStrength(val) {
+    let score = [val.length >= 8, /[A-Z]/.test(val), /[0-9]/.test(val), /[!@#$%^&*]/.test(val)].filter(Boolean).length;
+    const fill  = document.getElementById('pwNewFill');
+    const label = document.getElementById('pwNewLabel');
+    const map = [
+      { w:'0%',   bg:'#E0DDD6', t:'Enter new password' },
+      { w:'25%',  bg:'var(--danger)',     t:'Weak' },
+      { w:'50%',  bg:'var(--gold)',       t:'Fair' },
+      { w:'75%',  bg:'#4AABF0',           t:'Good' },
+      { w:'100%', bg:'var(--green-light)',t:'Strong 💪' },
+    ];
+    const c = map[val.length === 0 ? 0 : score];
+    fill.style.width      = val.length === 0 ? '0%' : c.w;
+    fill.style.background = c.bg;
+    label.textContent     = c.t;
+  }
+
+  /* ═══════════════════════════════════
+     LOGOUT
+  ═══════════════════════════════════ */
+  function doLogout() {
+    if (!confirm('Sign out of your account?')) return;
+    localStorage.removeItem('pinenas_user');
+    sessionStorage.removeItem('pinenas_user');
+    window.location.href = 'index.html';
+  }
+
+  /* ═══════════════════════════════════
+     HELPERS
+  ═══════════════════════════════════ */
+  function saveUserData() {
+    const users = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+    const idx   = users.findIndex(u => u.id === userData.id);
+    if (idx >= 0) users[idx] = userData;
+    else users.push(userData);
+    localStorage.setItem('pinenas_users', JSON.stringify(users));
+  }
+
+  function formatDate(str) {
+    return new Date(str).toLocaleDateString('en-MY', { year:'numeric', month:'short', day:'numeric' });
+  }
+
+  function showInlineAlert(alertId, msgId, type, msg) {
+    const el = document.getElementById(alertId);
+    el.className = `inline-alert ${type} show`;
+    document.getElementById(msgId).textContent = msg;
+    el.querySelector('i').className = type === 'ok' ? 'bi bi-check-circle-fill' : 'bi bi-exclamation-circle-fill';
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+
+  function showToast(msg, cls = 'bg-success') {
+    const el = document.getElementById('mainToast');
+    el.className = `toast align-items-center text-white border-0 ${cls}`;
+    document.getElementById('toastMsg').textContent = msg;
+    new bootstrap.Toast(el, { delay: 2500 }).show();
+  }
+
+  function copyPromo(code) {
+    navigator.clipboard.writeText(code).then(() => showToast(`🎁 Code ${code} copied!`));
+  }
+
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.querySelector('i').className = isText ? 'bi bi-eye-slash' : 'bi bi-eye';
+  }
+  </script>
+
+
+  <!-- ═ Live buyer notification ═ -->
+  <div class="live-notif" id="live-notif">
+    <div class="notif-avatar">A</div>
+    <div>
+      <div><b class="notif-name">Amirah R.</b> <span class="notif-product">just bought Pineapple Jam</span></div>
+      <div class="notif-sub"><span class="notif-dot" style="display:inline-block;width:7px;height:7px;background:#27ae60;border-radius:50;margin-right:4px;vertical-align:middle;"></span><span class="notif-time">2 min ago</span></div>
+    </div>
+  </div>
+
+  <!-- ═ Order success overlay ═ -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-card">
+      <div class="confetti-strip"></div>
+      <div class="tick-circle">✓</div>
+      <h3>Order Placed!</h3>
+      <p>Thank you, <b class="order-user">Customer</b>!<br>Your pineapple goodness is on its way 🍍</p>
+      <div class="order-id">Order ID: <span class="order-id-val">PN-XXXXXX</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);">Estimated delivery: <b>2–3 business days</b></p>
+      <div class="order-progress"><div class="order-progress-bar"></div></div>
+      <div class="order-dismiss">Auto-dismissing…</div>
+    </div>
+  </div>
+
+  <!-- ═ Confetti canvas ═ -->
+  <canvas id="confetti-canvas"></canvas>
+
+
+  <!-- ═══ BOMBASTIC FEATURES JS ═══ -->
+  <script>
+  // ── Flash sale countdown ──
+  function initFlashTimer() {
+    const el = document.getElementById('flash-timer');
+    if (!el) return;
+    const end = Date.now() + (3*3600 + 47*60 + 12)*1000;
+    setInterval(() => {
+      const left = Math.max(0, end - Date.now());
+      const h = String(Math.floor(left/3600000)).padStart(2,'0');
+      const m = String(Math.floor((left%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+
+  // ── Scroll reveal ──
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+  }
+
+  // ── Floating cart badge ──
+  function updateFloatBadge() {
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const total = cart.reduce((s,i) => s + (i.qty||1), 0);
+    const badge = document.getElementById('float-badge');
+    if (badge) { badge.textContent = total; badge.style.display = total ? 'flex' : 'none'; }
+  }
+
+  // ── Live buyer notifications ──
+  const LIVE_BUYERS = [
+    { name:'Amirah R.', product:'Pineapple Jam (500g)', time:'2 min ago' },
+    { name:'Hafiz M.',  product:'Fresh Pineapple Slices', time:'5 min ago' },
+    { name:'Nurul A.',  product:'Pineapple Enzyme Drink', time:'8 min ago' },
+    { name:'Syafiq K.', product:'Dried Pineapple Rings', time:'11 min ago' },
+    { name:'Liyana T.', product:'Pineapple Skincare Set', time:'14 min ago' },
+  ];
+  let liveBuyerIdx = 0;
+  function showLiveNotif() {
+    const notif = document.getElementById('live-notif');
+    if (!notif) return;
+    const b = LIVE_BUYERS[liveBuyerIdx % LIVE_BUYERS.length];
+    liveBuyerIdx++;
+    notif.querySelector('.notif-name').textContent = b.name;
+    notif.querySelector('.notif-product').textContent = `just bought ${b.product}`;
+    notif.querySelector('.notif-time').textContent = b.time;
+    notif.querySelector('.notif-avatar').textContent = b.name[0];
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+  function initLiveNotifs() {
+    setTimeout(() => { showLiveNotif(); setInterval(showLiveNotif, 9000); }, 3500);
+  }
+
+  // ── Confetti ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length:120}, () => ({
+      x: Math.random()*canvas.width, y: -20,
+      r: 6 + Math.random()*8,
+      color: ['#F5A623','#2D6A4F','#27ae60','#3498db','#e74c3c','#9b59b6'][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*4, vy: 3+Math.random()*4,
+      angle: Math.random()*360, va: (Math.random()-0.5)*6,
+      shape: Math.random()>0.5?'rect':'circle'
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle = p.color;
+        if (p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        p.x += p.vx; p.y += p.vy * 0.98; p.angle += p.va;
+      });
+      if (pieces.some(p => p.y < canvas.height)) frame = requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { if(frame) cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 3500);
+  }
+
+  // ── Order success popup ──
+  function showOrderSuccess(userName) {
+    const overlay = document.getElementById('order-success-overlay');
+    if (!overlay) return;
+    const orderId = 'PN-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    overlay.querySelector('.order-id-val').textContent = orderId;
+    overlay.querySelector('.order-user').textContent = userName || 'Customer';
+    overlay.classList.add('show');
+    launchConfetti();
+    // Auto-dismiss progress bar
+    const bar = overlay.querySelector('.order-progress-bar');
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 1;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          // Clear cart after popup gone
+          localStorage.removeItem('pinenas_cart');
+          updateFloatBadge();
+          if (typeof render === 'function') render();
+        }, 300);
+      }
+    }, 45);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initFlashTimer();
+    initReveal();
+    updateFloatBadge();
+    initLiveNotifs();
+    window.addEventListener('storage', updateFloatBadge);
+  });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --danger:      #D62B2B;
+      --radius:      14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+
+    /* ── Navbar ── */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; text-decoration: none; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; text-decoration: none; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Main layout ── */
+    .login-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── Left decorative panel ── */
+    .login-deco {
+      background: linear-gradient(160deg, var(--green) 0%, #1B4332 100%);
+      flex: 0 0 42%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-deco::after {
+      content: '';
+      font-size: 22rem;
+      position: absolute;
+      right: -3rem;
+      bottom: -3rem;
+      opacity: 0.07;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .deco-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    .deco-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .deco-headline span { color: var(--gold); }
+
+    .deco-sub {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 320px;
+      margin-bottom: 2rem;
+    }
+
+    .deco-perks { list-style: none; padding: 0; margin: 0; }
+    .deco-perks li {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.88rem;
+      padding: 0.3rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .deco-perks li i { color: var(--green-light); font-size: 1rem; }
+
+    /* ── Right form panel ── */
+    .login-form-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 2rem;
+      background: var(--cream);
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      padding: 2.5rem 2.2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .form-card-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .form-card-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 1.8rem;
+    }
+
+    /* Tab toggle: Customer / Admin */
+    .login-tabs {
+      display: flex;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.8rem;
+    }
+
+    .login-tab {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 0.6rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .login-tab.active {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .login-tab:not(.active):hover { background: #F9F5EE; }
+
+    /* Form fields */
+    .field-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+
+    .field-wrap {
+      position: relative;
+      margin-bottom: 1.1rem;
+    }
+
+    .field-input {
+      width: 100%;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.65rem 2.6rem 0.65rem 0.95rem;
+      font-size: 0.92rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--charcoal);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field-input:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
+    }
+
+    .field-input.is-invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(214,43,43,0.1);
+    }
+
+    .field-input.is-valid {
+      border-color: var(--green-light);
+    }
+
+    .field-icon {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #CCC;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .toggle-pw:hover { color: var(--green); }
+
+    .field-error {
+      font-size: 0.77rem;
+      color: var(--danger);
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    /* Remember me + forgot */
+    .form-extras {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.4rem;
+      font-size: 0.84rem;
+    }
+
+    .check-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      color: var(--charcoal);
+    }
+
+    .check-label input[type=checkbox] { accent-color: var(--green); width: 15px; height: 15px; }
+
+    .forgot-link {
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .forgot-link:hover { color: var(--gold-dark); }
+
+    /* Submit button */
+    .btn-login {
+      width: 100%;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-login:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn-login:disabled { background: #CCC; cursor: default; transform: none; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert */
+    .login-alert {
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.86rem;
+      margin-bottom: 1.2rem;
+      display: none;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .login-alert.error   { background: #FFE8E8; color: var(--danger); border: 1px solid #FFCCCC; }
+    .login-alert.success { background: #D9F5E5; color: var(--green);  border: 1px solid #B2E5CC; }
+    .login-alert.show    { display: flex; }
+
+    /* Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.2rem 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #E0DDD6;
+    }
+
+    /* Social login buttons */
+    .btn-social {
+      width: 100%;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.6rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      background: #fff;
+      color: var(--charcoal);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 0.6rem;
+    }
+
+    .btn-social:hover { background: #F9F5EE; border-color: #CCC; }
+
+    /* Register link */
+    .register-link-row {
+      text-align: center;
+      margin-top: 1.4rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .register-link-row a {
+      color: var(--green);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .register-link-row a:hover { color: var(--gold-dark); }
+
+    /* Admin hint box */
+    .admin-hint {
+      background: #FFF8EC;
+      border: 1px solid #FFE4B0;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: #7A5C00;
+      margin-bottom: 1.2rem;
+      display: none;
+    }
+
+    .admin-hint.show { display: block; }
+    .admin-hint strong { display: block; margin-bottom: 0.2rem; }
+
+    /* ── Footer ── */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 2rem 0 1.2rem; font-size: 0.85rem; }
+    .footer-bottom  { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.9rem; margin-right: 0.3rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+
+    @media (max-width: 767px) {
+      .login-deco { display: none; }
+      .login-form-panel { padding: 2rem 1.2rem; }
+      .form-card { padding: 2rem 1.4rem; }
+    }
+  </style>
+
+  <!-- ═══ BOMBASTIC FEATURES CSS ═══ -->
+  <style>
+  /* ── Announcement ticker ── */
+  .announce-bar {
+    background: linear-gradient(90deg, #1a3a28, #2D6A4F, #1a3a28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .announce-track span { padding: 0 3rem; color: var(--gold); }
+  .announce-track span b { color: #fff; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── Flash sale ribbon ── */
+  .flash-banner {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+  .flash-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+    animation: sheen 2.5s ease-in-out infinite;
+  }
+  @keyframes sheen { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+  .flash-timer { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.12em; color: #FFD700; }
+
+  /* ── Scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-left.visible  { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── "Live buyers" notification ── */
+  .live-notif {
+    position: fixed; bottom: 7rem; left: 1.2rem;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+    max-width: 270px; z-index: 9998;
+    transform: translateX(-130%);
+    transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .live-notif.show { transform: translateX(0); }
+  .live-notif .notif-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .live-notif .notif-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .live-notif .notif-dot { width:8px; height:8px; background:#27ae60; border-radius:50%; flex-shrink:0; animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  /* ── Success order popup ── */
+  .order-success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .order-success-overlay.show { opacity: 1; pointer-events: all; }
+  .order-success-card {
+    background: #fff; border-radius: 24px;
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .order-success-overlay.show .order-success-card { transform: scale(1); }
+  .order-success-card .tick-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.3rem; font-size: 2.2rem; color: #fff;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+    animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+  }
+  @keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .order-success-card h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color: var(--charcoal); margin-bottom:0.5rem; }
+  .order-success-card p  { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+  .order-success-card .order-id { font-family:monospace; background:#f4f4f4; border-radius:8px; padding:0.3rem 0.8rem; font-size:0.85rem; font-weight:700; color:var(--green); display:inline-block; margin:0.6rem 0; }
+  .order-success-card .confetti-strip { position:absolute; top:0; left:0; right:0; height:6px; background: linear-gradient(90deg,#F5A623,#27ae60,#3498db,#e74c3c,#F5A623); }
+  .order-progress { width:100%; background:#eee; border-radius:100px; height:6px; margin:1.1rem 0 0.4rem; overflow:hidden; }
+  .order-progress-bar { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:100px; width:0%; transition:width 0.1s linear; }
+  .order-dismiss { font-size:0.75rem; color:var(--muted); margin-top:0.8rem; }
+
+  /* ── Product card hover glow ── */
+  .prod-card { transition: transform 0.22s, box-shadow 0.22s; }
+  .prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px rgba(45,106,79,0.18) !important; }
+
+  /* ── Sparkle badge on cards ── */
+  .badge-hot {
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; font-size:0.65rem; font-weight:800;
+    padding:0.2rem 0.55rem; border-radius:100px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+  @keyframes badge-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.5)} 50%{box-shadow:0 0 0 6px rgba(231,76,60,0)} }
+
+  /* ── Confetti canvas ── */
+  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:999998; }
+  </style>
+
+</head>
+<body>
+
+  <!-- ═ Announcement ticker ═ -->
+  <div class="announce-bar">
+    <div class="announce-track">
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+    </div>
+  </div>
+
+  <!-- ═ Flash sale banner ═ -->
+  <div class="flash-banner">
+    🔥 FLASH SALE ENDS IN &nbsp; <span class="flash-timer" id="flash-timer">03:47:12</span> &nbsp; — Up to <b>30% OFF</b> selected products!
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem; color:#fff;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-1">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="account.html" class="nav-icon-btn" aria-label="My Account">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════
+       LOGIN WRAPPER
+  ══════════════════════════════════ -->
+  <div class="login-wrapper">
+
+    <!-- Left decorative panel -->
+    <div class="login-deco">
+      <a href="index.html" class="deco-brand"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Pinenas</a>
+      <h2 class="deco-headline">Welcome<br/>back to<br/><span>Pineapple</span><br/>Paradise.</h2>
+      <p class="deco-sub">Log in to track your orders, save your favourites, and enjoy exclusive member deals.</p>
+      <ul class="deco-perks">
+        <li><i class="bi bi-bag-check-fill"></i> View and track all your orders</li>
+        <li><i class="bi bi-heart-fill"></i> Save products to your wishlist</li>
+        <li><i class="bi bi-tag-fill"></i> Access member-only discounts</li>
+        <li><i class="bi bi-star-fill"></i> Leave reviews on products you love</li>
+        <li><i class="bi bi-truck"></i> Faster checkout with saved address</li>
+      </ul>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="login-form-panel">
+      <div class="form-card">
+
+        <h2 class="form-card-title">Sign In</h2>
+        <p class="form-card-sub">Don't have an account? <a href="register.html" style="color:var(--green);font-weight:700;text-decoration:none;">Register here</a></p>
+
+        <!-- Customer / Admin toggle -->
+        <div class="login-tabs" role="tablist">
+          <button class="login-tab active" id="tabCustomer" onclick="switchTab('customer')" role="tab" aria-selected="true">
+            <i class="bi bi-person"></i> Customer
+          </button>
+          <button class="login-tab" id="tabAdmin" onclick="switchTab('admin')" role="tab" aria-selected="false">
+            <i class="bi bi-shield-lock"></i> Admin
+          </button>
+        </div>
+
+        <!-- Admin hint -->
+        <div class="admin-hint" id="adminHint">
+          <strong>🔐 Admin Access</strong>
+          Username: <code>root</code> &nbsp;·&nbsp; Password: <em>(leave blank)</em>
+        </div>
+
+        <!-- Alert -->
+        <div class="login-alert" id="loginAlert" role="alert">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          <span id="loginAlertMsg"></span>
+        </div>
+
+        <!-- ── Form ── -->
+        <div id="loginForm">
+
+          <!-- Username / Email -->
+          <div>
+            <label class="field-label" for="loginUser" id="userLabel">Email Address</label>
+            <div class="field-wrap">
+              <input class="field-input" type="text" id="loginUser"
+                     placeholder="you@example.com" autocomplete="username" />
+              <i class="bi bi-envelope field-icon" id="userIcon"></i>
+            </div>
+            <div class="field-error" id="userError">Please enter your email address.</div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label class="field-label" for="loginPassword">Password</label>
+            <div class="field-wrap">
+              <input class="field-input" type="password" id="loginPassword"
+                     placeholder="Enter your password" autocomplete="current-password" />
+              <button class="toggle-pw" type="button" onclick="togglePw('loginPassword', this)" aria-label="Toggle password">
+                <i class="bi bi-eye-slash"></i>
+              </button>
+            </div>
+            <div class="field-error" id="pwError">Please enter your password.</div>
+          </div>
+
+          <!-- Extras: remember + forgot (customer only) -->
+          <div class="form-extras" id="formExtras">
+            <label class="check-label">
+              <input type="checkbox" id="rememberMe" />
+              Remember me
+            </label>
+            <a href="#" class="forgot-link" onclick="forgotPassword(event)">Forgot password?</a>
+          </div>
+
+          <!-- Submit -->
+          <button class="btn-login" id="btnLogin" onclick="doLogin()">
+            <span id="btnLoginText"><i class="bi bi-box-arrow-in-right me-1"></i> Sign In</span>
+            <div class="spinner" id="loginSpinner"></div>
+          </button>
+
+        </div>
+
+        <!-- Social login (customer tab only) -->
+        <div id="socialSection">
+          <div class="or-divider">or continue with</div>
+          <button class="btn-social" onclick="socialLogin('Google')">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continue with Google
+          </button>
+          <button class="btn-social" onclick="socialLogin('Facebook')">
+            <i class="bi bi-facebook" style="color:#1877F2;font-size:1.1rem;"></i>
+            Continue with Facebook
+          </button>
+        </div>
+
+        <!-- Register row -->
+        <div class="register-link-row">
+          New to Pinenas? <a href="register.html">Create an account</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <span style="font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:1.2rem;"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Pinenas</span>
+          <span style="margin-left:1rem;">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr"  class="social-icon" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9"   class="social-icon" target="_blank"><i class="bi bi-tiktok"></i></a>
+            <a href="https://wa.me/60123456789"     class="social-icon" target="_blank"><i class="bi bi-whatsapp"></i></a>
+          </span>
+        </div>
+        <div style="font-size:0.82rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI Chat FAB -->
+  <button style="position:fixed;bottom:1.8rem;right:1.8rem;z-index:1050;width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;border:none;box-shadow:0 4px 16px rgba(45,106,79,0.45);font-size:1.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="window.location.href='index.html'" aria-label="AI Chat">
+    <i class="bi bi-chat-dots-fill"></i>
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /* ═══════════════════════════════════
+     STATE
+  ═══════════════════════════════════ */
+  let currentTab = 'customer'; // 'customer' | 'admin'
+
+  /* ═══════════════════════════════════
+     INIT
+  ═══════════════════════════════════ */
+  (function init() {
+    // Cart badge
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+    // If already logged in, redirect
+    const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+    if (user) {
+      if (user.role === 'admin') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'account.html';
+      }
+      return;
+    }
+
+    // Pre-fill from URL param (e.g. after register)
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get('email');
+    if (email) document.getElementById('loginUser').value = decodeURIComponent(email);
+
+    // Check if came from admin tab link
+    if (params.get('tab') === 'admin') switchTab('admin');
+  })();
+
+  /* ═══════════════════════════════════
+     TAB SWITCH
+  ═══════════════════════════════════ */
+  function switchTab(tab) {
+    currentTab = tab;
+
+    document.getElementById('tabCustomer').classList.toggle('active', tab === 'customer');
+    document.getElementById('tabAdmin').classList.toggle('active', tab === 'admin');
+
+    const userLabel  = document.getElementById('userLabel');
+    const userIcon   = document.getElementById('userIcon');
+    const userInput  = document.getElementById('loginUser');
+    const pwInput    = document.getElementById('loginPassword');
+    const adminHint  = document.getElementById('adminHint');
+    const socialSec  = document.getElementById('socialSection');
+    const formExtras = document.getElementById('formExtras');
+
+    clearAlert();
+    clearFieldErrors();
+
+    if (tab === 'admin') {
+      userLabel.textContent  = 'Admin Username';
+      userIcon.className     = 'bi bi-person-badge field-icon';
+      userInput.type         = 'text';
+      userInput.placeholder  = 'Enter admin username';
+      userInput.value        = '';
+      pwInput.placeholder    = 'Enter password (or leave blank)';
+      adminHint.classList.add('show');
+      socialSec.style.display  = 'none';
+      formExtras.style.display = 'none';
+    } else {
+      userLabel.textContent  = 'Email Address';
+      userIcon.className     = 'bi bi-envelope field-icon';
+      userInput.type         = 'email';
+      userInput.placeholder  = 'you@example.com';
+      userInput.value        = '';
+      pwInput.placeholder    = 'Enter your password';
+      adminHint.classList.remove('show');
+      socialSec.style.display  = '';
+      formExtras.style.display = '';
+    }
+
+    document.getElementById('loginUser').focus();
+  }
+
+  /* ═══════════════════════════════════
+     LOGIN
+  ═══════════════════════════════════ */
+  function doLogin() {
+    clearAlert();
+    clearFieldErrors();
+
+    const userVal = document.getElementById('loginUser').value.trim();
+    const pwVal   = document.getElementById('loginPassword').value;
+    let valid = true;
+
+    // Validation
+    if (!userVal) {
+      showFieldError('userError', currentTab === 'admin'
+        ? 'Please enter the admin username.'
+        : 'Please enter your email address.');
+      document.getElementById('loginUser').classList.add('is-invalid');
+      valid = false;
+    }
+
+    if (currentTab === 'customer' && userVal && !isValidEmail(userVal)) {
+      showFieldError('userError', 'Please enter a valid email address.');
+      document.getElementById('loginUser').classList.add('is-invalid');
+      valid = false;
+    }
+
+    if (currentTab === 'customer' && !pwVal) {
+      showFieldError('pwError', 'Please enter your password.');
+      document.getElementById('loginPassword').classList.add('is-invalid');
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    // Show loading
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+
+      if (currentTab === 'admin') {
+        // Admin: username = "root", password = "" (blank)
+        if (userVal === 'root' && pwVal === '') {
+          const adminUser = { name: 'Administrator', email: 'admin@pinenas.com', role: 'admin', username: 'root' };
+          localStorage.setItem('pinenas_user', JSON.stringify(adminUser));
+          showAlert('success', '✅ Welcome, Administrator! Redirecting to dashboard…');
+          setTimeout(() => window.location.href = 'admin.html', 1200);
+        } else {
+          showAlert('error', '❌ Invalid admin credentials. Check username and password.');
+          document.getElementById('loginUser').classList.add('is-invalid');
+          document.getElementById('loginPassword').classList.add('is-invalid');
+        }
+
+      } else {
+        // Customer: check registered users in localStorage
+        const users = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+        const found = users.find(u => u.email.toLowerCase() === userVal.toLowerCase() && u.password === pwVal);
+
+        if (found) {
+          // Save session (never store password in session)
+          const session = { name: found.name, email: found.email, role: 'customer', id: found.id };
+          if (document.getElementById('rememberMe').checked) {
+            localStorage.setItem('pinenas_user', JSON.stringify(session));
+          } else {
+            sessionStorage.setItem('pinenas_user', JSON.stringify(session));
+            localStorage.setItem('pinenas_user', JSON.stringify(session));
+          }
+          showAlert('success', `✅ Welcome back, ${found.name}! Redirecting…`);
+          const redirect = new URLSearchParams(window.location.search).get('redirect') || 'account.html';
+          setTimeout(() => window.location.href = redirect, 1200);
+
+        } else if (users.some(u => u.email.toLowerCase() === userVal.toLowerCase())) {
+          // Email found but wrong password
+          showAlert('error', '❌ Incorrect password. Please try again.');
+          document.getElementById('loginPassword').classList.add('is-invalid');
+          showFieldError('pwError', 'Incorrect password.');
+
+        } else {
+          // No account found
+          showAlert('error', '❌ No account found with that email. <a href="register.html" style="color:var(--danger);font-weight:700;">Register here</a>');
+          document.getElementById('loginUser').classList.add('is-invalid');
+        }
+      }
+    }, 900);
+  }
+
+  /* ═══════════════════════════════════
+     SOCIAL LOGIN (placeholder)
+  ═══════════════════════════════════ */
+  function socialLogin(provider) {
+    showAlert('error', `${provider} login is not yet configured. Please use email login.`);
+  }
+
+  /* ═══════════════════════════════════
+     FORGOT PASSWORD
+  ═══════════════════════════════════ */
+  function forgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginUser').value.trim();
+    if (!email || !isValidEmail(email)) {
+      showAlert('error', '📧 Enter your email address above first, then click Forgot password.');
+      document.getElementById('loginUser').focus();
+      return;
+    }
+    showAlert('success', `📧 If an account exists for ${email}, a reset link has been sent. (Demo mode — no real email sent.)`);
+  }
+
+  /* ═══════════════════════════════════
+     HELPERS
+  ═══════════════════════════════════ */
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.querySelector('i').className = isText ? 'bi bi-eye-slash' : 'bi bi-eye';
+  }
+
+  function setLoading(on) {
+    const btn     = document.getElementById('btnLogin');
+    const spinner = document.getElementById('loginSpinner');
+    const text    = document.getElementById('btnLoginText');
+    btn.disabled        = on;
+    spinner.style.display = on ? 'block' : 'none';
+    text.style.display    = on ? 'none'  : 'flex';
+  }
+
+  function showAlert(type, msg) {
+    const el = document.getElementById('loginAlert');
+    el.className = `login-alert ${type} show`;
+    el.querySelector('span').innerHTML = msg;
+    el.querySelector('i').className = type === 'error'
+      ? 'bi bi-exclamation-circle-fill'
+      : 'bi bi-check-circle-fill';
+  }
+
+  function clearAlert() {
+    document.getElementById('loginAlert').classList.remove('show');
+  }
+
+  function showFieldError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent  = msg;
+    el.style.display = 'block';
+  }
+
+  function clearFieldErrors() {
+    ['userError','pwError'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    ['loginUser','loginPassword'].forEach(id => {
+      document.getElementById(id).classList.remove('is-invalid','is-valid');
+    });
+  }
+
+  /* Enter key submits form */
+  ['loginUser','loginPassword'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('is-invalid');
+      clearAlert();
+    });
+  });
+  </script>
+
+
+  <!-- ═ Live buyer notification ═ -->
+  <div class="live-notif" id="live-notif">
+    <div class="notif-avatar">A</div>
+    <div>
+      <div><b class="notif-name">Amirah R.</b> <span class="notif-product">just bought Pineapple Jam</span></div>
+      <div class="notif-sub"><span class="notif-dot" style="display:inline-block;width:7px;height:7px;background:#27ae60;border-radius:50;margin-right:4px;vertical-align:middle;"></span><span class="notif-time">2 min ago</span></div>
+    </div>
+  </div>
+
+  <!-- ═ Order success overlay ═ -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-card">
+      <div class="confetti-strip"></div>
+      <div class="tick-circle">✓</div>
+      <h3>Order Placed!</h3>
+      <p>Thank you, <b class="order-user">Customer</b>!<br>Your pineapple goodness is on its way 🍍</p>
+      <div class="order-id">Order ID: <span class="order-id-val">PN-XXXXXX</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);">Estimated delivery: <b>2–3 business days</b></p>
+      <div class="order-progress"><div class="order-progress-bar"></div></div>
+      <div class="order-dismiss">Auto-dismissing…</div>
+    </div>
+  </div>
+
+  <!-- ═ Confetti canvas ═ -->
+  <canvas id="confetti-canvas"></canvas>
+
+
+  <!-- ═══ BOMBASTIC FEATURES JS ═══ -->
+  <script>
+  // ── Flash sale countdown ──
+  function initFlashTimer() {
+    const el = document.getElementById('flash-timer');
+    if (!el) return;
+    const end = Date.now() + (3*3600 + 47*60 + 12)*1000;
+    setInterval(() => {
+      const left = Math.max(0, end - Date.now());
+      const h = String(Math.floor(left/3600000)).padStart(2,'0');
+      const m = String(Math.floor((left%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+
+  // ── Scroll reveal ──
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+  }
+
+  // ── Floating cart badge ──
+  function updateFloatBadge() {
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const total = cart.reduce((s,i) => s + (i.qty||1), 0);
+    const badge = document.getElementById('float-badge');
+    if (badge) { badge.textContent = total; badge.style.display = total ? 'flex' : 'none'; }
+  }
+
+  // ── Live buyer notifications ──
+  const LIVE_BUYERS = [
+    { name:'Amirah R.', product:'Pineapple Jam (500g)', time:'2 min ago' },
+    { name:'Hafiz M.',  product:'Fresh Pineapple Slices', time:'5 min ago' },
+    { name:'Nurul A.',  product:'Pineapple Enzyme Drink', time:'8 min ago' },
+    { name:'Syafiq K.', product:'Dried Pineapple Rings', time:'11 min ago' },
+    { name:'Liyana T.', product:'Pineapple Skincare Set', time:'14 min ago' },
+  ];
+  let liveBuyerIdx = 0;
+  function showLiveNotif() {
+    const notif = document.getElementById('live-notif');
+    if (!notif) return;
+    const b = LIVE_BUYERS[liveBuyerIdx % LIVE_BUYERS.length];
+    liveBuyerIdx++;
+    notif.querySelector('.notif-name').textContent = b.name;
+    notif.querySelector('.notif-product').textContent = `just bought ${b.product}`;
+    notif.querySelector('.notif-time').textContent = b.time;
+    notif.querySelector('.notif-avatar').textContent = b.name[0];
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+  function initLiveNotifs() {
+    setTimeout(() => { showLiveNotif(); setInterval(showLiveNotif, 9000); }, 3500);
+  }
+
+  // ── Confetti ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length:120}, () => ({
+      x: Math.random()*canvas.width, y: -20,
+      r: 6 + Math.random()*8,
+      color: ['#F5A623','#2D6A4F','#27ae60','#3498db','#e74c3c','#9b59b6'][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*4, vy: 3+Math.random()*4,
+      angle: Math.random()*360, va: (Math.random()-0.5)*6,
+      shape: Math.random()>0.5?'rect':'circle'
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle = p.color;
+        if (p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        p.x += p.vx; p.y += p.vy * 0.98; p.angle += p.va;
+      });
+      if (pieces.some(p => p.y < canvas.height)) frame = requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { if(frame) cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 3500);
+  }
+
+  // ── Order success popup ──
+  function showOrderSuccess(userName) {
+    const overlay = document.getElementById('order-success-overlay');
+    if (!overlay) return;
+    const orderId = 'PN-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    overlay.querySelector('.order-id-val').textContent = orderId;
+    overlay.querySelector('.order-user').textContent = userName || 'Customer';
+    overlay.classList.add('show');
+    launchConfetti();
+    // Auto-dismiss progress bar
+    const bar = overlay.querySelector('.order-progress-bar');
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 1;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          // Clear cart after popup gone
+          localStorage.removeItem('pinenas_cart');
+          updateFloatBadge();
+          if (typeof render === 'function') render();
+        }, 300);
+      }
+    }, 45);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initFlashTimer();
+    initReveal();
+    updateFloatBadge();
+    initLiveNotifs();
+    window.addEventListener('storage', updateFloatBadge);
+  });
+  </script>
+
+</body>
+</html>

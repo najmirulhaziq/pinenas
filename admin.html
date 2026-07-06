@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Pinenas</title>
+ 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+ 
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --danger:      #D62B2B;
+      --radius:      12px;
+      --sidebar-w:   240px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #F3F4F6; color: var(--charcoal); margin: 0; }
+    h1,h2,h3,h4 { font-family: 'Playfair Display', serif; }
+ 
+    /* ── Admin layout ── */
+    .admin-layout { display: flex; min-height: 100vh; }
+ 
+    /* ── Sidebar ── */
+    .admin-sidebar {
+      width: var(--sidebar-w);
+      background: var(--charcoal);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: transform 0.25s;
+    }
+ 
+    .sidebar-brand {
+      padding: 1.3rem 1.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-brand .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .sidebar-brand .brand-logo {
+      height: 44px;
+      width: auto;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+    .sidebar-brand .brand-sub {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+ 
+    .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+ 
+    .sidebar-section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      padding: 0.8rem 1.4rem 0.3rem;
+    }
+ 
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 1.4rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .sidebar-link i { font-size: 1rem; width: 18px; text-align: center; }
+    .sidebar-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+    .sidebar-link.active { background: var(--green); color: #fff; }
+    .sidebar-link .s-badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: var(--charcoal);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 10px;
+    }
+    .sidebar-link.danger { color: rgba(255,100,100,0.8); }
+    .sidebar-link.danger:hover { background: rgba(255,50,50,0.1); color: #FF6464; }
+ 
+    .sidebar-footer {
+      padding: 1rem 1.4rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .sidebar-footer strong { color: rgba(255,255,255,0.6); display: block; font-size: 0.82rem; }
+ 
+    /* ── Main area ── */
+    .admin-main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+ 
+    /* Top bar */
+    .admin-topbar {
+      background: #fff;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-title { font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .topbar-search {
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.2s;
+    }
+    .topbar-search:focus { border-color: var(--green-light); }
+    .topbar-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      margin-left: auto;
+      cursor: pointer;
+    }
+ 
+    /* Content */
+    .admin-content { padding: 1.5rem; flex: 1; }
+ 
+    /* Tab panels */
+    .admin-tab { display: none; }
+    .admin-tab.active { display: block; }
+ 
+    /* ── Stat cards ── */
+    .stat-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      border: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .stat-val { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; line-height: 1; }
+    .stat-lbl { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    .stat-delta { font-size: 0.75rem; margin-top: 0.25rem; }
+    .stat-delta.up   { color: var(--green); }
+    .stat-delta.down { color: var(--danger); }
+ 
+    /* ── Section card ── */
+    .admin-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #E5E7EB;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+    }
+    .admin-card-header {
+      padding: 0.9rem 1.3rem;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .admin-card-header h5 { margin: 0; font-size: 0.95rem; font-weight: 700; }
+    .admin-card-body { padding: 1.3rem; }
+ 
+    /* ── Table ── */
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .admin-table th {
+      background: #F9FAFB;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid #E5E7EB;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .admin-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #F3F4F6;
+      vertical-align: middle;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #F9FAFB; }
+ 
+    .product-emoji-cell { width: 40px; text-align: center; }
+    .product-emoji-cell img { width: 32px; height: 32px; object-fit: contain; }
+    .product-name-cell  { font-weight: 600; font-size: 0.88rem; max-width: 200px; }
+    .product-name-cell small { font-weight: 400; color: var(--muted); display: block; font-size: 0.75rem; }
+ 
+    .cat-pill-sm {
+      display: inline-block;
+      background: #EAF4EE;
+      color: var(--green);
+      border-radius: 20px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+ 
+    .status-pill {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 0.18rem 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .pill-active   { background: #D9F5E5; color: var(--green); }
+    .pill-featured { background: #FEF3C7; color: #92400E; }
+    .pill-low      { background: #FFE8E8; color: var(--danger); }
+ 
+    /* Action buttons */
+    .btn-icon {
+      background: none; border: none; cursor: pointer;
+      width: 30px; height: 30px; border-radius: 7px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: background 0.15s, color 0.15s;
+      color: var(--muted);
+    }
+    .btn-icon:hover { background: #F3F4F6; }
+    .btn-icon.edit:hover  { background: #EAF4EE; color: var(--green); }
+    .btn-icon.del:hover   { background: #FFE8E8; color: var(--danger); }
+    .btn-icon.view:hover  { background: #DBEAFE; color: #1D4ED8; }
+ 
+    /* ── Form buttons ── */
+    .btn-primary-sm {
+      background: var(--green); color: #fff; border: none; border-radius: 8px;
+      padding: 0.5rem 1.2rem; font-size: 0.86rem; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-primary-sm:hover { background: var(--gold-dark); }
+ 
+    .btn-ghost {
+      background: none; border: 1px solid #E5E7EB; border-radius: 8px;
+      padding: 0.5rem 1.1rem; font-size: 0.86rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; color: var(--muted); cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+ 
+    .btn-danger-sm {
+      background: none; border: 1px solid #FFCCCC; border-radius: 8px;
+      padding: 0.5rem 1.1rem; font-size: 0.86rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; color: var(--danger); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-danger-sm:hover { background: #FFE8E8; }
+ 
+    /* ── Modal form ── */
+    .modal-content { border-radius: var(--radius); border: none; }
+    .modal-header { background: var(--green); color: #fff; border-radius: var(--radius) var(--radius) 0 0; padding: 1rem 1.3rem; }
+    .modal-title  { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1rem; }
+    .modal-body   { padding: 1.4rem; }
+    .modal-footer { padding: 1rem 1.4rem; border-top: 1px solid #E5E7EB; }
+ 
+    .f-label { font-size: 0.8rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.3rem; display: block; }
+    .f-input {
+      width: 100%; border: 1.5px solid #E0DDD6; border-radius: 8px;
+      padding: 0.55rem 0.85rem; font-size: 0.88rem;
+      font-family: 'DM Sans', sans-serif; color: var(--charcoal);
+      outline: none; transition: border-color 0.2s;
+      background: #fff;
+    }
+    .f-input:focus { border-color: var(--green-light); }
+    .f-input.invalid { border-color: var(--danger); }
+    .f-error { font-size: 0.76rem; color: var(--danger); margin-top: 0.2rem; display: none; }
+ 
+    /* Toggle switch */
+    .toggle-wrap { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+    .toggle-wrap input[type=checkbox] { accent-color: var(--green); width: 16px; height: 16px; cursor: pointer; }
+ 
+    /* ── Orders table badges ── */
+    .o-badge { font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.6rem; border-radius: 20px; text-transform: uppercase; }
+    .o-delivered { background: #D9F5E5; color: var(--green); }
+    .o-shipped   { background: #DBEAFE; color: #1D4ED8; }
+    .o-processing{ background: #FEF3C7; color: #92400E; }
+    .o-cancelled { background: #FFE8E8; color: var(--danger); }
+ 
+    /* ── Inline alert ── */
+    .inline-alert {
+      border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.83rem;
+      display: none; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;
+    }
+    .inline-alert.ok  { background: #D9F5E5; color: var(--green);  border: 1px solid #B2E5CC; display: flex; }
+    .inline-alert.err { background: #FFE8E8; color: var(--danger); border: 1px solid #FFCCCC; display: flex; }
+ 
+    /* ── Search & filter bar ── */
+    .filter-bar { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+    .filter-input {
+      border: 1px solid #E5E7EB; border-radius: 8px; padding: 0.42rem 0.85rem;
+      font-size: 0.84rem; font-family: 'DM Sans', sans-serif; outline: none;
+      transition: border-color 0.2s;
+    }
+    .filter-input:focus { border-color: var(--green-light); }
+    .filter-select {
+      border: 1px solid #E5E7EB; border-radius: 8px; padding: 0.42rem 1.8rem 0.42rem 0.75rem;
+      font-size: 0.84rem; font-family: 'DM Sans', sans-serif; outline: none;
+      appearance: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236B6B6B'/%3E%3C/svg%3E") no-repeat right 0.55rem center;
+      cursor: pointer;
+    }
+ 
+    /* ── Empty state ── */
+    .table-empty { text-align: center; padding: 2.5rem; color: var(--muted); font-size: 0.9rem; }
+    .table-empty i { font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.4; }
+ 
+    /* Mobile sidebar toggle */
+    .sidebar-toggle {
+      display: none;
+      background: none; border: none; color: var(--charcoal); font-size: 1.4rem; cursor: pointer; padding: 0;
+    }
+ 
+    /* ── Quick activity feed ── */
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.6rem 0; border-bottom: 1px solid #F3F4F6; font-size: 0.84rem;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem;
+    }
+ 
+    @media (max-width: 991px) {
+      .admin-sidebar { transform: translateX(-100%); }
+      .admin-sidebar.open { transform: translateX(0); }
+      .admin-main { margin-left: 0; }
+      .sidebar-toggle { display: block; }
+    }
+ 
+    .toast-container { z-index: 1055; }
+  </style>
+ 
+  <!-- ═══ BOMBASTIC FEATURES CSS ═══ -->
+  <style>
+  /* ── Announcement ticker ── */
+  .announce-bar {
+    background: linear-gradient(90deg, #1a3a28, #2D6A4F, #1a3a28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .announce-track span { padding: 0 3rem; color: var(--gold); }
+  .announce-track span b { color: #fff; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+ 
+  /* ── Flash sale ribbon ── */
+  .flash-banner {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+  .flash-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+    animation: sheen 2.5s ease-in-out infinite;
+  }
+  @keyframes sheen { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+  .flash-timer { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.12em; color: #FFD700; }
+ 
+  /* ── Scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-left.visible  { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+ 
+  /* ── "Live buyers" notification ── */
+  .live-notif {
+    position: fixed; bottom: 7rem; left: 1.2rem;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+    max-width: 270px; z-index: 9998;
+    transform: translateX(-130%);
+    transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .live-notif.show { transform: translateX(0); }
+  .live-notif .notif-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .live-notif .notif-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .live-notif .notif-dot { width:8px; height:8px; background:#27ae60; border-radius:50%; flex-shrink:0; animation: pulse-dot 1.5s ease-in-out infinite; }
+ 
+  /* ── Success order popup ── */
+  .order-success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .order-success-overlay.show { opacity: 1; pointer-events: all; }
+  .order-success-card {
+    background: #fff; border-radius: 24px;
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .order-success-overlay.show .order-success-card { transform: scale(1); }
+  .order-success-card .tick-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.3rem; font-size: 2.2rem; color: #fff;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+    animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+  }
+  @keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .order-success-card h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color: var(--charcoal); margin-bottom:0.5rem; }
+  .order-success-card p  { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+  .order-success-card .order-id { font-family:monospace; background:#f4f4f4; border-radius:8px; padding:0.3rem 0.8rem; font-size:0.85rem; font-weight:700; color:var(--green); display:inline-block; margin:0.6rem 0; }
+  .order-success-card .confetti-strip { position:absolute; top:0; left:0; right:0; height:6px; background: linear-gradient(90deg,#F5A623,#27ae60,#3498db,#e74c3c,#F5A623); }
+  .order-progress { width:100%; background:#eee; border-radius:100px; height:6px; margin:1.1rem 0 0.4rem; overflow:hidden; }
+  .order-progress-bar { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:100px; width:0%; transition:width 0.1s linear; }
+  .order-dismiss { font-size:0.75rem; color:var(--muted); margin-top:0.8rem; }
+ 
+  /* ── Product card hover glow ── */
+  .prod-card { transition: transform 0.22s, box-shadow 0.22s; }
+  .prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px rgba(45,106,79,0.18) !important; }
+ 
+  /* ── Sparkle badge on cards ── */
+  .badge-hot {
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; font-size:0.65rem; font-weight:800;
+    padding:0.2rem 0.55rem; border-radius:100px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+  @keyframes badge-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.5)} 50%{box-shadow:0 0 0 6px rgba(231,76,60,0)} }
+ 
+  /* ── Confetti canvas ── */
+  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:999998; }
+  </style>
+ 
+</head>
+<body>
+ 
+  <!-- ═ Announcement ticker ═ -->
+  <div class="announce-bar">
+    <div class="announce-track">
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+    </div>
+  </div>
+ 
+  <!-- ═ Flash sale banner ═ -->
+  <div class="flash-banner">
+    🔥 FLASH SALE ENDS IN &nbsp; <span class="flash-timer" id="flash-timer">03:47:12</span> &nbsp; — Up to <b>30% OFF</b> selected products!
+  </div>
+ 
+ 
+<div class="admin-layout">
+ 
+  <!-- ══════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════ -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-brand">
+      <img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text-admin">Pinenas</span>
+      <div class="brand-sub">Admin Dashboard</div>
+    </div>
+ 
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Main</div>
+      <button class="sidebar-link active" onclick="switchTab('overview')" id="snav-overview">
+        <i class="bi bi-grid-1x2"></i> Overview
+      </button>
+      <button class="sidebar-link" onclick="switchTab('products')" id="snav-products">
+        <i class="bi bi-box-seam"></i> Products
+        <span class="s-badge" id="snavProductCount">16</span>
+      </button>
+      <button class="sidebar-link" onclick="switchTab('categories')" id="snav-categories">
+        <i class="bi bi-tags"></i> Categories
+      </button>
+      <button class="sidebar-link" onclick="switchTab('orders')" id="snav-orders">
+        <i class="bi bi-bag"></i> Orders
+        <span class="s-badge" id="snavOrderCount">4</span>
+      </button>
+      <button class="sidebar-link" onclick="switchTab('customers')" id="snav-customers">
+        <i class="bi bi-people"></i> Customers
+      </button>
+ 
+      <div class="sidebar-section-label">Store</div>
+      <button class="sidebar-link" onclick="switchTab('reviews')" id="snav-reviews">
+        <i class="bi bi-star"></i> Reviews
+      </button>
+      <button class="sidebar-link" onclick="switchTab('settings')" id="snav-settings">
+        <i class="bi bi-gear"></i> Settings
+      </button>
+ 
+      <div class="sidebar-section-label">Account</div>
+      <a href="index.html" class="sidebar-link" target="_blank">
+        <i class="bi bi-shop"></i> View Storefront
+      </a>
+      <button class="sidebar-link danger" onclick="doLogout()">
+        <i class="bi bi-box-arrow-right"></i> Sign Out
+      </button>
+    </nav>
+ 
+    <div class="sidebar-footer">
+      <strong id="adminName">Administrator</strong>
+      Logged in as root
+    </div>
+  </aside>
+ 
+ 
+  <!-- ══════════════════════════════════
+       MAIN
+  ══════════════════════════════════ -->
+  <div class="admin-main">
+ 
+    <!-- Top bar -->
+    <div class="admin-topbar">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="bi bi-list"></i>
+      </button>
+      <h1 class="topbar-title" id="topbarTitle">Overview</h1>
+      <input class="topbar-search d-none d-md-block" type="search" id="globalSearch" placeholder="🔍 Search products…" oninput="globalSearchProducts(this.value)" />
+      <a href="index.html" class="btn-ghost ms-auto d-none d-md-flex" style="display:inline-flex;align-items:center;gap:0.4rem;text-decoration:none;" target="_blank">
+        <i class="bi bi-shop"></i> Storefront
+      </a>
+      <div class="topbar-avatar" title="Sign out" onclick="doLogout()">A</div>
+    </div>
+ 
+    <div class="admin-content">
+ 
+ 
+      <!-- ══════════════════════
+           OVERVIEW TAB
+      ══════════════════════ -->
+      <div class="admin-tab active" id="tab-overview">
+ 
+        <!-- Stat cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#EAF4EE;"><span>📦</span></div>
+              <div>
+                <div class="stat-val" id="ovTotalProducts">16</div>
+                <div class="stat-lbl">Total Products</div>
+                <div class="stat-delta up"><i class="bi bi-arrow-up-short"></i> +2 this month</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#DBEAFE;"><span>🛍️</span></div>
+              <div>
+                <div class="stat-val" id="ovTotalOrders">4</div>
+                <div class="stat-lbl">Total Orders</div>
+                <div class="stat-delta up"><i class="bi bi-arrow-up-short"></i> +1 today</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#FEF3C7;"><span>💰</span></div>
+              <div>
+                <div class="stat-val" id="ovRevenue">RM 0</div>
+                <div class="stat-lbl">Total Revenue</div>
+                <div class="stat-delta up"><i class="bi bi-arrow-up-short"></i> +12% vs last month</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#F3E8FF;"><span>👥</span></div>
+              <div>
+                <div class="stat-val" id="ovCustomers">0</div>
+                <div class="stat-lbl">Customers</div>
+                <div class="stat-delta up"><i class="bi bi-arrow-up-short"></i> +3 this week</div>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="row g-3">
+          <!-- Recent orders -->
+          <div class="col-lg-7">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h5>Recent Orders</h5>
+                <button class="btn-ghost ms-auto" style="font-size:0.78rem;padding:0.3rem 0.75rem;" onclick="switchTab('orders')">View all</button>
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="admin-table" id="recentOrdersTable">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Date</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentOrdersBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+ 
+          <!-- Activity feed -->
+          <div class="col-lg-5">
+            <div class="admin-card">
+              <div class="admin-card-header"><h5>Activity Feed</h5></div>
+              <div class="admin-card-body" style="padding:0.8rem 1.3rem;" id="activityFeed"></div>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Top products -->
+        <div class="admin-card mt-3">
+          <div class="admin-card-header">
+            <h5>Top Selling Products</h5>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr><th>#</th><th>Product</th><th>Category</th><th>Price</th><th>Reviews</th><th>Rating</th></tr>
+              </thead>
+              <tbody id="topProductsBody"></tbody>
+            </table>
+          </div>
+        </div>
+ 
+      </div>
+ 
+ 
+      <!-- ══════════════════════
+           PRODUCTS TAB
+      ══════════════════════ -->
+      <div class="admin-tab" id="tab-products">
+ 
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h5>All Products</h5>
+            <div class="filter-bar ms-auto">
+              <input class="filter-input" type="search" id="productSearch" placeholder="Search products…" oninput="renderProductsTable()" />
+              <select class="filter-select" id="productCatFilter" onchange="renderProductsTable()">
+                <option value="">All categories</option>
+                <option value="fresh">Fresh Pineapple</option>
+                <option value="juice">Juices & Drinks</option>
+                <option value="snacks">Snacks & Candies</option>
+                <option value="condiments">Jams & Condiments</option>
+                <option value="skincare">Skincare</option>
+                <option value="gifts">Gift Sets</option>
+              </select>
+              <button class="btn-primary-sm" onclick="openProductModal()">
+                <i class="bi bi-plus-lg"></i> Add Product
+              </button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price (RM)</th>
+                  <th>Rating</th>
+                  <th>Stock</th>
+                  <th>Tags</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
+            <div class="table-empty" id="productsEmpty" style="display:none;">
+              <i class="bi bi-box-seam"></i>
+              No products match your filters.
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+ 
+ 
+      <!-- ══════════════════════
+           CATEGORIES TAB
+      ══════════════════════ -->
+      <div class="admin-tab" id="tab-categories">
+ 
+        <div class="row g-3">
+          <div class="col-md-5">
+            <div class="admin-card">
+              <div class="admin-card-header"><h5 id="catFormTitle">Add Category</h5></div>
+              <div class="admin-card-body">
+                <div class="inline-alert" id="catAlert"><i></i><span id="catAlertMsg"></span></div>
+                <input type="hidden" id="catEditId" value="" />
+                <div class="mb-3">
+                  <label class="f-label" for="catName">Category Name *</label>
+                  <input class="f-input" type="text" id="catName" placeholder="e.g. Pineapple Beverages" maxlength="40" />
+                  <div class="f-error" id="catNameErr">Name is required.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="f-label" for="catEmoji">Emoji Icon *</label>
+                  <input class="f-input" type="text" id="catEmoji" placeholder="e.g. 🍹" maxlength="4" style="width:80px;" />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label" for="catSlug">Slug (URL key) *</label>
+                  <input class="f-input" type="text" id="catSlug" placeholder="e.g. beverages" maxlength="30" />
+                  <div class="f-error" id="catSlugErr">Slug is required.</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn-primary-sm" onclick="saveCategory()">
+                    <i class="bi bi-check-lg"></i> <span id="catSaveBtnText">Add Category</span>
+                  </button>
+                  <button class="btn-ghost" onclick="resetCatForm()">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="admin-card">
+              <div class="admin-card-header"><h5>Categories</h5></div>
+              <div style="overflow-x:auto;">
+                <table class="admin-table">
+                  <thead>
+                    <tr><th>Icon</th><th>Name</th><th>Slug</th><th>Products</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody id="categoriesBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+ 
+ 
+      <!-- ══════════════════════
+           ORDERS TAB
+      ══════════════════════ -->
+      <div class="admin-tab" id="tab-orders">
+ 
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h5>All Orders</h5>
+            <div class="filter-bar ms-auto">
+              <select class="filter-select" id="orderStatusFilter" onchange="renderOrdersTable()">
+                <option value="">All statuses</option>
+                <option>Processing</option>
+                <option>Shipped</option>
+                <option>Delivered</option>
+                <option>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+ 
+      </div>
+ 
+ 
+      <!-- ══════════════════════
+           CUSTOMERS TAB
+      ══════════════════════ -->
+      <div class="admin-tab" id="tab-customers">
+ 
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h5>Registered Customers</h5>
+            <span class="ms-auto" style="font-size:0.82rem;color:var(--muted);" id="customerCountLabel">0 customers</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Orders</th></tr>
+              </thead>
+              <tbody id="customersBody"></tbody>
+            </table>
+            <div class="table-empty" id="customersEmpty" style="display:none;">
+              <i class="bi bi-people"></i>
+              No registered customers yet.
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+ 
+ 
+      <!-- ══════════════════════
+           REVIEWS TAB
+      ══════════════════════ -->
+      <div class="admin-tab" id="tab-reviews">
+ 
+        <div class="admin-card">
+          <div class="admin-card-header"><h5>All Customer Reviews</h5></div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Product</th><th>Customer</th><th>Rating</th><th>Review</th><th>Date</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="reviewsBody"></tbody>
+            </table>
+            <div class="table-empty" id="reviewsEmpty" style="display:none;">
+              <i class="bi bi-star"></i>
+              No reviews yet.
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+ 
+ 
+      <!-- ══════════════════════
+           SETTINGS TAB
+      ══════════════════════ -->
+      <div class="admin-tab" id="tab-settings">
+ 
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="admin-card">
+              <div class="admin-card-header"><h5>Store Settings</h5></div>
+              <div class="admin-card-body">
+                <div class="inline-alert" id="settingsAlert"><i></i><span id="settingsAlertMsg"></span></div>
+                <div class="mb-3">
+                  <label class="f-label">Store Name</label>
+                  <input class="f-input" id="setStoreName" type="text" value="Pinenas" />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">Store Email</label>
+                  <input class="f-input" id="setStoreEmail" type="email" value="hello@pinenas.com" />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">Store Phone</label>
+                  <input class="f-input" id="setStorePhone" type="tel" value="+60 12-345 6789" />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">Currency</label>
+                  <input class="f-input" value="RM (Malaysian Ringgit)" disabled />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">SST Rate</label>
+                  <input class="f-input" value="8%" disabled />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">Free Delivery Threshold</label>
+                  <input class="f-input" id="setFreeShip" type="number" value="60" />
+                  <div style="font-size:0.76rem;color:var(--muted);margin-top:0.3rem;">Orders above this amount qualify for free delivery.</div>
+                </div>
+                <button class="btn-primary-sm" onclick="saveSettings()">
+                  <i class="bi bi-check-lg"></i> Save Settings
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="admin-card">
+              <div class="admin-card-header"><h5>Admin Account</h5></div>
+              <div class="admin-card-body">
+                <div class="mb-3">
+                  <label class="f-label">Username</label>
+                  <input class="f-input" value="root" disabled />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">Role</label>
+                  <input class="f-input" value="Super Administrator" disabled />
+                </div>
+                <div class="mb-3">
+                  <label class="f-label">New Password</label>
+                  <input class="f-input" type="password" id="setAdminPw" placeholder="Leave blank to keep current" />
+                </div>
+                <button class="btn-primary-sm" onclick="saveAdminPw()">
+                  <i class="bi bi-lock"></i> Update Password
+                </button>
+              </div>
+            </div>
+            <div class="admin-card mt-3">
+              <div class="admin-card-header"><h5 style="color:var(--danger);">Danger Zone</h5></div>
+              <div class="admin-card-body">
+                <p style="font-size:0.84rem;color:var(--muted);">These actions cannot be undone. Proceed with caution.</p>
+                <button class="btn-danger-sm" onclick="clearAllData()">
+                  <i class="bi bi-trash me-1"></i> Clear All Customer Data
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+ 
+    </div><!-- /admin-content -->
+  </div><!-- /admin-main -->
+</div><!-- /admin-layout -->
+ 
+ 
+<!-- ══════════════════════════════════
+     ADD / EDIT PRODUCT MODAL
+══════════════════════════════════ -->
+<div class="modal fade" id="productModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Add New Product</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="inline-alert" id="modalAlert"><i></i><span id="modalAlertMsg"></span></div>
+        <input type="hidden" id="editProductId" value="" />
+ 
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="f-label" for="pName">Product Name *</label>
+            <input class="f-input" type="text" id="pName" placeholder="e.g. Fresh Pineapple Juice 500ml" maxlength="80" />
+            <div class="f-error" id="err-pName">Product name is required.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="f-label" for="pEmoji">Emoji *</label>
+            <input class="f-input" type="text" id="pEmoji" placeholder="🍍" maxlength="4" />
+            <div class="f-error" id="err-pEmoji">Emoji is required.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="f-label" for="pCategory">Category *</label>
+            <select class="f-input" id="pCategory" style="cursor:pointer;">
+              <option value="">Select category…</option>
+              <option value="fresh">Fresh Pineapple</option>
+              <option value="juice">Juices & Drinks</option>
+              <option value="snacks">Snacks & Candies</option>
+              <option value="condiments">Jams & Condiments</option>
+              <option value="skincare">Skincare</option>
+              <option value="gifts">Gift Sets</option>
+            </select>
+            <div class="f-error" id="err-pCategory">Category is required.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="f-label" for="pPrice">Price (RM) *</label>
+            <input class="f-input" type="number" id="pPrice" placeholder="0.00" min="0.01" step="0.01" />
+            <div class="f-error" id="err-pPrice">Valid price is required.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="f-label" for="pSku">SKU</label>
+            <input class="f-input" type="text" id="pSku" placeholder="e.g. JD-005" maxlength="20" />
+          </div>
+          <div class="col-md-4">
+            <label class="f-label" for="pWeight">Weight / Volume</label>
+            <input class="f-input" type="text" id="pWeight" placeholder="e.g. 500ml" maxlength="30" />
+          </div>
+          <div class="col-md-4">
+            <label class="f-label" for="pStock">Stock Status</label>
+            <select class="f-input" id="pStock" style="cursor:pointer;">
+              <option value="in">In Stock</option>
+              <option value="low">Low Stock</option>
+              <option value="out">Out of Stock</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="f-label" for="pRating">Rating (0–5)</label>
+            <input class="f-input" type="number" id="pRating" placeholder="5.0" min="0" max="5" step="0.1" />
+          </div>
+          <div class="col-12">
+            <label class="f-label" for="pShortDesc">Short Description *</label>
+            <input class="f-input" type="text" id="pShortDesc" placeholder="One-line product tagline" maxlength="120" />
+            <div class="f-error" id="err-pShortDesc">Short description is required.</div>
+          </div>
+          <div class="col-12">
+            <label class="f-label" for="pDesc">Full Description</label>
+            <textarea class="f-input" id="pDesc" rows="4" placeholder="Detailed product description…" maxlength="1000" style="resize:vertical;"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="f-label">Tags</label>
+            <div class="d-flex gap-3 flex-wrap">
+              <div class="toggle-wrap">
+                <input type="checkbox" id="pFeatured" />
+                <label for="pFeatured">Featured</label>
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="pTopSeller" />
+                <label for="pTopSeller">Top Seller</label>
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="pIsNew" />
+                <label for="pIsNew">New Arrival</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="f-label" for="pAllergens">Allergens</label>
+            <input class="f-input" type="text" id="pAllergens" placeholder="e.g. Contains soy. May contain nuts." maxlength="120" />
+          </div>
+          <div class="col-md-6">
+            <label class="f-label" for="pStorage">Storage</label>
+            <input class="f-input" type="text" id="pStorage" placeholder="e.g. Refrigerate after opening." maxlength="80" />
+          </div>
+          <div class="col-md-6">
+            <label class="f-label" for="pShelfLife">Shelf Life</label>
+            <input class="f-input" type="text" id="pShelfLife" placeholder="e.g. 6 months" maxlength="40" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-primary-sm" onclick="saveProduct()">
+          <i class="bi bi-check-lg"></i> <span id="modalSaveBtnText">Add Product</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Confirm delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:360px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background:var(--danger);">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center py-3">
+        <div style="font-size:2.5rem;margin-bottom:0.5rem;">🗑️</div>
+        <p style="font-size:0.9rem;color:var(--charcoal);">Delete <strong id="deleteProductName"></strong>?<br/>This cannot be undone.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-danger-sm" onclick="confirmDelete()">
+          <i class="bi bi-trash me-1"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="adminToast" class="toast align-items-center text-white border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="adminToastMsg">Done!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+ 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+ 
+<script>
+/* ═══════════════════════════════════
+   INITIAL PRODUCT DATA
+═══════════════════════════════════ */
+const SEED_PRODUCTS = [
+  { id:1, img:'whole_sweet_pineapple.png',  name:'Whole Sweet Gold Pineapple',          cat:'fresh',      emoji:'🍍', price:12.90, rating:5.0, reviews:48,  featured:false,  topseller:false, isNew:true, stock:'in',  sku:'PF-001', weight:'Approx. 1.2–1.5 kg', shortDesc:'Hand-picked at peak ripeness for maximum sweetness.', desc:'Grown in the highlands of Johor, harvested at exact ripeness.', allergens:'None', storage:'Room temp up to 3 days.', shelfLife:'5–7 days' },
+  { id:2, img:'pre_cut_pineapple_chunk.png',  name:'Pre-Cut Pineapple Chunks 400g',       cat:'fresh',      emoji:'🍍', price:7.90,  rating:4.5, reviews:59,  featured:false, topseller:true,  isNew:false, stock:'in',  sku:'PF-002', weight:'400 g', shortDesc:'Ready to eat — no prep needed.', desc:'Fresh, cleaned and cut hygienically.', allergens:'None', storage:'Keep refrigerated.', shelfLife:'5 days' },
+  { id:3, img:'Pineapple_Slices_in_Syrup_Description.png',  name:'Pineapple Slices in Syrup 300g',      cat:'fresh',      emoji:'🍍', price:5.50,  rating:4.2, reviews:22,  featured:false, topseller:false, isNew:true,  stock:'low', sku:'PF-003', weight:'300 g', shortDesc:'Tender pineapple in light natural syrup.', desc:'Perfect for baking and desserts.', allergens:'None', storage:'Refrigerate after opening.', shelfLife:'12 months unopened' },
+  { id:4, img:'Cold-Pressed_Pineapple_Juice_500ml.png',  name:'Cold-Pressed Pineapple Juice 500ml',  cat:'juice',      emoji:'🥤', price:8.50,  rating:5.0, reviews:63,  featured:false,  topseller:false, isNew:true, stock:'in',  sku:'JD-001', weight:'500 ml', shortDesc:'100% cold-pressed, no added sugar.', desc:'Low temperature pressed to retain nutrients.', allergens:'None', storage:'Keep refrigerated.', shelfLife:'14 days' },
+  { id:5, img:'Pineapple_Coconut_Sparkling_Water.png',  name:'Pineapple Coconut Sparkling Water',   cat:'juice',      emoji:'🧃', price:6.50,  rating:5.0, reviews:87,  featured:false, topseller:true,  isNew:false, stock:'in',  sku:'JD-002', weight:'330 ml', shortDesc:'Zero sugar fizzy tropical refresher.', desc:'Natural pineapple and coconut essence.', allergens:'None', storage:'Room temperature.', shelfLife:'18 months' },
+  { id:6, img:'Pineapple_Ginger_Wellness_Shot_60ml.png',  name:'Pineapple Ginger Wellness Shot 60ml', cat:'juice',      emoji:'🥃', price:4.90,  rating:4.6, reviews:31,  featured:false, topseller:false, isNew:true,  stock:'in',  sku:'JD-003', weight:'60 ml', shortDesc:'Bromelain, ginger & turmeric daily shot.', desc:'Potent wellness blend for your morning ritual.', allergens:'None', storage:'Refrigerate.', shelfLife:'21 days' },
+  { id:7, img:'Pineapple_Iced_Tea_1L_1.png',  name:'Pineapple Iced Tea 1L',               cat:'juice',      emoji:'🫖', price:9.90,  rating:4.3, reviews:18,  featured:false, topseller:false, isNew:false, stock:'in',  sku:'JD-004', weight:'1 L', shortDesc:'Brewed tea with fresh pineapple juice.', desc:'Real tea leaves infused with fresh pineapple.', allergens:'None', storage:'Refrigerate.', shelfLife:'10 days' },
+  { id:8, img:'Dry_Pineapple_Rings_No_sugar.png',  name:'Dried Pineapple Rings (No Sugar)',    cat:'snacks',     emoji:'🍫', price:9.90,  rating:5.0, reviews:112, featured:false, topseller:true,  isNew:false, stock:'in',  sku:'SC-001', weight:'80 g', shortDesc:'No added sugar, low-temperature dried.', desc:'Our bestselling guilt-free snack.', allergens:'None', storage:'Cool dry place.', shelfLife:'6 months' },
+  { id:9, img:'pineapple_chili_candy.png',  name:'Pineapple Chilli Candy',              cat:'snacks',     emoji:'🍬', price:4.50,  rating:4.4, reviews:44,  featured:false, topseller:false, isNew:false, stock:'in',  sku:'SC-002', weight:'150 g', shortDesc:'Sweet, sour & spicy Malaysian candy.', desc:'Inspired by traditional asam boi.', allergens:'May contain nuts', storage:'Cool dry place.', shelfLife:'8 months' },
+  { id:10, img:'Dark_chocolate_bar_80g.png', name:'Pineapple Dark Chocolate Bar 80g',    cat:'snacks',     emoji:'🍫', price:13.90, rating:4.7, reviews:27,  featured:false, topseller:false, isNew:true,  stock:'in',  sku:'SC-003', weight:'80 g', shortDesc:'70% dark chocolate with pineapple bits.', desc:'Complex layered flavour with sea salt.', allergens:'Soy, may contain milk & nuts', storage:'Below 25°C.', shelfLife:'9 months' },
+  { id:11, img:'Artisan_Pineapple_Jam_250g.png', name:'Artisan Pineapple Jam 250g',          cat:'condiments', emoji:'🫙', price:14.00, rating:4.5, reviews:29,  featured:false,  topseller:false, isNew:true, stock:'in',  sku:'CM-001', weight:'250 g', shortDesc:'Small-batch jam, no pectin, pure pineapple.', desc:'Slow-cooked with cane sugar.', allergens:'None', storage:'Refrigerate after opening.', shelfLife:'12 months' },
+  { id:12, img:'Pineapple_Sambal_Sauce_200ml.png', name:'Pineapple Sambal Sauce 200ml',        cat:'condiments', emoji:'🌶️', price:11.00, rating:4.8, reviews:36,  featured:false, topseller:false, isNew:false, stock:'in',  sku:'CM-002', weight:'200 ml', shortDesc:'Malaysian sambal with fruity pineapple heat.', desc:'Traditional sambal with a tropical twist.', allergens:'Shrimp (belacan)', storage:'Refrigerate after opening.', shelfLife:'10 months' },
+  { id:13, img:'Pineapple_Enzyme_Face_Scrub.png', name:'Pineapple Enzyme Face Scrub',         cat:'skincare',   emoji:'🌿', price:32.00, rating:5.0, reviews:41,  featured:false,  topseller:false, isNew:true, stock:'in',  sku:'SK-001', weight:'100 ml', shortDesc:'Natural bromelain enzyme exfoliant.', desc:'Paraben-free, cruelty-free skincare.', allergens:'Patch test recommended', storage:'Away from sunlight.', shelfLife:'24 months' },
+  { id:14, img:'Pineapple_Vitamin_C_Serum_30ml.png', name:'Pineapple Vitamin C Serum 30ml',      cat:'skincare',   emoji:'💧', price:48.00, rating:4.6, reviews:19,  featured:false, topseller:false, isNew:true,  stock:'low', sku:'SK-002', weight:'30 ml', shortDesc:'15% Vitamin C with pineapple brightening complex.', desc:'Dermatologist tested brightening serum.', allergens:'Patch test recommended', storage:'Room temperature.', shelfLife:'18 months' },
+  { id:15, img:'Tropical_Treat_gift_box.png', name:'Tropical Treat Gift Box',             cat:'gifts',      emoji:'🎁', price:55.00, rating:5.0, reviews:74,  featured:false, topseller:true,  isNew:false, stock:'in',  sku:'GF-001', weight:'Approx. 2.5 kg', shortDesc:'Curated gift set with our top products.', desc:'Perfect for birthdays and Hari Raya.', allergens:'Contains tree nut traces', storage:'See individual items.', shelfLife:'Varies' },
+  { id:16, img:'Pineapple_Lovers_Bundle.png', name:'Pineapple Lovers Bundle',             cat:'gifts',      emoji:'🎀', price:78.00, rating:4.9, reviews:33,  featured:false, topseller:false, isNew:true,  stock:'in',  sku:'GF-002', weight:'Approx. 3.2 kg', shortDesc:'8 products for the ultimate pineapple fan.', desc:'Our biggest bundle with great savings.', allergens:'Contains soy, shrimp. May contain nuts.', storage:'See individual items.', shelfLife:'Varies' },
+  { id:17, img:'PineNas_Concentrated_Pineapple_Syrup.png', name:'PineNas Concentrated Pineapple Syrup', cat:'condiments', emoji:'🍯', price:16.90, rating:4.8, reviews:12,  featured:true, topseller:false, isNew:false, stock:'in', sku:'PN-001', weight:'250 ml', shortDesc:'Concentrated pineapple syrup for drinks and desserts.', desc:'Rich, concentrated pineapple syrup made from our finest fruit.', allergens:'None', storage:'Refrigerate after opening.', shelfLife:'12 months' },
+  { id:18, img:'PineNas_Pineapple-flavoured_Aromatics.png', name:'PineNas Pineapple-flavoured Aromatics', cat:'gifts', emoji:'🌸', price:24.90, rating:4.7, reviews:9,  featured:true, topseller:false, isNew:false, stock:'in', sku:'PN-002', weight:'100 ml', shortDesc:'Pineapple-scented home aromatics.', desc:'Fill your home with the fresh scent of tropical pineapple.', allergens:'None', storage:'Store away from sunlight.', shelfLife:'24 months' },
+  { id:19, img:'PineNas_Pineapple-based_Supplement.png', name:'PineNas Pineapple-based Supplement', cat:'skincare', emoji:'💊', price:39.90, rating:4.9, reviews:15,  featured:true, topseller:false, isNew:false, stock:'in', sku:'PN-003', weight:'60 capsules', shortDesc:'Daily bromelain supplement made from pineapple.', desc:'Support digestion and wellness with our pineapple-based supplement.', allergens:'None', storage:'Cool dry place.', shelfLife:'18 months' },
+  { id:20, img:'PineNas_Pineapple-flavoured_Lip_Balm.png', name:'PineNas Pineapple-flavoured Lip Balm', cat:'skincare', emoji:'💄', price:9.90, rating:4.6, reviews:21,  featured:true, topseller:false, isNew:false, stock:'in', sku:'PN-004', weight:'4.5 g', shortDesc:'Moisturising lip balm with pineapple flavour.', desc:'Nourish your lips with our tropical pineapple-flavoured balm.', allergens:'None', storage:'Room temperature.', shelfLife:'24 months' },
+  { id:21, img:'PineNas_Canned_Pineapple_Chunks.png', name:'PineNas Canned Pineapple Chunks', cat:'fresh', emoji:'🥫', price:6.90, rating:4.5, reviews:17,  featured:true, topseller:false, isNew:false, stock:'in', sku:'PN-005', weight:'425 g', shortDesc:'Convenient canned pineapple chunks in juice.', desc:'Ready-to-eat pineapple chunks, packed in natural juice.', allergens:'None', storage:'Store in a cool dry place.', shelfLife:'24 months' },
+];
+ 
+const SEED_ORDERS = [
+  { id:'PN-20260601-001', date:'2026-06-01', status:'Delivered', items:[{id:8,name:'Dried Pineapple Rings',emoji:'🍫',qty:2,price:9.90},{id:4,name:'Cold-Pressed Pineapple Juice 500ml',emoji:'🥤',qty:1,price:8.50}], total:30.57 },
+  { id:'PN-20260520-002', date:'2026-05-20', status:'Delivered', items:[{id:13,name:'Pineapple Enzyme Face Scrub',emoji:'🌿',qty:1,price:32.00}], total:39.96 },
+  { id:'PN-20260615-003', date:'2026-06-15', status:'Shipped',   items:[{id:15,name:'Tropical Treat Gift Box',emoji:'🎁',qty:1,price:55.00},{id:11,name:'Artisan Pineapple Jam 250g',emoji:'🫙',qty:2,price:14.00}], total:89.64 },
+  { id:'PN-20260625-004', date:'2026-06-25', status:'Processing',items:[{id:5,name:'Pineapple Coconut Sparkling Water',emoji:'🧃',qty:4,price:6.50}], total:33.08 },
+];
+ 
+const DEFAULT_CATS = [
+  { id:'fresh',      name:'Fresh Pineapple',    emoji:'🍍' },
+  { id:'juice',      name:'Juices & Drinks',    emoji:'🥤' },
+  { id:'snacks',     name:'Snacks & Candies',   emoji:'🍫' },
+  { id:'condiments', name:'Jams & Condiments',  emoji:'🫙' },
+  { id:'skincare',   name:'Skincare',            emoji:'🌿' },
+  { id:'gifts',      name:'Gift Sets',           emoji:'🎁' },
+];
+ 
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+let products   = [];
+let categories = [];
+let orders     = [];
+let deletingId = null;
+ 
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+(function init() {
+  // Auth guard
+  const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+  if (!user || user.role !== 'admin') {
+    window.location.href = 'login.html?tab=admin';
+    return;
+  }
+ 
+  // Load data
+  products   = JSON.parse(localStorage.getItem('pinenas_admin_products')   || 'null') || [...SEED_PRODUCTS];
+  categories = JSON.parse(localStorage.getItem('pinenas_admin_categories') || 'null') || [...DEFAULT_CATS];
+  orders     = SEED_ORDERS; // Static for demo
+ 
+  saveProducts();
+  saveCategories();
+ 
+  renderAll();
+})();
+ 
+function renderAll() {
+  renderOverview();
+  renderProductsTable();
+  renderCategoriesTable();
+  renderOrdersTable();
+  renderCustomersTable();
+  renderReviewsTable();
+}
+ 
+/* ═══════════════════════════════════
+   OVERVIEW
+═══════════════════════════════════ */
+function renderOverview() {
+  const users    = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+  const revenue  = orders.reduce((s,o) => s + o.total, 0);
+ 
+  document.getElementById('ovTotalProducts').textContent = products.length;
+  document.getElementById('ovTotalOrders').textContent   = orders.length;
+  document.getElementById('ovRevenue').textContent       = `RM ${revenue.toFixed(0)}`;
+  document.getElementById('ovCustomers').textContent     = users.length;
+  document.getElementById('snavProductCount').textContent= products.length;
+  document.getElementById('snavOrderCount').textContent  = orders.length;
+ 
+  // Recent orders
+  const tbody = document.getElementById('recentOrdersBody');
+  tbody.innerHTML = orders.slice(0,4).map(o => `
+    <tr>
+      <td><strong style="font-size:0.82rem;">${o.id}</strong></td>
+      <td>${fmtDate(o.date)}</td>
+      <td>${o.items.length} item${o.items.length>1?'s':''}</td>
+      <td><strong>RM ${o.total.toFixed(2)}</strong></td>
+      <td><span class="o-badge o-${o.status.toLowerCase()}">${o.status}</span></td>
+    </tr>`).join('');
+ 
+  // Activity feed
+  const feed = document.getElementById('activityFeed');
+  const activities = [
+    { color:'var(--green)',   text:'New order <strong>PN-20260625-004</strong> received', time:'2 hours ago' },
+    { color:'var(--gold)',    text:'Product <strong>Pineapple Lovers Bundle</strong> added', time:'1 day ago' },
+    { color:'#4AABF0',       text:'Order <strong>PN-20260615-003</strong> shipped', time:'2 days ago' },
+    { color:'var(--green-light)', text:'New customer registered', time:'3 days ago' },
+    { color:'var(--danger)', text:'Stock low for <strong>Pineapple Slices in Syrup</strong>', time:'4 days ago' },
+  ];
+  feed.innerHTML = activities.map(a => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${a.color};"></div>
+      <div>
+        <div style="font-size:0.84rem;">${a.text}</div>
+        <div style="font-size:0.75rem;color:var(--muted);">${a.time}</div>
+      </div>
+    </div>`).join('');
+ 
+  // Top products
+  const top = [...products].sort((a,b) => b.reviews - a.reviews).slice(0,5);
+  document.getElementById('topProductsBody').innerHTML = top.map((p,i) => `
+    <tr>
+      <td style="color:var(--muted);font-weight:700;">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <img src="images/${p.img}" alt="${p.name}" style="width:1.4rem;height:1.4rem;object-fit:contain;">
+          <span style="font-weight:600;font-size:0.86rem;">${p.name}</span>
+        </div>
+      </td>
+      <td><span class="cat-pill-sm">${catLabel(p.cat)}</span></td>
+      <td><strong>RM ${p.price.toFixed(2)}</strong></td>
+      <td>${p.reviews}</td>
+      <td>${'★'.repeat(Math.floor(p.rating))} ${p.rating.toFixed(1)}</td>
+    </tr>`).join('');
+}
+ 
+/* ═══════════════════════════════════
+   PRODUCTS TABLE
+═══════════════════════════════════ */
+function renderProductsTable() {
+  const q    = (document.getElementById('productSearch')?.value || '').toLowerCase();
+  const cat  = document.getElementById('productCatFilter')?.value || '';
+ 
+  let list = products.filter(p => {
+    const matchQ   = !q   || p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q);
+    const matchCat = !cat || p.cat === cat;
+    return matchQ && matchCat;
+  });
+ 
+  const tbody = document.getElementById('productsTableBody');
+  const empty = document.getElementById('productsEmpty');
+ 
+  if (!list.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+ 
+  tbody.innerHTML = list.map(p => {
+    const stockCls = p.stock === 'low' ? 'pill-low' : p.stock === 'out' ? 'pill-low' : 'pill-active';
+    const stockLbl = p.stock === 'in' ? 'In Stock' : p.stock === 'low' ? 'Low Stock' : 'Out of Stock';
+    const tags = [
+      p.featured   ? '<span class="status-pill pill-featured">Featured</span>'   : '',
+      p.topseller  ? '<span class="status-pill pill-active">Top Seller</span>'   : '',
+      p.isNew      ? '<span class="status-pill" style="background:#F3E8FF;color:#7C3AED;">New</span>' : '',
+    ].filter(Boolean).join(' ');
+ 
+    return `
+      <tr>
+        <td class="product-emoji-cell"><img src="images/${p.img}" alt="${p.name}"></td>
+        <td class="product-name-cell">
+          ${p.name}
+          <small>SKU: ${p.sku || '—'}</small>
+        </td>
+        <td><span class="cat-pill-sm">${catLabel(p.cat)}</span></td>
+        <td><strong>RM ${p.price.toFixed(2)}</strong></td>
+        <td>${p.rating.toFixed(1)} ⭐ <span style="color:var(--muted);font-size:0.78rem;">(${p.reviews})</span></td>
+        <td><span class="status-pill ${stockCls}">${stockLbl}</span></td>
+        <td>${tags || '<span style="color:var(--muted);font-size:0.78rem;">—</span>'}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn-icon view" title="View product" onclick="window.open('product-detail.html?id=${p.id}','_blank')">
+            <i class="bi bi-eye"></i>
+          </button>
+          <button class="btn-icon edit" title="Edit product" onclick="openProductModal(${p.id})">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn-icon del" title="Delete product" onclick="openDeleteModal(${p.id})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+ 
+/* ═══════════════════════════════════
+   PRODUCT MODAL
+═══════════════════════════════════ */
+function openProductModal(id = null) {
+  clearModalErrors();
+  document.getElementById('editProductId').value = id || '';
+ 
+  if (id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('modalTitle').textContent      = 'Edit Product';
+    document.getElementById('modalSaveBtnText').textContent= 'Save Changes';
+    document.getElementById('pName').value       = p.name;
+    document.getElementById('pEmoji').value      = p.emoji;
+    document.getElementById('pCategory').value   = p.cat;
+    document.getElementById('pPrice').value      = p.price;
+    document.getElementById('pSku').value        = p.sku        || '';
+    document.getElementById('pWeight').value     = p.weight     || '';
+    document.getElementById('pStock').value      = p.stock      || 'in';
+    document.getElementById('pRating').value     = p.rating;
+    document.getElementById('pShortDesc').value  = p.shortDesc  || '';
+    document.getElementById('pDesc').value       = p.desc       || '';
+    document.getElementById('pFeatured').checked = p.featured;
+    document.getElementById('pTopSeller').checked= p.topseller;
+    document.getElementById('pIsNew').checked    = p.isNew;
+    document.getElementById('pAllergens').value  = p.allergens  || '';
+    document.getElementById('pStorage').value    = p.storage    || '';
+    document.getElementById('pShelfLife').value  = p.shelfLife  || '';
+  } else {
+    document.getElementById('modalTitle').textContent      = 'Add New Product';
+    document.getElementById('modalSaveBtnText').textContent= 'Add Product';
+    ['pName','pEmoji','pCategory','pPrice','pSku','pWeight','pRating','pShortDesc','pDesc','pAllergens','pStorage','pShelfLife']
+      .forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pStock').value       = 'in';
+    document.getElementById('pFeatured').checked  = false;
+    document.getElementById('pTopSeller').checked = false;
+    document.getElementById('pIsNew').checked     = false;
+  }
+ 
+  new bootstrap.Modal(document.getElementById('productModal')).show();
+}
+ 
+function saveProduct() {
+  clearModalErrors();
+  let ok = true;
+ 
+  const name      = document.getElementById('pName').value.trim();
+  const emoji     = document.getElementById('pEmoji').value.trim();
+  const cat       = document.getElementById('pCategory').value;
+  const price     = parseFloat(document.getElementById('pPrice').value);
+  const shortDesc = document.getElementById('pShortDesc').value.trim();
+ 
+  if (!name)                { setErr('pName',      'Product name is required.');   ok = false; }
+  if (!emoji)               { setErr('pEmoji',     'Emoji is required.');           ok = false; }
+  if (!cat)                 { setErr('pCategory',  'Category is required.');        ok = false; }
+  if (!price || price <= 0) { setErr('pPrice',     'Valid price is required.');     ok = false; }
+  if (!shortDesc)           { setErr('pShortDesc', 'Short description is required.'); ok = false; }
+  if (!ok) return;
+ 
+  const editId = document.getElementById('editProductId').value;
+ 
+  const productData = {
+    name,
+    emoji,
+    cat,
+    price,
+    shortDesc,
+    sku:        document.getElementById('pSku').value.trim(),
+    weight:     document.getElementById('pWeight').value.trim(),
+    stock:      document.getElementById('pStock').value,
+    rating:     parseFloat(document.getElementById('pRating').value) || 5.0,
+    desc:       document.getElementById('pDesc').value.trim(),
+    featured:   document.getElementById('pFeatured').checked,
+    topseller:  document.getElementById('pTopSeller').checked,
+    isNew:      document.getElementById('pIsNew').checked,
+    allergens:  document.getElementById('pAllergens').value.trim(),
+    storage:    document.getElementById('pStorage').value.trim(),
+    shelfLife:  document.getElementById('pShelfLife').value.trim(),
+    reviews:    0,
+  };
+ 
+  if (editId) {
+    const idx = products.findIndex(p => p.id === parseInt(editId));
+    if (idx >= 0) {
+      productData.id      = products[idx].id;
+      productData.reviews = products[idx].reviews;
+      products[idx] = productData;
+      showToast('✅ Product updated successfully!');
+    }
+  } else {
+    productData.id = Date.now();
+    products.unshift(productData);
+    showToast('✅ Product added successfully!');
+  }
+ 
+  saveProducts();
+  renderProductsTable();
+  renderOverview();
+  bootstrap.Modal.getInstance(document.getElementById('productModal'))?.hide();
+}
+ 
+/* ═══════════════════════════════════
+   DELETE
+═══════════════════════════════════ */
+function openDeleteModal(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  deletingId = id;
+  document.getElementById('deleteProductName').textContent = p.name;
+  new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+ 
+function confirmDelete() {
+  products = products.filter(p => p.id !== deletingId);
+  saveProducts();
+  renderProductsTable();
+  renderOverview();
+  bootstrap.Modal.getInstance(document.getElementById('deleteModal'))?.hide();
+  showToast('🗑️ Product deleted.', 'bg-secondary');
+  deletingId = null;
+}
+ 
+/* ═══════════════════════════════════
+   GLOBAL SEARCH
+═══════════════════════════════════ */
+function globalSearchProducts(q) {
+  if (!q.trim()) return;
+  document.getElementById('productSearch').value = q;
+  switchTab('products');
+  renderProductsTable();
+}
+ 
+/* ═══════════════════════════════════
+   CATEGORIES
+═══════════════════════════════════ */
+function renderCategoriesTable() {
+  const tbody = document.getElementById('categoriesBody');
+  tbody.innerHTML = categories.map(c => {
+    const count = products.filter(p => p.cat === c.id).length;
+    return `
+      <tr>
+        <td style="font-size:1.5rem;text-align:center;width:40px;">${c.emoji}</td>
+        <td><strong style="font-size:0.88rem;">${c.name}</strong></td>
+        <td><code style="font-size:0.78rem;color:var(--muted);">${c.id}</code></td>
+        <td>${count}</td>
+        <td>
+          <button class="btn-icon edit" onclick="editCategory('${c.id}')" title="Edit"><i class="bi bi-pencil"></i></button>
+          <button class="btn-icon del" onclick="deleteCategory('${c.id}')" title="Delete"><i class="bi bi-trash"></i></button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+ 
+function saveCategory() {
+  const name  = document.getElementById('catName').value.trim();
+  const emoji = document.getElementById('catEmoji').value.trim();
+  const slug  = document.getElementById('catSlug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const editId= document.getElementById('catEditId').value;
+  let ok = true;
+ 
+  if (!name) { document.getElementById('catNameErr').style.display='block'; ok=false; }
+  else document.getElementById('catNameErr').style.display='none';
+  if (!slug) { document.getElementById('catSlugErr').style.display='block'; ok=false; }
+  else document.getElementById('catSlugErr').style.display='none';
+  if (!ok) return;
+ 
+  if (editId) {
+    const idx = categories.findIndex(c => c.id === editId);
+    if (idx >= 0) categories[idx] = { id: editId, name, emoji: emoji || '📦' };
+    showCatAlert('ok', '✅ Category updated.');
+  } else {
+    if (categories.find(c => c.id === slug)) { showCatAlert('err','❌ A category with that slug already exists.'); return; }
+    categories.push({ id: slug, name, emoji: emoji || '📦' });
+    showCatAlert('ok', '✅ Category added.');
+    // Update products tab filter options
+    const opt = document.createElement('option');
+    opt.value = slug; opt.textContent = name;
+    document.getElementById('productCatFilter').appendChild(opt);
+    document.getElementById('pCategory').appendChild(opt.cloneNode(true));
+  }
+ 
+  saveCategories();
+  renderCategoriesTable();
+  resetCatForm();
+}
+ 
+function editCategory(id) {
+  const c = categories.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('catEditId').value = id;
+  document.getElementById('catName').value   = c.name;
+  document.getElementById('catEmoji').value  = c.emoji;
+  document.getElementById('catSlug').value   = c.id;
+  document.getElementById('catSlug').disabled= true;
+  document.getElementById('catFormTitle').textContent = 'Edit Category';
+  document.getElementById('catSaveBtnText').textContent = 'Save Changes';
+}
+ 
+function deleteCategory(id) {
+  const inUse = products.some(p => p.cat === id);
+  if (inUse) { showCatAlert('err','❌ Cannot delete — products are using this category.'); return; }
+  if (!confirm('Delete this category?')) return;
+  categories = categories.filter(c => c.id !== id);
+  saveCategories();
+  renderCategoriesTable();
+  showCatAlert('ok','✅ Category deleted.');
+}
+ 
+function resetCatForm() {
+  document.getElementById('catEditId').value = '';
+  document.getElementById('catName').value   = '';
+  document.getElementById('catEmoji').value  = '';
+  document.getElementById('catSlug').value   = '';
+  document.getElementById('catSlug').disabled= false;
+  document.getElementById('catFormTitle').textContent   = 'Add Category';
+  document.getElementById('catSaveBtnText').textContent = 'Add Category';
+  ['catNameErr','catSlugErr'].forEach(id => document.getElementById(id).style.display='none');
+}
+ 
+function showCatAlert(type, msg) {
+  const el = document.getElementById('catAlert');
+  el.className = `inline-alert ${type}`;
+  el.querySelector('i').className = type === 'ok' ? 'bi bi-check-circle-fill' : 'bi bi-exclamation-circle-fill';
+  document.getElementById('catAlertMsg').textContent = msg;
+  setTimeout(() => el.className = 'inline-alert', 3000);
+}
+ 
+/* ═══════════════════════════════════
+   ORDERS TABLE
+═══════════════════════════════════ */
+function renderOrdersTable() {
+  const filter = document.getElementById('orderStatusFilter')?.value || '';
+  const list   = filter ? orders.filter(o => o.status === filter) : orders;
+  const tbody  = document.getElementById('ordersTableBody');
+ 
+  tbody.innerHTML = list.map(o => `
+    <tr>
+      <td><strong style="font-size:0.82rem;">${o.id}</strong></td>
+      <td style="font-size:0.82rem;color:var(--muted);">${fmtDate(o.date)}</td>
+      <td>
+        ${o.items.map(i=>`<img src="images/${imgFor(i.id)}" title="${i.name}" alt="${i.name}" style="width:1.3rem;height:1.3rem;object-fit:contain;">`).join(' ')}
+        <span style="font-size:0.78rem;color:var(--muted);"> ×${o.items.reduce((s,i)=>s+i.qty,0)}</span>
+      </td>
+      <td><strong>RM ${o.total.toFixed(2)}</strong></td>
+      <td>
+        <select onchange="updateOrderStatus('${o.id}',this.value)" style="border:1px solid #E5E7EB;border-radius:6px;padding:0.25rem 0.5rem;font-size:0.78rem;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;">
+          ${['Processing','Shipped','Delivered','Cancelled'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <button class="btn-icon view" onclick="alert('Order details: ${o.id}\\nItems: ${o.items.map(i=>i.name+' ×'+i.qty).join(', ')}\\nTotal: RM ${o.total.toFixed(2)}')" title="View order">
+          <i class="bi bi-eye"></i>
+        </button>
+      </td>
+    </tr>`).join('');
+}
+ 
+function updateOrderStatus(orderId, status) {
+  const o = orders.find(x => x.id === orderId);
+  if (o) { o.status = status; renderOrdersTable(); renderOverview(); showToast(`Order ${orderId} → ${status}`); }
+}
+ 
+/* ═══════════════════════════════════
+   CUSTOMERS TABLE
+═══════════════════════════════════ */
+function renderCustomersTable() {
+  const users  = JSON.parse(localStorage.getItem('pinenas_users') || '[]');
+  const tbody  = document.getElementById('customersBody');
+  const empty  = document.getElementById('customersEmpty');
+  const label  = document.getElementById('customerCountLabel');
+ 
+  document.getElementById('ovCustomers').textContent = users.length;
+  label.textContent = `${users.length} customer${users.length !== 1 ? 's' : ''}`;
+ 
+  if (!users.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+ 
+  tbody.innerHTML = users.map((u, i) => `
+    <tr>
+      <td style="color:var(--muted);font-weight:700;">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;">
+            ${(u.firstName?.[0]||'?').toUpperCase()}
+          </div>
+          <strong style="font-size:0.86rem;">${u.name}</strong>
+        </div>
+      </td>
+      <td style="font-size:0.84rem;">${u.email}</td>
+      <td style="font-size:0.84rem;color:var(--muted);">${u.phone || '—'}</td>
+      <td style="font-size:0.82rem;color:var(--muted);">${u.createdAt ? fmtDate(u.createdAt.split('T')[0]) : '—'}</td>
+      <td>${u.orders?.length || 0}</td>
+    </tr>`).join('');
+}
+ 
+/* ═══════════════════════════════════
+   REVIEWS TABLE
+═══════════════════════════════════ */
+function renderReviewsTable() {
+  const tbody = document.getElementById('reviewsBody');
+  const empty = document.getElementById('reviewsEmpty');
+  const rows  = [];
+ 
+  products.forEach(p => {
+    const stored = JSON.parse(localStorage.getItem(`pinenas_reviews_${p.id}`) || '[]');
+    const seed   = getSeedReviews(p.id);
+    [...seed, ...stored].forEach(r => {
+      rows.push({ ...r, productId: p.id, productName: p.name });
+    });
+  });
+ 
+  if (!rows.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+ 
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <img src="images/${imgFor(r.productId)}" alt="${r.productName}" style="width:1.3rem;height:1.3rem;object-fit:contain;">
+          <span style="font-size:0.82rem;font-weight:600;">${r.productName}</span>
+        </div>
+      </td>
+      <td style="font-size:0.84rem;">${r.name}</td>
+      <td><span style="color:var(--gold);">${'★'.repeat(r.rating)}</span></td>
+      <td style="font-size:0.82rem;max-width:200px;color:var(--muted);">${r.comment?.substring(0,60)}${r.comment?.length>60?'…':''}</td>
+      <td style="font-size:0.78rem;color:var(--muted);">${fmtDate(r.date)}</td>
+      <td>
+        <button class="btn-icon del" title="Delete review" onclick="deleteReview(${r.productId}, ${i})">
+          <i class="bi bi-trash"></i>
+        </button>
+      </td>
+    </tr>`).join('');
+}
+ 
+function deleteReview(productId, rowIdx) {
+  if (!confirm('Delete this review?')) return;
+  const stored = JSON.parse(localStorage.getItem(`pinenas_reviews_${productId}`) || '[]');
+  if (stored.length) {
+    stored.splice(0, 1);
+    localStorage.setItem(`pinenas_reviews_${productId}`, JSON.stringify(stored));
+  }
+  renderReviewsTable();
+  showToast('Review deleted.', 'bg-secondary');
+}
+ 
+/* ═══════════════════════════════════
+   SETTINGS
+═══════════════════════════════════ */
+function saveSettings() {
+  const settings = {
+    storeName:   document.getElementById('setStoreName').value.trim(),
+    storeEmail:  document.getElementById('setStoreEmail').value.trim(),
+    storePhone:  document.getElementById('setStorePhone').value.trim(),
+    freeShipMin: parseFloat(document.getElementById('setFreeShip').value) || 60,
+  };
+  localStorage.setItem('pinenas_settings', JSON.stringify(settings));
+  const el = document.getElementById('settingsAlert');
+  document.getElementById('settingsAlertMsg').textContent = '✅ Settings saved successfully!';
+  el.className = 'inline-alert ok';
+  el.querySelector('i').className = 'bi bi-check-circle-fill';
+  setTimeout(() => el.className = 'inline-alert', 3000);
+}
+ 
+function saveAdminPw() {
+  const pw = document.getElementById('setAdminPw').value;
+  if (!pw) { showToast('Enter a new password first.', 'bg-secondary'); return; }
+  localStorage.setItem('pinenas_admin_pw', pw);
+  document.getElementById('setAdminPw').value = '';
+  showToast('✅ Admin password updated!');
+}
+ 
+function clearAllData() {
+  if (!confirm('This will permanently delete all customer accounts and order data. Proceed?')) return;
+  ['pinenas_users','pinenas_cart','pinenas_wishlist','pinenas_user'].forEach(k => localStorage.removeItem(k));
+  products.forEach(p => localStorage.removeItem(`pinenas_reviews_${p.id}`));
+  showToast('All customer data cleared.', 'bg-secondary');
+  renderAll();
+}
+ 
+/* ═══════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════ */
+const TABS = ['overview','products','categories','orders','customers','reviews','settings'];
+const TAB_TITLES = {
+  overview:'Overview', products:'Products', categories:'Categories',
+  orders:'Orders', customers:'Customers', reviews:'Reviews', settings:'Settings'
+};
+ 
+function switchTab(tab) {
+  TABS.forEach(t => {
+    document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
+    document.getElementById(`snav-${t}`)?.classList.toggle('active', t === tab);
+  });
+  document.getElementById('topbarTitle').textContent = TAB_TITLES[tab] || tab;
+  if (tab === 'customers') renderCustomersTable();
+  if (tab === 'reviews')   renderReviewsTable();
+  window.scrollTo({ top: 0 });
+  // Close mobile sidebar
+  document.getElementById('adminSidebar').classList.remove('open');
+}
+ 
+function toggleSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('open');
+}
+ 
+/* ═══════════════════════════════════
+   LOGOUT
+═══════════════════════════════════ */
+function doLogout() {
+  if (!confirm('Sign out of Admin Dashboard?')) return;
+  localStorage.removeItem('pinenas_user');
+  window.location.href = 'login.html';
+}
+ 
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
+function imgFor(id) {
+  const p = products.find(x => x.id === id);
+  return (p && p.img) ? p.img : 'logo_for_header_footer.png';
+}
+function catLabel(cat) {
+  const c = categories.find(x => x.id === cat);
+  return c ? c.name : cat;
+}
+ 
+function fmtDate(str) {
+  return new Date(str).toLocaleDateString('en-MY', { year:'numeric', month:'short', day:'numeric' });
+}
+ 
+function saveProducts()   { localStorage.setItem('pinenas_admin_products',   JSON.stringify(products)); }
+function saveCategories() { localStorage.setItem('pinenas_admin_categories', JSON.stringify(categories)); }
+ 
+function showToast(msg, cls = 'bg-success') {
+  const el = document.getElementById('adminToast');
+  el.className = `toast align-items-center text-white border-0 ${cls}`;
+  document.getElementById('adminToastMsg').textContent = msg;
+  new bootstrap.Toast(el, { delay: 2500 }).show();
+}
+ 
+function setErr(id, msg) {
+  const el = document.getElementById(`err-${id}`);
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+  const input = document.getElementById(id);
+  if (input) input.classList.add('invalid');
+}
+ 
+function clearModalErrors() {
+  ['pName','pEmoji','pCategory','pPrice','pShortDesc'].forEach(id => {
+    const err = document.getElementById(`err-${id}`);
+    if (err) err.style.display = 'none';
+    const input = document.getElementById(id);
+    if (input) input.classList.remove('invalid');
+  });
+  document.getElementById('modalAlert').className = 'inline-alert';
+}
+ 
+function getSeedReviews(productId) {
+  const SEED = {
+    1: [{ name:'Amirah Z.', rating:5, comment:'Absolutely incredible sweetness.', date:'2026-05-20' }],
+    4: [{ name:'Faiz M.',   rating:5, comment:'I drink this every morning.', date:'2026-06-01' }],
+    8: [{ name:'Nurul H.',  rating:5, comment:'Best healthy snack ever.', date:'2026-06-10' }],
+    13:[{ name:'Aisyah R.', rating:5, comment:'My skin is glowing!', date:'2026-06-05' }],
+  };
+  return SEED[productId] || [];
+}
+</script>
+ 
+ 
+  <!-- ═ Live buyer notification ═ -->
+  <div class="live-notif" id="live-notif">
+    <div class="notif-avatar">A</div>
+    <div>
+      <div><b class="notif-name">Amirah R.</b> <span class="notif-product">just bought Pineapple Jam</span></div>
+      <div class="notif-sub"><span class="notif-dot" style="display:inline-block;width:7px;height:7px;background:#27ae60;border-radius:50;margin-right:4px;vertical-align:middle;"></span><span class="notif-time">2 min ago</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═ Order success overlay ═ -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-card">
+      <div class="confetti-strip"></div>
+      <div class="tick-circle">✓</div>
+      <h3>Order Placed!</h3>
+      <p>Thank you, <b class="order-user">Customer</b>!<br>Your pineapple goodness is on its way 🍍</p>
+      <div class="order-id">Order ID: <span class="order-id-val">PN-XXXXXX</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);">Estimated delivery: <b>2–3 business days</b></p>
+      <div class="order-progress"><div class="order-progress-bar"></div></div>
+      <div class="order-dismiss">Auto-dismissing…</div>
+    </div>
+  </div>
+ 
+  <!-- ═ Confetti canvas ═ -->
+  <canvas id="confetti-canvas"></canvas>
+ 
+ 
+  <!-- ═══ BOMBASTIC FEATURES JS ═══ -->
+  <script>
+  // ── Flash sale countdown ──
+  function initFlashTimer() {
+    const el = document.getElementById('flash-timer');
+    if (!el) return;
+    const end = Date.now() + (3*3600 + 47*60 + 12)*1000;
+    setInterval(() => {
+      const left = Math.max(0, end - Date.now());
+      const h = String(Math.floor(left/3600000)).padStart(2,'0');
+      const m = String(Math.floor((left%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+ 
+  // ── Scroll reveal ──
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+  }
+ 
+  // ── Floating cart badge ──
+  function updateFloatBadge() {
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const total = cart.reduce((s,i) => s + (i.qty||1), 0);
+    const badge = document.getElementById('float-badge');
+    if (badge) { badge.textContent = total; badge.style.display = total ? 'flex' : 'none'; }
+  }
+ 
+  // ── Live buyer notifications ──
+  const LIVE_BUYERS = [
+    { name:'Amirah R.', product:'Pineapple Jam (500g)', time:'2 min ago' },
+    { name:'Hafiz M.',  product:'Fresh Pineapple Slices', time:'5 min ago' },
+    { name:'Nurul A.',  product:'Pineapple Enzyme Drink', time:'8 min ago' },
+    { name:'Syafiq K.', product:'Dried Pineapple Rings', time:'11 min ago' },
+    { name:'Liyana T.', product:'Pineapple Skincare Set', time:'14 min ago' },
+  ];
+  let liveBuyerIdx = 0;
+  function showLiveNotif() {
+    const notif = document.getElementById('live-notif');
+    if (!notif) return;
+    const b = LIVE_BUYERS[liveBuyerIdx % LIVE_BUYERS.length];
+    liveBuyerIdx++;
+    notif.querySelector('.notif-name').textContent = b.name;
+    notif.querySelector('.notif-product').textContent = `just bought ${b.product}`;
+    notif.querySelector('.notif-time').textContent = b.time;
+    notif.querySelector('.notif-avatar').textContent = b.name[0];
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+  function initLiveNotifs() {
+    setTimeout(() => { showLiveNotif(); setInterval(showLiveNotif, 9000); }, 3500);
+  }
+ 
+  // ── Confetti ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length:120}, () => ({
+      x: Math.random()*canvas.width, y: -20,
+      r: 6 + Math.random()*8,
+      color: ['#F5A623','#2D6A4F','#27ae60','#3498db','#e74c3c','#9b59b6'][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*4, vy: 3+Math.random()*4,
+      angle: Math.random()*360, va: (Math.random()-0.5)*6,
+      shape: Math.random()>0.5?'rect':'circle'
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle = p.color;
+        if (p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        p.x += p.vx; p.y += p.vy * 0.98; p.angle += p.va;
+      });
+      if (pieces.some(p => p.y < canvas.height)) frame = requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { if(frame) cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 3500);
+  }
+ 
+  // ── Order success popup ──
+  function showOrderSuccess(userName) {
+    const overlay = document.getElementById('order-success-overlay');
+    if (!overlay) return;
+    const orderId = 'PN-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    overlay.querySelector('.order-id-val').textContent = orderId;
+    overlay.querySelector('.order-user').textContent = userName || 'Customer';
+    overlay.classList.add('show');
+    launchConfetti();
+    // Auto-dismiss progress bar
+    const bar = overlay.querySelector('.order-progress-bar');
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 1;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          // Clear cart after popup gone
+          localStorage.removeItem('pinenas_cart');
+          updateFloatBadge();
+          if (typeof render === 'function') render();
+        }, 300);
+      }
+    }, 45);
+  }
+ 
+  document.addEventListener('DOMContentLoaded', () => {
+    initFlashTimer();
+    initReveal();
+    updateFloatBadge();
+    initLiveNotifs();
+    window.addEventListener('storage', updateFloatBadge);
+  });
+  </script>
+ 
+</body>
+</html>

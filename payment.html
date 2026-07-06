@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- jsPDF for client-side receipt generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --radius:      14px;
+      --danger:      #D62B2B;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); }
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+
+    /* ── Navbar ── */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; position: sticky; top: 0; z-index: 1030; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .search-form .form-control { border-radius: 30px 0 0 30px; border: none; background: rgba(255,255,255,0.15); color: #fff; padding: 0.45rem 1rem; font-size: 0.88rem; width: 200px; }
+    .search-form .form-control::placeholder { color: rgba(255,255,255,0.6); }
+    .search-form .form-control:focus { background: rgba(255,255,255,0.25); box-shadow: none; color: #fff; }
+    .search-form .btn-search { border-radius: 0 30px 30px 0; background: var(--gold); border: none; color: var(--charcoal); padding: 0.45rem 1rem; }
+    .search-form .btn-search:hover { background: var(--gold-dark); color: #fff; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb-bar { background: #fff; border-bottom: 1px solid #F0EDE6; padding: 0.7rem 0; }
+    .breadcrumb { margin: 0; font-size: 0.82rem; }
+    .breadcrumb-item a { color: var(--green); text-decoration: none; }
+    .breadcrumb-item a:hover { color: var(--gold-dark); }
+    .breadcrumb-item.active { color: var(--muted); }
+
+    /* ── Page title ── */
+    .page-title { font-size: 1.9rem; font-weight: 700; margin: 0; }
+
+    /* ── Progress steps ── */
+    .checkout-steps { display: flex; align-items: center; gap: 0; }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .step .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #E0DDD6;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step.active .step-num { background: var(--green); }
+    .step.active { color: var(--green); }
+    .step.done .step-num { background: var(--green-light); }
+    .step-line { flex: 1; height: 2px; background: #E0DDD6; margin: 0 0.5rem; min-width: 30px; }
+
+    /* ── Payment section card ── */
+    .pay-section {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      overflow: hidden;
+    }
+    .pay-header {
+      padding: 1rem 1.4rem;
+      border-bottom: 1px solid #F0EDE6;
+    }
+    .pay-header h5 { margin: 0; font-size: 1rem; font-weight: 700; }
+    .pay-body { padding: 1.4rem; }
+
+    /* Method tabs */
+    .method-tabs { display: flex; gap: 0.75rem; margin-bottom: 1.4rem; }
+    .method-tab {
+      flex: 1;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      background: #fff;
+      transition: border-color 0.2s, background 0.2s;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .method-tab i { font-size: 1.3rem; color: var(--muted); }
+    .method-tab.active { border-color: var(--green); background: rgba(45,106,79,0.06); }
+    .method-tab.active i { color: var(--green); }
+    .method-tab.active { color: var(--green); }
+
+    .method-panel { display: none; }
+    .method-panel.active { display: block; }
+
+    /* Card form */
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.35rem; }
+    .form-control-pn {
+      width: 100%;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control-pn:focus { border-color: var(--green-light); }
+    .card-brands { display: flex; gap: 0.4rem; }
+    .card-brands .pay-icon { font-size: 0.68rem; }
+
+    /* QR panel */
+    .qr-box {
+      text-align: center;
+      padding: 1.5rem;
+      border: 1.5px dashed #E0DDD6;
+      border-radius: 12px;
+      background: #FCFAF4;
+    }
+    .qr-box img {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      background: #fff;
+      border: 1px solid #F0EDE6;
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+    .qr-ref {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.04em;
+    }
+
+    /* Order summary card (reused from cart) */
+    .summary-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      padding: 1.4rem;
+      position: sticky;
+      top: 80px;
+    }
+    .summary-card h5 { font-size: 1.05rem; font-weight: 700; margin-bottom: 1.2rem; }
+
+    .mini-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.7rem;
+      font-size: 0.83rem;
+    }
+    .mini-item img { width: 42px; height: 42px; object-fit: contain; border-radius: 6px; border: 1px solid #F0EDE6; background: #FCFAF4; flex-shrink: 0; }
+    .mini-item .mi-name { font-weight: 600; flex: 1; }
+    .mini-item .mi-qty { color: var(--muted); }
+    .mini-item .mi-total { font-weight: 700; }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      margin-bottom: 0.6rem;
+      color: var(--charcoal);
+    }
+    .summary-row .label { color: var(--muted); }
+    .summary-row.total {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-top: 1.5px solid #F0EDE6;
+      margin-top: 0.8rem;
+      padding-top: 0.8rem;
+      color: var(--green);
+    }
+    .summary-row.discount .val { color: var(--danger); font-weight: 600; }
+
+    .btn-checkout {
+      width: 100%;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-checkout:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn-checkout:disabled { background: #CCC; cursor: default; transform: none; }
+
+    .btn-outline-pn {
+      width: 100%;
+      background: #fff;
+      color: var(--green);
+      border: 1.5px solid var(--green);
+      border-radius: 10px;
+      padding: 0.75rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .btn-outline-pn:hover { background: var(--green); color: #fff; }
+
+    .payment-icons { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .pay-icon {
+      background: #F0EDE6;
+      border-radius: 6px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      letter-spacing: 0.02em;
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .trust-badge i { color: var(--green); font-size: 0.9rem; }
+
+    /* ── Success view ── */
+    .success-view { text-align: center; padding: 3rem 1.5rem; }
+    .success-check {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      background: rgba(45,106,79,0.1);
+      color: var(--green);
+      font-size: 2.6rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.2rem;
+    }
+    .success-view h3 { margin-bottom: 0.4rem; }
+    .success-order-id { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--gold-dark); font-size: 1.1rem; }
+    .success-actions { max-width: 340px; margin: 1.6rem auto 0; display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .spin-icon { animation: pn-spin 0.9s linear infinite; }
+    @keyframes pn-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 3rem 0 1.5rem; font-size: 0.88rem; margin-top: 3rem; }
+    .pinenas-footer .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+    .pinenas-footer h6 { color: #fff; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; margin-bottom: 0.35rem; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex !important; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.95rem; margin-right: 0.35rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+
+    .empty-cart { text-align: center; padding: 4rem 2rem; }
+    .empty-cart .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-cart h4 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="products.html?cat=juice">🥤 Juices &amp; Drinks</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=snacks">🍫 Snacks &amp; Candies</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=fresh"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Fresh Pineapple</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=skincare">🌿 Skincare</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=condiments">🫙 Jams &amp; Condiments</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="search-form d-flex me-3" action="search.html" method="get">
+          <input class="form-control" type="search" name="q" placeholder="Search products…" />
+          <button class="btn-search" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+        <div class="d-flex align-items-center gap-1">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="account.html" class="nav-icon-btn" aria-label="My Account" id="accountBtn">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="cart.html">My Cart</a></li>
+          <li class="breadcrumb-item active">Payment</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       MAIN
+  ══════════════════════════════════ -->
+  <div class="container py-4">
+
+    <!-- Page title + steps -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <h1 class="page-title">Payment</h1>
+      <div class="checkout-steps">
+        <div class="step done">
+          <div class="step-num"><i class="bi bi-check-lg"></i></div>
+          <span class="d-none d-sm-inline">Cart</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step done">
+          <div class="step-num"><i class="bi bi-check-lg"></i></div>
+          <span class="d-none d-sm-inline">Details</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step active" id="stepPayment">
+          <div class="step-num">3</div>
+          <span class="d-none d-sm-inline">Payment</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" id="stepDone">
+          <div class="step-num">4</div>
+          <span class="d-none d-sm-inline">Done</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty cart guard -->
+    <div class="empty-cart" id="emptyCart" style="display:none;">
+      <div class="empty-icon">🛒</div>
+      <h4>Your cart is empty</h4>
+      <p class="text-muted">Add some pineapple goodness before checking out.</p>
+      <a href="products.html" class="btn-checkout" style="display:inline-flex;width:auto;padding:0.75rem 2rem;text-decoration:none;margin-top:1rem;">Browse Products</a>
+    </div>
+
+    <div class="row g-4" id="paymentLayout">
+
+      <!-- LEFT: Payment form / success -->
+      <div class="col-lg-7">
+        <div class="pay-section" id="payFormSection">
+          <div class="pay-header">
+            <h5><i class="bi bi-credit-card me-1"></i> Choose Payment Method</h5>
+          </div>
+          <div class="pay-body">
+
+            <div class="method-tabs">
+              <div class="method-tab active" id="tabCard" onclick="selectMethod('card')">
+                <i class="bi bi-credit-card-2-front"></i> Credit / Debit Card
+              </div>
+              <div class="method-tab" id="tabQr" onclick="selectMethod('qr')">
+                <i class="bi bi-qr-code"></i> Scan QR
+              </div>
+            </div>
+
+            <!-- CARD PANEL -->
+            <div class="method-panel active" id="panelCard">
+              <div class="mb-3">
+                <label class="form-label">Name on Card</label>
+                <input type="text" class="form-control-pn" id="cardName" placeholder="e.g. John Tan" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Card Number</label>
+                <input type="text" class="form-control-pn" id="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" maxlength="19" />
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="form-label">Expiry (MM/YY)</label>
+                  <input type="text" class="form-control-pn" id="cardExpiry" placeholder="MM/YY" maxlength="5" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label">CVV</label>
+                  <input type="text" class="form-control-pn" id="cardCvv" placeholder="123" inputmode="numeric" maxlength="4" />
+                </div>
+              </div>
+              <div class="card-brands mb-2">
+                <span class="pay-icon">VISA</span>
+                <span class="pay-icon">MC</span>
+                <span class="pay-icon">AMEX</span>
+              </div>
+              <div class="text-danger small" id="cardError" style="display:none;"></div>
+            </div>
+
+            <!-- QR PANEL -->
+            <div class="method-panel" id="panelQr">
+              <div class="qr-box">
+                <img src="images/QR.png" alt="Scan QR to pay" onerror="this.style.display='none'; document.getElementById('qrFallback').style.display='block';" />
+                <div id="qrFallback" style="display:none;color:var(--muted);font-size:0.85rem;padding:2rem 0;">
+                  <i class="bi bi-qr-code" style="font-size:3rem;"></i>
+                  <div class="mt-2">QR code image will appear here</div>
+                </div>
+                <p class="mt-3 mb-1" style="font-size:0.88rem;color:var(--muted);">Scan with your banking app or e-wallet (DuitNow / TnG / GrabPay)</p>
+                <div class="qr-ref">Ref: <span id="qrRefCode">—</span></div>
+              </div>
+              <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" id="qrConfirmCheck">
+                <label class="form-check-label" for="qrConfirmCheck" style="font-size:0.86rem;">
+                  I have completed the payment via QR code
+                </label>
+              </div>
+              <div class="text-danger small" id="qrError" style="display:none;"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SUCCESS VIEW (hidden until payment completes) -->
+        <div class="pay-section success-view" id="successSection" style="display:none;">
+          <div class="success-check"><i class="bi bi-check-lg"></i></div>
+          <h3>Payment Successful!</h3>
+          <p class="text-muted mb-1">Thank you, <span id="successName">Customer</span>. Your order has been placed.</p>
+          <div class="success-order-id">Order <span id="successOrderId">—</span></div>
+          <p class="text-muted mt-2 mb-0" style="font-size:0.85rem;">A confirmation has been recorded for <span id="successDate">—</span></p>
+
+          <div class="success-actions">
+            <button class="btn-checkout" onclick="downloadReceipt()">
+              <i class="bi bi-download"></i> Download Receipt (PDF)
+            </button>
+            <a href="index.html" class="btn-outline-pn">
+              <i class="bi bi-house"></i> Back to Home
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Order summary -->
+      <div class="col-lg-5">
+        <div class="summary-card">
+          <h5>Order Summary <span id="summaryQtyLabel" style="font-size:0.8rem;font-weight:500;color:var(--muted);"></span></h5>
+
+          <div id="miniItemsContainer"></div>
+
+          <hr style="border-color:#F0EDE6;">
+
+          <div class="summary-row">
+            <span class="label">Subtotal</span>
+            <span class="val" id="summarySubtotal">RM 0.00</span>
+          </div>
+          <div class="summary-row discount" id="discountRow" style="display:none;">
+            <span class="label">Discount</span>
+            <span class="val" id="discountAmt">− RM 0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Delivery</span>
+            <span class="val" id="deliveryAmt">RM 0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">SST (8%)</span>
+            <span class="val" id="sstAmt">RM 0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span id="totalAmt">RM 0.00</span>
+          </div>
+
+          <button class="btn-checkout mt-4" id="payNowBtn" onclick="processPayment()">
+            <i class="bi bi-lock-fill"></i> <span id="payNowLabel">Pay Now</span>
+          </button>
+
+          <div class="mt-3">
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem;text-align:center;">We accept</div>
+            <div class="payment-icons justify-content-center">
+              <span class="pay-icon">VISA</span>
+              <span class="pay-icon">MC</span>
+              <span class="pay-icon">FPX</span>
+              <span class="pay-icon">TnG</span>
+              <span class="pay-icon">GrabPay</span>
+              <span class="pay-icon">COD</span>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2 mt-3 pt-3" style="border-top:1px solid #F0EDE6;">
+            <div class="trust-badge"><i class="bi bi-shield-fill-check"></i> Secure &amp; encrypted checkout</div>
+            <div class="trust-badge"><i class="bi bi-arrow-counterclockwise"></i> 7-day easy returns</div>
+            <div class="trust-badge"><i class="bi bi-truck"></i> Free delivery on orders ≥ RM 60</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="footer-brand mb-2"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo-footer"><span class="brand-text-footer">Pinenas</span></div>
+          <p style="font-size:0.84rem;max-width:270px;">Premium pineapple products, natural and delivered to your door.</p>
+          <div class="mt-3">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr"  class="social-icon" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9"   class="social-icon" target="_blank" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+            <a href="https://www.twitter.com/pinenas"   class="social-icon" target="_blank" aria-label="X"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://wa.me/60123456789"     class="social-icon" target="_blank" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Shop</h6>
+          <a href="products.html">All Products</a>
+          <a href="products.html?featured=1">Featured</a>
+          <a href="products.html?topseller=1">Top Sellers</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Account</h6>
+          <a href="account.html">My Account</a>
+          <a href="cart.html">My Cart</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Info</h6>
+          <a href="about.html">About</a>
+          <a href="delivery.html">Delivery</a>
+          <a href="policy.html">Returns</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Contact</h6>
+          <a href="mailto:hello@pinenas.com"><i class="bi bi-envelope me-1"></i>hello@pinenas.com</a>
+          <a href="tel:+60123456789"><i class="bi bi-telephone me-1"></i>+60 12-345 6789</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+
+    /* ═══════════════════════════════════
+       PRODUCT IMAGE LOOKUP (for cart items)
+    ═══════════════════════════════════ */
+    const PRODUCTS = [
+      { id:1,  img:'whole_sweet_pineapple.png' },
+      { id:2,  img:'pre_cut_pineapple_chunk.png' },
+      { id:3,  img:'Pineapple_Slices_in_Syrup_Description.png' },
+      { id:4,  img:'Cold-Pressed_Pineapple_Juice_500ml.png' },
+      { id:5,  img:'Pineapple_Coconut_Sparkling_Water.png' },
+      { id:6,  img:'Pineapple_Ginger_Wellness_Shot_60ml.png' },
+      { id:7,  img:'Pineapple_Iced_Tea_1L_1.png' },
+      { id:8,  img:'Dry_Pineapple_Rings_No_sugar.png' },
+      { id:9,  img:'pineapple_chili_candy.png' },
+      { id:10, img:'Dark_chocolate_bar_80g.png' },
+      { id:11, img:'Artisan_Pineapple_Jam_250g.png' },
+      { id:12, img:'Pineapple_Sambal_Sauce_200ml.png' },
+      { id:13, img:'Pineapple_Enzyme_Face_Scrub.png' },
+      { id:14, img:'Pineapple_Vitamin_C_Serum_30ml.png' },
+      { id:15, img:'Tropical_Treat_gift_box.png' },
+      { id:16, img:'Pineapple_Lovers_Bundle.png' },
+      { id:17, img:'PineNas_Concentrated_Pineapple_Syrup.png' },
+      { id:18, img:'PineNas_Pineapple-flavoured_Aromatics.png' },
+      { id:19, img:'PineNas_Pineapple-based_Supplement.png' },
+      { id:20, img:'PineNas_Pineapple-flavoured_Lip_Balm.png' },
+      { id:21, img:'PineNas_Canned_Pineapple_Chunks.png' },
+    ];
+    function imgFor(id) {
+      const p = PRODUCTS.find(x => x.id === id);
+      return (p && p.img) ? p.img : 'logo_for_header_footer.png';
+    }
+
+    /* ═══════════════════════════════════
+       PROMO CODES (mirrors cart.html)
+    ═══════════════════════════════════ */
+    const PROMOS = {
+      'PINENAS15': { type:'pct', value:15, label:'15% off (new customer)' },
+      'WELCOME10': { type:'pct', value:10, label:'10% welcome discount'   },
+      'FREESHIP':  { type:'ship', value:0, label:'Free delivery'          },
+      'SAVE5':     { type:'fixed', value:5, label:'RM 5 off'              },
+    };
+    const appliedPromo = localStorage.getItem('pinenas_promo') || null;
+
+    /* ═══════════════════════════════════
+       CART / SUMMARY STATE
+    ═══════════════════════════════════ */
+    function getCart() { return JSON.parse(localStorage.getItem('pinenas_cart') || '[]'); }
+
+    let currentCart = [];
+    let currentSummary = { subtotal:0, discount:0, delivery:0, sst:0, total:0 };
+    let selectedMethod = 'card';
+    let orderCompleted = false;
+    let lastOrder = null;
+
+    function updateFloatBadge() {
+      const cart = getCart();
+      const qty = cart.reduce((s,i) => s + i.qty, 0);
+      const el = document.getElementById('cartCount');
+      if (el) el.textContent = qty;
+    }
+
+    function computeSummary(cart) {
+      const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+      const FREE_SHIP_THRESHOLD = 60;
+      const BASE_DELIVERY = 5;
+
+      let discount = 0;
+      let freeShip = false;
+      if (appliedPromo && PROMOS[appliedPromo]) {
+        const p = PROMOS[appliedPromo];
+        if (p.type === 'pct')   discount = subtotal * p.value / 100;
+        if (p.type === 'fixed') discount = Math.min(p.value, subtotal);
+        if (p.type === 'ship')  freeShip = true;
+      }
+
+      const afterDiscount = subtotal - discount;
+      const delivery = (freeShip || afterDiscount >= FREE_SHIP_THRESHOLD) ? 0 : BASE_DELIVERY;
+      const sst = afterDiscount * 0.08;
+      const total = afterDiscount + delivery + sst;
+
+      return { subtotal, discount, delivery, sst, total };
+    }
+
+    function renderSummary() {
+      const cart = getCart();
+      currentCart = cart;
+
+      const isEmpty = cart.length === 0;
+      document.getElementById('paymentLayout').style.display = isEmpty ? 'none' : '';
+      document.getElementById('emptyCart').style.display = isEmpty ? 'block' : 'none';
+      if (isEmpty) return;
+
+      const totalQty = cart.reduce((s,i) => s + i.qty, 0);
+      document.getElementById('summaryQtyLabel').textContent = `(${totalQty} item${totalQty !== 1 ? 's' : ''})`;
+
+      // Mini items
+      const container = document.getElementById('miniItemsContainer');
+      container.innerHTML = cart.map(item => `
+        <div class="mini-item">
+          <img src="images/${imgFor(item.id)}" alt="${item.name}">
+          <span class="mi-name">${item.name} <span class="mi-qty">× ${item.qty}</span></span>
+          <span class="mi-total">RM ${(item.price * item.qty).toFixed(2)}</span>
+        </div>
+      `).join('');
+
+      const s = computeSummary(cart);
+      currentSummary = s;
+
+      document.getElementById('summarySubtotal').textContent = `RM ${s.subtotal.toFixed(2)}`;
+      document.getElementById('sstAmt').textContent = `RM ${s.sst.toFixed(2)}`;
+      document.getElementById('totalAmt').textContent = `RM ${s.total.toFixed(2)}`;
+      document.getElementById('deliveryAmt').textContent = s.delivery === 0 ? '🎉 Free!' : `RM ${s.delivery.toFixed(2)}`;
+
+      if (s.discount > 0) {
+        document.getElementById('discountRow').style.display = '';
+        document.getElementById('discountAmt').textContent = `− RM ${s.discount.toFixed(2)}`;
+      } else {
+        document.getElementById('discountRow').style.display = 'none';
+      }
+    }
+
+    /* ═══════════════════════════════════
+       METHOD SWITCHING
+    ═══════════════════════════════════ */
+    function selectMethod(method) {
+      selectedMethod = method;
+      document.getElementById('tabCard').classList.toggle('active', method === 'card');
+      document.getElementById('tabQr').classList.toggle('active', method === 'qr');
+      document.getElementById('panelCard').classList.toggle('active', method === 'card');
+      document.getElementById('panelQr').classList.toggle('active', method === 'qr');
+    }
+
+    /* Simple input formatting for card fields */
+    document.addEventListener('DOMContentLoaded', () => {
+      const numInput = document.getElementById('cardNumber');
+      numInput.addEventListener('input', () => {
+        let v = numInput.value.replace(/\D/g, '').slice(0, 16);
+        numInput.value = v.replace(/(.{4})/g, '$1 ').trim();
+      });
+
+      const expInput = document.getElementById('cardExpiry');
+      expInput.addEventListener('input', () => {
+        let v = expInput.value.replace(/\D/g, '').slice(0, 4);
+        if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+        expInput.value = v;
+      });
+
+      const cvvInput = document.getElementById('cardCvv');
+      cvvInput.addEventListener('input', () => {
+        cvvInput.value = cvvInput.value.replace(/\D/g, '').slice(0, 4);
+      });
+
+      // QR reference code
+      document.getElementById('qrRefCode').textContent = 'PN' + Math.random().toString(36).substr(2,8).toUpperCase();
+
+      updateFloatBadge();
+      renderSummary();
+    });
+
+    /* ═══════════════════════════════════
+       VALIDATION
+    ═══════════════════════════════════ */
+    function validateCard() {
+      const name   = document.getElementById('cardName').value.trim();
+      const number = document.getElementById('cardNumber').value.replace(/\s/g, '');
+      const expiry = document.getElementById('cardExpiry').value.trim();
+      const cvv    = document.getElementById('cardCvv').value.trim();
+      const errEl  = document.getElementById('cardError');
+
+      if (!name || number.length < 13 || !/^\d{2}\/\d{2}$/.test(expiry) || cvv.length < 3) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Please fill in all card details correctly.';
+        return false;
+      }
+      errEl.style.display = 'none';
+      return { name, number, expiry };
+    }
+
+    function validateQr() {
+      const checked = document.getElementById('qrConfirmCheck').checked;
+      const errEl = document.getElementById('qrError');
+      if (!checked) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Please confirm that you have completed the QR payment.';
+        return false;
+      }
+      errEl.style.display = 'none';
+      return true;
+    }
+
+    /* ═══════════════════════════════════
+       PROCESS PAYMENT
+    ═══════════════════════════════════ */
+    function processPayment() {
+      if (currentCart.length === 0) return;
+
+      let paymentDetail = '';
+      if (selectedMethod === 'card') {
+        const card = validateCard();
+        if (!card) return;
+        const last4 = card.number.slice(-4);
+        paymentDetail = `Card ending in ${last4}`;
+      } else {
+        if (!validateQr()) return;
+        paymentDetail = `QR Payment (Ref: ${document.getElementById('qrRefCode').textContent})`;
+      }
+
+      const btn = document.getElementById('payNowBtn');
+      const label = document.getElementById('payNowLabel');
+      btn.disabled = true;
+      label.textContent = 'Processing…';
+      btn.querySelector('i').className = 'bi bi-arrow-repeat spin-icon';
+
+      setTimeout(() => {
+        completeOrder(paymentDetail);
+      }, 1200);
+    }
+
+    function completeOrder(paymentDetail) {
+      const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+      const orderId = 'PN-' + Date.now().toString().slice(-8);
+      const now = new Date();
+
+      lastOrder = {
+        orderId,
+        date: now.toISOString(),
+        customerName: user ? user.name : 'Guest',
+        customerEmail: user ? user.email : '',
+        items: currentCart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+        subtotal: currentSummary.subtotal,
+        discount: currentSummary.discount,
+        delivery: currentSummary.delivery,
+        sst: currentSummary.sst,
+        total: currentSummary.total,
+        paymentMethod: paymentDetail,
+      };
+
+      localStorage.setItem('pinenas_last_order', JSON.stringify(lastOrder));
+      localStorage.removeItem('pinenas_cart');
+      localStorage.removeItem('pinenas_promo');
+      updateFloatBadge();
+      orderCompleted = true;
+
+      // Swap UI to success view
+      document.getElementById('payFormSection').style.display = 'none';
+      document.getElementById('successSection').style.display = 'block';
+      document.getElementById('successName').textContent = lastOrder.customerName;
+      document.getElementById('successOrderId').textContent = lastOrder.orderId;
+      document.getElementById('successDate').textContent = now.toLocaleString('en-MY', { dateStyle:'medium', timeStyle:'short' });
+
+      // Mark step 3 (Payment) as done, and step 4 as done/active
+      const stepPayment = document.getElementById('stepPayment');
+      stepPayment.classList.remove('active');
+      stepPayment.classList.add('done');
+      stepPayment.querySelector('.step-num').innerHTML = '<i class="bi bi-check-lg"></i>';
+
+      const stepDone = document.getElementById('stepDone');
+      stepDone.classList.add('active');
+      stepDone.querySelector('.step-num').innerHTML = '<i class="bi bi-check-lg"></i>';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ═══════════════════════════════════
+       RECEIPT PDF
+    ═══════════════════════════════════ */
+    function downloadReceipt() {
+      if (!lastOrder) return;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+      const green = [45, 106, 79];
+      const gold  = [200, 126, 14];
+      const muted = [107, 107, 107];
+      let y = 50;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.setTextColor(...green);
+      doc.text('Pinenas', 40, y);
+
+      doc.setFontSize(11);
+      doc.setTextColor(...gold);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Payment Receipt', 40, y + 18);
+
+      doc.setDrawColor(224, 221, 214);
+      y += 32;
+      doc.line(40, y, 555, y);
+
+      y += 24;
+      doc.setFontSize(10);
+      doc.setTextColor(0,0,0);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Order ID:', 40, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(lastOrder.orderId, 120, y);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date:', 320, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(new Date(lastOrder.date).toLocaleString('en-MY', { dateStyle:'medium', timeStyle:'short' }), 360, y);
+
+      y += 18;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Customer:', 40, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(lastOrder.customerName || 'Guest', 120, y);
+
+      if (lastOrder.customerEmail) {
+        doc.setFont('helvetica', 'bold');
+        doc.text('Email:', 320, y);
+        doc.setFont('helvetica', 'normal');
+        doc.text(lastOrder.customerEmail, 360, y);
+      }
+
+      y += 18;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Payment Method:', 40, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(lastOrder.paymentMethod, 150, y);
+
+      y += 28;
+      doc.setFillColor(...green);
+      doc.rect(40, y, 515, 22, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.text('ITEM', 48, y + 15);
+      doc.text('QTY', 380, y + 15);
+      doc.text('UNIT PRICE', 430, y + 15);
+      doc.text('TOTAL', 505, y + 15);
+
+      y += 22;
+      doc.setTextColor(0,0,0);
+      doc.setFont('helvetica', 'normal');
+      lastOrder.items.forEach((item, idx) => {
+        y += 22;
+        if (idx % 2 === 1) {
+          doc.setFillColor(250, 250, 246);
+          doc.rect(40, y - 15, 515, 22, 'F');
+        }
+        doc.setFontSize(9.5);
+        doc.text(item.name, 48, y);
+        doc.text(String(item.qty), 388, y);
+        doc.text(`RM ${item.price.toFixed(2)}`, 430, y);
+        doc.text(`RM ${(item.price * item.qty).toFixed(2)}`, 500, y);
+      });
+
+      y += 20;
+      doc.setDrawColor(224, 221, 214);
+      doc.line(320, y, 555, y);
+
+      const totalsRow = (label, value, bold=false) => {
+        y += 20;
+        doc.setFont('helvetica', bold ? 'bold' : 'normal');
+        doc.setFontSize(bold ? 12 : 10);
+        doc.setTextColor(...(bold ? green : muted));
+        doc.text(label, 380, y);
+        doc.setTextColor(0,0,0);
+        doc.text(value, 500, y);
+      };
+
+      totalsRow('Subtotal', `RM ${lastOrder.subtotal.toFixed(2)}`);
+      if (lastOrder.discount > 0) totalsRow('Discount', `− RM ${lastOrder.discount.toFixed(2)}`);
+      totalsRow('Delivery', lastOrder.delivery === 0 ? 'Free' : `RM ${lastOrder.delivery.toFixed(2)}`);
+      totalsRow('SST (8%)', `RM ${lastOrder.sst.toFixed(2)}`);
+      totalsRow('TOTAL', `RM ${lastOrder.total.toFixed(2)}`, true);
+
+      y += 40;
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(10);
+      doc.setTextColor(...muted);
+      doc.text('Thank you for shopping with Pinenas — premium pineapple products,', 40, y);
+      doc.text('naturally delivered to your door.', 40, y + 14);
+
+      doc.save(`Pinenas_Receipt_${lastOrder.orderId}.pdf`);
+    }
+
+  </script>
+</body>
+</html>

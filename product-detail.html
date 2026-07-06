@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --radius:      14px;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); }
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+
+    /* ── Navbar ── */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; position: sticky; top: 0; z-index: 1030; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .search-form .form-control { border-radius: 30px 0 0 30px; border: none; background: rgba(255,255,255,0.15); color: #fff; padding: 0.45rem 1rem; font-size: 0.88rem; width: 200px; }
+    .search-form .form-control::placeholder { color: rgba(255,255,255,0.6); }
+    .search-form .form-control:focus { background: rgba(255,255,255,0.25); box-shadow: none; color: #fff; }
+    .search-form .btn-search { border-radius: 0 30px 30px 0; background: var(--gold); border: none; color: var(--charcoal); padding: 0.45rem 1rem; }
+    .search-form .btn-search:hover { background: var(--gold-dark); color: #fff; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb-bar { background: #fff; border-bottom: 1px solid #F0EDE6; padding: 0.7rem 0; }
+    .breadcrumb { margin: 0; font-size: 0.82rem; }
+    .breadcrumb-item a { color: var(--green); text-decoration: none; }
+    .breadcrumb-item a:hover { color: var(--gold-dark); }
+    .breadcrumb-item.active { color: var(--muted); }
+
+    /* ── Product image panel ── */
+    .img-main {
+      background: #F9F5EE;
+      border-radius: var(--radius);
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9rem;
+      border: 1px solid #F0EDE6;
+      position: relative;
+      overflow: hidden;
+    }
+    .img-main img { max-height: 85%; max-width: 85%; object-fit: contain; }
+    .img-thumbs { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+    .img-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      background: #F9F5EE;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      overflow: hidden;
+    }
+    .img-thumb img { max-height: 85%; max-width: 85%; object-fit: contain; }
+    .img-thumb.active, .img-thumb:hover { border-color: var(--green); }
+
+    /* ── Badges ── */
+    .product-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-featured   { background: var(--gold);         color: var(--charcoal); }
+    .badge-topseller  { background: var(--green);        color: #fff; }
+    .badge-new        { background: #9B5DE5;             color: #fff; }
+    .badge-instock    { background: #D9F5E5;             color: var(--green); }
+    .badge-lowstock   { background: #FFF3CD;             color: #856404; }
+    .badge-outofstock { background: #F8D7DA;             color: #842029; }
+
+    /* ── Product info ── */
+    .product-title { font-size: 1.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.4rem; }
+    .product-cat-link { color: var(--green); font-size: 0.82rem; font-weight: 600; text-decoration: none; }
+    .product-cat-link:hover { color: var(--gold-dark); }
+
+    /* Stars */
+    .stars-lg { color: var(--gold); font-size: 1.1rem; }
+    .rating-score { font-size: 1.1rem; font-weight: 700; color: var(--charcoal); }
+    .review-count-link { font-size: 0.85rem; color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--muted); }
+    .review-count-link:hover { color: var(--green); }
+
+    /* Price */
+    .price-main { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--green); }
+    .price-original { font-size: 1rem; color: var(--muted); text-decoration: line-through; }
+    .price-save { font-size: 0.82rem; font-weight: 700; color: #D62B2B; background: #FFE8E8; padding: 0.15rem 0.55rem; border-radius: 20px; }
+
+    /* Qty selector */
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      overflow: hidden;
+      width: fit-content;
+    }
+    .qty-btn {
+      background: none;
+      border: none;
+      width: 40px;
+      height: 44px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--green);
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qty-btn:hover { background: #EAF4EE; }
+    .qty-input {
+      width: 50px;
+      border: none;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--charcoal);
+      outline: none;
+      background: none;
+    }
+
+    /* CTA buttons */
+    .btn-cart {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-cart:hover { background: var(--gold-dark); color: #fff; transform: translateY(-2px); }
+    .btn-wishlist {
+      background: #fff;
+      color: var(--charcoal);
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-wishlist:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Product meta */
+    .product-meta { font-size: 0.85rem; }
+    .product-meta .label { color: var(--muted); min-width: 90px; display: inline-block; }
+    .product-meta .val   { font-weight: 600; }
+
+    /* ── Tabs ── */
+    .detail-tabs .nav-link {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 0.75rem 1.2rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .detail-tabs .nav-link:hover { color: var(--green); }
+    .detail-tabs .nav-link.active { color: var(--green); border-bottom-color: var(--green); background: none; }
+    .tab-pane { padding: 1.5rem 0; }
+
+    /* Description */
+    .description-content { font-size: 0.95rem; line-height: 1.8; color: var(--charcoal); }
+    .feature-list { list-style: none; padding: 0; margin: 1rem 0 0; }
+    .feature-list li { padding: 0.35rem 0; font-size: 0.9rem; }
+    .feature-list li::before { content: ''; margin-right: 0.5rem; }
+
+    /* ── Reviews section ── */
+    .review-summary {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .review-big-score {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1;
+    }
+    .stars-xl { color: var(--gold); font-size: 1.4rem; }
+    .rating-bar-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; }
+    .rating-bar-row .bar-track {
+      flex: 1;
+      background: #F0EDE6;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .rating-bar-row .bar-fill { height: 100%; background: var(--gold); border-radius: 10px; transition: width 0.4s; }
+    .rating-bar-row .bar-pct { width: 32px; text-align: right; color: var(--muted); }
+
+    /* Review card */
+    .review-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .reviewer-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .review-stars { color: var(--gold); font-size: 0.88rem; }
+    .review-date  { font-size: 0.75rem; color: var(--muted); }
+    .review-text  { font-size: 0.9rem; color: var(--charcoal); line-height: 1.6; margin: 0.5rem 0 0; }
+    .verified-badge { font-size: 0.72rem; color: var(--green); font-weight: 600; }
+
+    /* Write review form */
+    .write-review-box {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid #F0EDE6;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .write-review-box h5 { font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; }
+
+    /* Star picker */
+    .star-picker { display: flex; gap: 0.3rem; flex-direction: row-reverse; justify-content: flex-end; }
+    .star-picker input { display: none; }
+    .star-picker label {
+      font-size: 2rem;
+      color: #DDD;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .star-picker input:checked ~ label,
+    .star-picker label:hover,
+    .star-picker label:hover ~ label { color: var(--gold); }
+
+    .review-textarea {
+      border: 1.5px solid #E0DDD6;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      width: 100%;
+      resize: vertical;
+      min-height: 110px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .review-textarea:focus { border-color: var(--green-light); }
+
+    .btn-submit-review {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.8rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .btn-submit-review:hover { background: var(--gold-dark); color: #fff; }
+
+    .login-prompt {
+      background: #F9F5EE;
+      border-radius: 10px;
+      padding: 1.1rem 1.3rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .login-prompt a { color: var(--green); font-weight: 600; }
+
+    /* ── Related products ── */
+    .related-section { background: #fff; padding: 3rem 0; margin-top: 3rem; }
+    .section-eyebrow { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.3rem; }
+    .section-title   { font-size: 1.6rem; font-weight: 700; margin-bottom: 0; }
+    .section-divider { width: 36px; height: 3px; background: var(--gold); border-radius: 2px; margin: 0.5rem 0 1.8rem; }
+
+    .product-card {
+      background: #fff;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid #F0EDE6;
+      transition: box-shadow 0.2s, transform 0.2s;
+      height: 100%;
+    }
+    .product-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.09); transform: translateY(-4px); }
+    .product-card .img-wrap { background: #F9F5EE; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .product-card .card-body { padding: 0.9rem; }
+    .p-cat  { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .p-name { font-weight: 600; font-size: 0.88rem; text-decoration: none; color: var(--charcoal); display: block; margin-bottom: 0.3rem; }
+    .p-name:hover { color: var(--green); }
+    .p-stars { color: var(--gold); font-size: 0.78rem; }
+    .p-price { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--green); }
+    .btn-add { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 0.35rem 0.8rem; font-size: 0.8rem; font-weight: 600; transition: background 0.2s; }
+    .btn-add:hover { background: var(--gold-dark); color: #fff; }
+
+    /* ── Chat FAB ── */
+    .chat-fab { position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 1050; width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; border: none; box-shadow: 0 4px 16px rgba(45,106,79,0.45); font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+    .chat-fab:hover { background: var(--green-light); transform: scale(1.08); }
+
+    /* ── Footer ── */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 3rem 0 1.5rem; font-size: 0.88rem; margin-top: 0; }
+    .pinenas-footer .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+    .pinenas-footer h6 { color: #fff; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; margin-bottom: 0.35rem; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex !important; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.95rem; margin-right: 0.35rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+
+    .toast-container { z-index: 1055; }
+  </style>
+
+  <!-- ═══ BOMBASTIC FEATURES CSS ═══ -->
+  <style>
+  /* ── Announcement ticker ── */
+  .announce-bar {
+    background: linear-gradient(90deg, #1a3a28, #2D6A4F, #1a3a28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .announce-track span { padding: 0 3rem; color: var(--gold); }
+  .announce-track span b { color: #fff; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── Flash sale ribbon ── */
+  .flash-banner {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+  .flash-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+    animation: sheen 2.5s ease-in-out infinite;
+  }
+  @keyframes sheen { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+  .flash-timer { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.12em; color: #FFD700; }
+
+  /* ── Scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-left.visible  { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── "Live buyers" notification ── */
+  .live-notif {
+    position: fixed; bottom: 7rem; left: 1.2rem;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+    max-width: 270px; z-index: 9998;
+    transform: translateX(-130%);
+    transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .live-notif.show { transform: translateX(0); }
+  .live-notif .notif-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .live-notif .notif-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .live-notif .notif-dot { width:8px; height:8px; background:#27ae60; border-radius:50%; flex-shrink:0; animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  /* ── Success order popup ── */
+  .order-success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .order-success-overlay.show { opacity: 1; pointer-events: all; }
+  .order-success-card {
+    background: #fff; border-radius: 24px;
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .order-success-overlay.show .order-success-card { transform: scale(1); }
+  .order-success-card .tick-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.3rem; font-size: 2.2rem; color: #fff;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+    animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+  }
+  @keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .order-success-card h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color: var(--charcoal); margin-bottom:0.5rem; }
+  .order-success-card p  { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+  .order-success-card .order-id { font-family:monospace; background:#f4f4f4; border-radius:8px; padding:0.3rem 0.8rem; font-size:0.85rem; font-weight:700; color:var(--green); display:inline-block; margin:0.6rem 0; }
+  .order-success-card .confetti-strip { position:absolute; top:0; left:0; right:0; height:6px; background: linear-gradient(90deg,#F5A623,#27ae60,#3498db,#e74c3c,#F5A623); }
+  .order-progress { width:100%; background:#eee; border-radius:100px; height:6px; margin:1.1rem 0 0.4rem; overflow:hidden; }
+  .order-progress-bar { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:100px; width:0%; transition:width 0.1s linear; }
+  .order-dismiss { font-size:0.75rem; color:var(--muted); margin-top:0.8rem; }
+
+  /* ── Product card hover glow ── */
+  .prod-card { transition: transform 0.22s, box-shadow 0.22s; }
+  .prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px rgba(45,106,79,0.18) !important; }
+
+  /* ── Sparkle badge on cards ── */
+  .badge-hot {
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; font-size:0.65rem; font-weight:800;
+    padding:0.2rem 0.55rem; border-radius:100px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+  @keyframes badge-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.5)} 50%{box-shadow:0 0 0 6px rgba(231,76,60,0)} }
+
+  /* ── Confetti canvas ── */
+  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:999998; }
+  </style>
+
+</head>
+<body>
+
+  <!-- ═ Announcement ticker ═ -->
+  <div class="announce-bar">
+    <div class="announce-track">
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+    </div>
+  </div>
+
+  <!-- ═ Flash sale banner ═ -->
+  <div class="flash-banner">
+    🔥 FLASH SALE ENDS IN &nbsp; <span class="flash-timer" id="flash-timer">03:47:12</span> &nbsp; — Up to <b>30% OFF</b> selected products!
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="products.html">Products</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="products.html?cat=juice">🥤 Juices &amp; Drinks</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=snacks">🍫 Snacks &amp; Candies</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=fresh"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Fresh Pineapple</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=skincare">🌿 Skincare</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=condiments">🫙 Jams &amp; Condiments</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="search-form d-flex me-3" action="search.html" method="get">
+          <input class="form-control" type="search" name="q" placeholder="Search products…" />
+          <button class="btn-search" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+        <div class="d-flex align-items-center gap-1">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="account.html" class="nav-icon-btn" aria-label="My Account" id="accountBtn">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════
+       BREADCRUMB
+  ══════════════════════════════════ -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="products.html">Products</a></li>
+          <li class="breadcrumb-item active" id="breadcrumbName">Loading…</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       PRODUCT DETAIL
+  ══════════════════════════════════ -->
+  <div class="container py-4" id="productDetail" style="display:none;">
+    <div class="row g-5">
+
+      <!-- ── Left: Images ── -->
+      <div class="col-lg-5">
+        <div class="img-main" id="imgMain"></div>
+        <div class="img-thumbs" id="imgThumbs">
+          <div class="img-thumb active"></div>
+          <div class="img-thumb"></div>
+          <div class="img-thumb"></div>
+        </div>
+      </div>
+
+      <!-- ── Right: Info ── -->
+      <div class="col-lg-7">
+
+        <!-- Badges -->
+        <div class="d-flex gap-2 flex-wrap mb-3" id="productBadges"></div>
+
+        <!-- Category -->
+        <a href="#" class="product-cat-link" id="productCatLink">Category</a>
+
+        <!-- Title -->
+        <h1 class="product-title mt-1 mb-2" id="productTitle">Product Name</h1>
+
+        <!-- Rating row -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="stars-lg" id="starsDisplay">★★★★★</span>
+          <span class="rating-score" id="ratingScore">5.0</span>
+          <a href="#reviews" class="review-count-link" id="reviewCountLink">0 reviews</a>
+          <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified</span>
+        </div>
+
+        <!-- Price -->
+        <div class="d-flex align-items-baseline gap-2 mb-3">
+          <span class="price-main" id="priceMain">RM 0.00</span>
+          <span class="price-original d-none" id="priceOriginal">RM 0.00</span>
+          <span class="price-save d-none" id="priceSave">Save 0%</span>
+        </div>
+
+        <!-- Stock status -->
+        <div class="mb-3" id="stockStatus">
+          <span class="product-badge badge-instock"><i class="bi bi-check-circle-fill"></i> In Stock</span>
+        </div>
+
+        <!-- Short description -->
+        <p id="productShortDesc" class="mb-4" style="font-size:0.95rem;color:var(--muted);line-height:1.7;"></p>
+
+        <!-- Quantity + Add to cart -->
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-4">
+          <div class="qty-selector">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <input class="qty-input" type="number" id="qtyInput" value="1" min="1" max="99" />
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+          <button class="btn-cart flex-grow-1" onclick="addToCartFromDetail()">
+            <i class="bi bi-bag-plus me-2"></i>Add to Cart
+          </button>
+          <button class="btn-wishlist" id="wishlistBtn" onclick="toggleWishlist()" aria-label="Wishlist">
+            <i class="bi bi-heart" id="wishlistIcon"></i>
+          </button>
+        </div>
+
+        <!-- Product meta -->
+        <div class="product-meta d-flex flex-column gap-1 mb-3">
+          <div><span class="label">SKU:</span>       <span class="val" id="metaSku">—</span></div>
+          <div><span class="label">Category:</span>  <span class="val" id="metaCat">—</span></div>
+          <div><span class="label">Weight:</span>    <span class="val" id="metaWeight">—</span></div>
+          <div><span class="label">Origin:</span>    <span class="val" id="metaOrigin">Malaysia</span></div>
+        </div>
+
+        <!-- Share -->
+        <div class="d-flex align-items-center gap-2 pt-3" style="border-top:1px solid #F0EDE6;">
+          <span style="font-size:0.82rem;color:var(--muted);">Share:</span>
+          <a href="#" class="nav-icon-btn" style="color:var(--muted);font-size:1.1rem;" aria-label="Share on Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="nav-icon-btn" style="color:var(--muted);font-size:1.1rem;" aria-label="Share on WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          <a href="#" class="nav-icon-btn" style="color:var(--muted);font-size:1.1rem;" aria-label="Share on X"><i class="bi bi-twitter-x"></i></a>
+          <button onclick="copyLink()" class="nav-icon-btn" style="color:var(--muted);font-size:1.1rem;" aria-label="Copy link"><i class="bi bi-link-45deg"></i></button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         TABS: Description / Details / Reviews
+    ══════════════════════════════════ -->
+    <div class="mt-5">
+      <ul class="nav detail-tabs border-bottom" id="detailTabs">
+        <li class="nav-item"><a class="nav-link active" href="#description" data-bs-toggle="tab">Description</a></li>
+        <li class="nav-item"><a class="nav-link" href="#details" data-bs-toggle="tab">Details</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="#reviews" data-bs-toggle="tab">
+            Reviews <span class="badge rounded-pill ms-1" style="background:var(--green);font-size:0.7rem;" id="reviewTabCount">0</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="detailTabContent">
+
+        <!-- Description tab -->
+        <div class="tab-pane fade show active" id="description">
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="description-content" id="descriptionContent">
+                <p>Loading…</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details tab -->
+        <div class="tab-pane fade" id="details">
+          <div class="row">
+            <div class="col-lg-6">
+              <table class="table table-sm" style="font-size:0.9rem;">
+                <tbody id="detailsTable">
+                  <tr><td class="text-muted" style="width:40%">SKU</td><td class="fw-600" id="dtSku">—</td></tr>
+                  <tr><td class="text-muted">Category</td><td id="dtCat">—</td></tr>
+                  <tr><td class="text-muted">Weight / Volume</td><td id="dtWeight">—</td></tr>
+                  <tr><td class="text-muted">Origin</td><td>Malaysia</td></tr>
+                  <tr><td class="text-muted">Storage</td><td id="dtStorage">—</td></tr>
+                  <tr><td class="text-muted">Allergens</td><td id="dtAllergens">None</td></tr>
+                  <tr><td class="text-muted">Shelf Life</td><td id="dtShelfLife">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews tab -->
+        <div class="tab-pane fade" id="reviews">
+          <div class="row g-4 mt-1">
+
+            <!-- Summary -->
+            <div class="col-lg-3">
+              <div class="review-summary">
+                <div class="review-big-score" id="bigScore">5.0</div>
+                <div class="stars-xl my-2" id="summaryStars">★★★★★</div>
+                <div style="font-size:0.82rem;color:var(--muted);" id="summaryTotal">Based on 0 reviews</div>
+
+                <div class="d-flex flex-column gap-2 mt-3 text-start" id="ratingBars">
+                  <!-- Filled by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Review list -->
+            <div class="col-lg-9">
+              <div id="reviewList"></div>
+
+              <!-- Write review -->
+              <div class="write-review-box" id="writeReviewBox">
+                <h5>Write a Review</h5>
+
+                <!-- Login gate -->
+                <div id="reviewLoginGate">
+                  <div class="login-prompt">
+                    <i class="bi bi-lock me-1"></i>
+                    Please <a href="login.html">log in</a> or <a href="register.html">register</a> to leave a review.
+                  </div>
+                </div>
+
+                <!-- Review form (shown when logged in) -->
+                <div id="reviewForm" style="display:none;">
+                  <div class="mb-3">
+                    <label class="form-label fw-600" style="font-size:0.88rem;">Your Rating <span class="text-danger">*</span></label>
+                    <div class="star-picker" id="starPicker">
+                      <input type="radio" name="star" id="s5" value="5"><label for="s5" title="5 stars">★</label>
+                      <input type="radio" name="star" id="s4" value="4"><label for="s4" title="4 stars">★</label>
+                      <input type="radio" name="star" id="s3" value="3"><label for="s3" title="3 stars">★</label>
+                      <input type="radio" name="star" id="s2" value="2"><label for="s2" title="2 stars">★</label>
+                      <input type="radio" name="star" id="s1" value="1"><label for="s1" title="1 star">★</label>
+                    </div>
+                    <div id="starError" style="color:#D62B2B;font-size:0.8rem;display:none;">Please select a star rating.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-600" style="font-size:0.88rem;" for="reviewTitle">Review Title</label>
+                    <input type="text" id="reviewTitle" class="form-control" style="border-radius:10px;font-size:0.9rem;" placeholder="Sum up your experience in a line…" maxlength="80" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-600" style="font-size:0.88rem;" for="reviewComment">Your Review <span class="text-danger">*</span></label>
+                    <textarea id="reviewComment" class="review-textarea" placeholder="What did you like or dislike? How was the quality?" maxlength="600"></textarea>
+                    <div style="font-size:0.75rem;color:var(--muted);text-align:right;" id="charCount">0 / 600</div>
+                  </div>
+                  <div id="reviewError" style="color:#D62B2B;font-size:0.82rem;display:none;margin-bottom:0.5rem;"></div>
+                  <div id="reviewSuccess" style="color:var(--green);font-size:0.88rem;display:none;margin-bottom:0.5rem;"></div>
+                  <button class="btn-submit-review" onclick="submitReview()">
+                    <i class="bi bi-send me-1"></i> Submit Review
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Not found state -->
+  <div class="container py-5 text-center" id="notFound" style="display:none;">
+    <div style="font-size:4rem;"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:80px;width:auto;display:block;margin:0 auto 0.75rem;"></div>
+    <h3 class="mt-3">Product not found</h3>
+    <p class="text-muted">The product you're looking for doesn't exist.</p>
+    <a href="products.html" class="btn-cart px-4 py-2" style="display:inline-block;text-decoration:none;">Browse all products</a>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       RELATED PRODUCTS
+  ══════════════════════════════════ -->
+  <section class="related-section" id="relatedSection" style="display:none;">
+    <div class="container">
+      <p class="section-eyebrow">You might also like</p>
+      <h2 class="section-title">Related Products</h2>
+      <div class="section-divider"></div>
+      <div class="row row-cols-2 row-cols-md-4 g-3" id="relatedGrid"></div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="footer-brand mb-2"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo-footer"><span class="brand-text-footer">Pinenas</span></div>
+          <p style="font-size:0.84rem;max-width:270px;">Premium pineapple products, natural and delivered to your door.</p>
+          <div class="mt-3">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr"  class="social-icon" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9"   class="social-icon" target="_blank" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+            <a href="https://twitter.com/pinenas"   class="social-icon" target="_blank" aria-label="X"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://wa.me/60123456789"     class="social-icon" target="_blank" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Shop</h6>
+          <a href="products.html">All Products</a>
+          <a href="products.html?featured=1">Featured</a>
+          <a href="products.html?topseller=1">Top Sellers</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Account</h6>
+          <a href="account.html">My Account</a>
+          <a href="cart.html">My Cart</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Info</h6>
+          <a href="#">About</a>
+          <a href="#">Delivery</a>
+          <a href="#">Returns</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Contact</h6>
+          <a href="mailto:hello@pinenas.com"><i class="bi bi-envelope me-1"></i>hello@pinenas.com</a>
+          <a href="tel:+60123456789"><i class="bi bi-telephone me-1"></i>+60 12-345 6789</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI Chat FAB -->
+  <button class="chat-fab" onclick="window.location.href='index.html'" aria-label="Open AI chat">
+    <i class="bi bi-chat-dots-fill"></i>
+  </button>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+    <div id="cartToast" class="toast align-items-center text-bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg">Added to cart!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /* ═══════════════════════════════════
+     PRODUCT DATA (mirrors products.html)
+  ═══════════════════════════════════ */
+  const PRODUCTS = [
+    { id:1, img:'whole_sweet_pineapple.png',  name:'Whole Sweet Gold Pineapple',          cat:'fresh',      emoji:'🍍', price:12.90, rating:5.0, reviews:48, featured:false,  topseller:false, badge:null,   isNew:true },
+    { id:2, img:'pre_cut_pineapple_chunk.png',  name:'Pre-Cut Pineapple Chunks 400g',       cat:'fresh',      emoji:'🍍', price:7.90,  rating:4.5, reviews:59, featured:false, topseller:true,  badge:'Top Seller', isNew:false },
+    { id:3, img:'Pineapple_Slices_in_Syrup_Description.png',  name:'Pineapple Slices in Syrup 300g',      cat:'fresh',      emoji:'🍍', price:5.50,  rating:4.2, reviews:22, featured:false, topseller:false, badge:null,         isNew:true  },
+    { id:4, img:'Cold-Pressed_Pineapple_Juice_500ml.png',  name:'Cold-Pressed Pineapple Juice 500ml',  cat:'juice',      emoji:'🥤', price:8.50,  rating:5.0, reviews:63, featured:false,  topseller:false, badge:null,   isNew:true },
+    { id:5, img:'Pineapple_Coconut_Sparkling_Water.png',  name:'Pineapple Coconut Sparkling Water',   cat:'juice',      emoji:'🧃', price:6.50,  rating:5.0, reviews:87, featured:false, topseller:true,  badge:'Top Seller', isNew:false },
+    { id:6, img:'Pineapple_Ginger_Wellness_Shot_60ml.png',  name:'Pineapple Ginger Wellness Shot 60ml', cat:'juice',      emoji:'🥃', price:4.90,  rating:4.6, reviews:31, featured:false, topseller:false, badge:null,         isNew:true  },
+    { id:7, img:'Pineapple_Iced_Tea_1L_1.png',  name:'Pineapple Iced Tea 1L',               cat:'juice',      emoji:'🫖', price:9.90,  rating:4.3, reviews:18, featured:false, topseller:false, badge:null,         isNew:false },
+    { id:8, img:'Dry_Pineapple_Rings_No_sugar.png',  name:'Dried Pineapple Rings (No Sugar)',    cat:'snacks',     emoji:'🍫', price:9.90,  rating:5.0, reviews:112,featured:false, topseller:true,  badge:'Top Seller', isNew:false },
+    { id:9, img:'pineapple_chili_candy.png',  name:'Pineapple Chilli Candy',              cat:'snacks',     emoji:'🍬', price:4.50,  rating:4.4, reviews:44, featured:false, topseller:false, badge:null,         isNew:false },
+    { id:10, img:'Dark_chocolate_bar_80g.png', name:'Pineapple Dark Chocolate Bar 80g',    cat:'snacks',     emoji:'🍫', price:13.90, rating:4.7, reviews:27, featured:false, topseller:false, badge:null,         isNew:true  },
+    { id:11, img:'Artisan_Pineapple_Jam_250g.png', name:'Artisan Pineapple Jam 250g',          cat:'condiments', emoji:'🫙', price:14.00, rating:4.5, reviews:29, featured:false,  topseller:false, badge:null,   isNew:true },
+    { id:12, img:'Pineapple_Sambal_Sauce_200ml.png', name:'Pineapple Sambal Sauce 200ml',        cat:'condiments', emoji:'🌶️', price:11.00, rating:4.8, reviews:36, featured:false, topseller:false, badge:null,         isNew:false },
+    { id:13, img:'Pineapple_Enzyme_Face_Scrub.png', name:'Pineapple Enzyme Face Scrub',         cat:'skincare',   emoji:'🌿', price:32.00, rating:5.0, reviews:41, featured:false,  topseller:false, badge:null,   isNew:true },
+    { id:14, img:'Pineapple_Vitamin_C_Serum_30ml.png', name:'Pineapple Vitamin C Serum 30ml',      cat:'skincare',   emoji:'💧', price:48.00, rating:4.6, reviews:19, featured:false, topseller:false, badge:null,         isNew:true  },
+    { id:15, img:'Tropical_Treat_gift_box.png', name:'Tropical Treat Gift Box',             cat:'gifts',      emoji:'🎁', price:55.00, rating:5.0, reviews:74, featured:false, topseller:true,  badge:'Top Seller', isNew:false },
+    { id:16, img:'Pineapple_Lovers_Bundle.png', name:'Pineapple Lovers Bundle',             cat:'gifts',      emoji:'🎀', price:78.00, rating:4.9, reviews:33, featured:false, topseller:false, badge:null,         isNew:true  },
+    { id:17, img:'PineNas_Concentrated_Pineapple_Syrup.png', name:'PineNas Concentrated Pineapple Syrup', cat:'condiments', emoji:'🍯', price:16.90, rating:4.8, reviews:12, featured:true, topseller:false, badge:'Featured', isNew:false },
+    { id:18, img:'PineNas_Pineapple-flavoured_Aromatics.png', name:'PineNas Pineapple-flavoured Aromatics', cat:'gifts', emoji:'🌸', price:24.90, rating:4.7, reviews:9, featured:true, topseller:false, badge:'Featured', isNew:false },
+    { id:19, img:'PineNas_Pineapple-based_Supplement.png', name:'PineNas Pineapple-based Supplement', cat:'skincare', emoji:'💊', price:39.90, rating:4.9, reviews:15, featured:true, topseller:false, badge:'Featured', isNew:false },
+    { id:20, img:'PineNas_Pineapple-flavoured_Lip_Balm.png', name:'PineNas Pineapple-flavoured Lip Balm', cat:'skincare', emoji:'💄', price:9.90, rating:4.6, reviews:21, featured:true, topseller:false, badge:'Featured', isNew:false },
+    { id:21, img:'PineNas_Canned_Pineapple_Chunks.png', name:'PineNas Canned Pineapple Chunks', cat:'fresh', emoji:'🥫', price:6.90, rating:4.5, reviews:17, featured:true, topseller:false, badge:'Featured', isNew:false },
+  ];
+
+  /* Extra detail per product */
+  const PRODUCT_DETAIL = {
+    1:  { shortDesc:'Our iconic whole Sweet Gold Pineapple — hand-picked at peak ripeness for maximum sweetness. Juicy, bright, and bursting with tropical flavour.', desc:'<p>Grown in the fertile highlands of Johor, our Sweet Gold Pineapples are nurtured for months before being hand-harvested at exact ripeness. The result is an exceptionally sweet, low-acid fruit with a golden flesh and intoxicating aroma.</p><ul class="feature-list"><li>Hand-picked at peak ripeness</li><li>No artificial ripening agents</li><li>Rich in Vitamin C and bromelain</li><li>Sustainably farmed</li></ul>', sku:'PF-001', weight:'Approx. 1.2–1.5 kg', storage:'Room temp up to 3 days, refrigerate after cutting', shelfLife:'5–7 days', allergens:'None', stock:'in' },
+    2:  { shortDesc:'Fresh pineapple chunks, pre-cut and ready to eat. Perfect for smoothies, fruit salads, or snacking straight from the pack.', desc:'<p>Save time with our ready-to-eat pre-cut chunks. Sourced from the same premium pineapples, cleaned and cut hygienically in our facility.</p><ul class="feature-list"><li>Ready to eat, no prep needed</li><li>Packed in resealable container</li><li>No added sugar or preservatives</li><li>Great for smoothies &amp; desserts</li></ul>', sku:'PF-002', weight:'400 g', storage:'Keep refrigerated. Consume within 3 days of opening.', shelfLife:'5 days (refrigerated)', allergens:'None', stock:'in' },
+    3:  { shortDesc:'Tender pineapple slices bathed in a light natural syrup. Great for baking, topping pavlovas, or enjoying as a sweet treat.', desc:'<p>Our pineapple slices in light syrup are perfect for baking and desserts. The gentle sweetness of the syrup complements the natural tang of the fruit.</p><ul class="feature-list"><li>No artificial colours or flavours</li><li>Perfect for cakes &amp; pavlova</li><li>Lightly sweetened natural syrup</li><li>Resealable glass jar</li></ul>', sku:'PF-003', weight:'300 g (drained)', storage:'Refrigerate after opening, consume within 7 days', shelfLife:'12 months unopened', allergens:'None', stock:'low' },
+    4:  { shortDesc:'100% cold-pressed pineapple juice with no added sugar, no preservatives. Pure tropical goodness in every sip.', desc:'<p>Cold-pressed at low temperature to retain maximum nutrients and enzymes. No heat treatment means you get all the bromelain and Vitamin C nature intended.</p><ul class="feature-list"><li>100% cold-pressed, no heat</li><li>No added sugar or preservatives</li><li>High in bromelain &amp; Vitamin C</li><li>500 ml BPA-free bottle</li></ul>', sku:'JD-001', weight:'500 ml', storage:'Keep refrigerated. Best consumed within 5 days of opening.', shelfLife:'14 days (refrigerated)', allergens:'None', stock:'in' },
+    5:  { shortDesc:'Sparkling water infused with real pineapple and coconut flavour. Refreshing, light, and naturally tropical.', desc:'<p>A fizzy, refreshing blend of natural pineapple essence and coconut water. Zero sugar, zero guilt — just pure tropical sparkle.</p><ul class="feature-list"><li>Zero sugar, zero calories</li><li>Natural fruit flavours only</li><li>Lightly carbonated</li><li>Recyclable aluminium can</li></ul>', sku:'JD-002', weight:'330 ml', storage:'Store at room temperature. Best served chilled.', shelfLife:'18 months', allergens:'None', stock:'in' },
+    6:  { shortDesc:'A concentrated 60 ml wellness shot packed with pineapple, ginger, and turmeric. A morning ritual that packs a punch.', desc:'<p>Start your day right with this potent wellness shot. Pineapple bromelain, ginger anti-inflammatories, and turmeric antioxidants combine for a powerful daily boost.</p><ul class="feature-list"><li>Bromelain, ginger &amp; turmeric blend</li><li>60 ml single-serve shot</li><li>No sugar added</li><li>Best taken on an empty stomach</li></ul>', sku:'JD-003', weight:'60 ml', storage:'Refrigerate. Shake well before use.', shelfLife:'21 days (refrigerated)', allergens:'None', stock:'in' },
+    7:  { shortDesc:'Brewed pineapple iced tea with a hint of lemon. Refreshing, lightly sweetened, and perfect for any occasion.', desc:'<p>A tropical twist on classic iced tea. Brewed from real tea leaves and infused with fresh pineapple juice, finished with a squeeze of lemon.</p><ul class="feature-list"><li>Brewed from real tea leaves</li><li>Infused with fresh pineapple juice</li><li>Lightly sweetened with cane sugar</li><li>1 litre resealable bottle</li></ul>', sku:'JD-004', weight:'1 L', storage:'Refrigerate. Consume within 5 days of opening.', shelfLife:'10 days (refrigerated)', allergens:'None', stock:'in' },
+    8:  { shortDesc:'Sweet, chewy dried pineapple rings with zero added sugar. A guilt-free tropical snack for any time of day.', desc:'<p>Our best-seller! Naturally dried at low temperature to preserve the fruit\'s natural sweetness and nutrients. Absolutely no sugar or sulphites added.</p><ul class="feature-list"><li>No added sugar or sulphites</li><li>Low-temperature dried</li><li>High in fibre &amp; Vitamin C</li><li>Resealable foil pouch</li></ul>', sku:'SC-001', weight:'80 g', storage:'Store in a cool dry place. Refrigerate after opening.', shelfLife:'6 months', allergens:'None', stock:'in' },
+    9:  { shortDesc:'Sweet pineapple meets fiery chilli in this addictive candy. A classic Malaysian street snack reimagined.', desc:'<p>Inspired by Malaysia\'s iconic asam boi candy tradition, our Pineapple Chilli Candy layers tangy dried pineapple with a slow-building chilli heat.</p><ul class="feature-list"><li>Sweet, sour &amp; spicy</li><li>Inspired by traditional asam boi</li><li>Individually wrapped pieces</li><li>150 g resealable bag</li></ul>', sku:'SC-002', weight:'150 g', storage:'Store in a cool, dry place.', shelfLife:'8 months', allergens:'May contain traces of nuts', stock:'in' },
+    10: { shortDesc:'Rich dark chocolate infused with real pineapple bits and a hint of sea salt. A sophisticated tropical indulgence.', desc:'<p>70% dark chocolate meets freeze-dried pineapple for a complex, layered flavour profile. The pinch of sea salt elevates every bite.</p><ul class="feature-list"><li>70% premium dark chocolate</li><li>Real freeze-dried pineapple</li><li>Pinch of Sarawak sea salt</li><li>Compostable packaging</li></ul>', sku:'SC-003', weight:'80 g', storage:'Store below 25°C away from direct sunlight.', shelfLife:'9 months', allergens:'Contains soy lecithin. May contain milk & nuts.', stock:'in' },
+    11: { shortDesc:'Small-batch pineapple jam made with fresh fruit and cane sugar. No pectin, no artificial anything. Just pure pineapple.', desc:'<p>Our jam-maker slow-cooks fresh pineapple with cane sugar for hours until it reaches the perfect spreadable consistency. Every jar is hand-labelled and batch-numbered.</p><ul class="feature-list"><li>Small-batch artisan production</li><li>No pectin, no artificial ingredients</li><li>Pairs perfectly with cheese</li><li>Hand-labelled 250 g glass jar</li></ul>', sku:'CM-001', weight:'250 g', storage:'Refrigerate after opening. Consume within 4 weeks.', shelfLife:'12 months unopened', allergens:'None', stock:'in' },
+    12: { shortDesc:'A Malaysian-style sambal infused with pineapple for a fruity heat. Perfect with rice, grilled chicken, or as a dipping sauce.', desc:'<p>This is sambal with a tropical twist. Fresh pineapple balances the chilli heat and shrimp paste, creating a versatile sauce that works with almost any Malaysian dish.</p><ul class="feature-list"><li>Traditional sambal recipe</li><li>Fresh pineapple &amp; belacan blend</li><li>Medium heat level</li><li>200 ml glass bottle</li></ul>', sku:'CM-002', weight:'200 ml', storage:'Refrigerate after opening. Use within 3 weeks.', shelfLife:'10 months unopened', allergens:'Contains shrimp (belacan)', stock:'in' },
+    13: { shortDesc:'A gentle enzyme-based face scrub powered by natural bromelain from pineapple. Exfoliates, brightens, and leaves skin glowing.', desc:'<p>Bromelain, the proteolytic enzyme found naturally in pineapple, gently dissolves dead skin cells without harsh physical abrasion. Formulated with aloe vera and vitamin E for a nourishing finish.</p><ul class="feature-list"><li>Natural bromelain enzyme exfoliant</li><li>Suitable for all skin types</li><li>Paraben-free &amp; cruelty-free</li><li>100 ml recyclable jar</li></ul>', sku:'SK-001', weight:'100 ml', storage:'Store away from direct sunlight.', shelfLife:'24 months', allergens:'Patch test recommended for sensitive skin', stock:'in' },
+    14: { shortDesc:'Lightweight Vitamin C serum with pineapple extract for brightening, anti-oxidant protection and even skin tone.', desc:'<p>Combining stable Vitamin C (ascorbyl glucoside) with pineapple fruit extract, this serum targets dullness, dark spots, and uneven texture for a visibly brighter complexion.</p><ul class="feature-list"><li>15% stabilised Vitamin C</li><li>Pineapple &amp; niacinamide complex</li><li>Lightweight, fast-absorbing formula</li><li>Dermatologist tested</li></ul>', sku:'SK-002', weight:'30 ml', storage:'Store at room temperature away from sunlight.', shelfLife:'18 months', allergens:'Patch test recommended', stock:'low' },
+    15: { shortDesc:'A curated gift box with our top pineapple products. Perfect for birthdays, Hari Raya, or any special occasion.', desc:'<p>Our most popular gift set contains a hand-picked selection of Pinenas bestsellers, beautifully packaged in a signature keepsake box.</p><p><strong>Includes:</strong></p><ul class="feature-list"><li>1× Whole Sweet Gold Pineapple</li><li>1× Artisan Pineapple Jam 250g</li><li>1× Dried Pineapple Rings 80g</li><li>1× Cold-Pressed Juice 500ml</li><li>Pinenas greeting card</li></ul>', sku:'GF-001', weight:'Approx. 2.5 kg', storage:'See individual items', shelfLife:'Varies by item', allergens:'Contains items with tree nut traces', stock:'in' },
+    16: { shortDesc:'Our biggest bundle for the ultimate pineapple lover. Eight products, one incredible price.', desc:'<p>For those who just can\'t get enough of pineapple, this bundle brings together eight of our most-loved products at a generous saving.</p><p><strong>Includes:</strong></p><ul class="feature-list"><li>2× Cold-Pressed Juice 500ml</li><li>1× Dried Pineapple Rings</li><li>1× Pineapple Dark Chocolate Bar</li><li>1× Artisan Pineapple Jam</li><li>1× Pineapple Enzyme Face Scrub</li><li>1× Pineapple Sambal Sauce</li><li>1× Pineapple Lovers tote bag</li></ul>', sku:'GF-002', weight:'Approx. 3.2 kg', storage:'See individual items', shelfLife:'Varies by item', allergens:'Contains soy, shrimp. May contain nuts.', stock:'in' },
+  };
+
+  /* Seeded mock reviews per product */
+  const SEED_REVIEWS = {
+    1:  [
+      { name:'Amirah Z.', rating:5, title:'Sweetest pineapple I\'ve ever had!', comment:'Absolutely incredible sweetness. No sourness at all. Will definitely order again every week.', date:'2026-05-20', verified:true },
+      { name:'Ravi K.',   rating:5, title:'Perfectly ripe on arrival',          comment:'Arrived ripe and ready. No waiting needed. The flavour is just unbelievable.', date:'2026-04-11', verified:true },
+      { name:'Sarah L.',  rating:4, title:'Great but slightly bruised',          comment:'Flavour was amazing. One side had a small bruise but it didn\'t affect the taste.', date:'2026-03-30', verified:true },
+    ],
+    4:  [
+      { name:'Faiz M.',   rating:5, title:'My morning ritual',   comment:'I drink this every morning. Replaced my store-bought OJ completely. Pure and refreshing.', date:'2026-06-01', verified:true },
+      { name:'Priya N.',  rating:5, title:'Real pineapple taste', comment:'You can taste the difference between cold-pressed and regular juice immediately.', date:'2026-05-14', verified:true },
+    ],
+    8:  [
+      { name:'Nurul H.',  rating:5, title:'Best healthy snack ever',  comment:'I eat these instead of chips now. My whole family is obsessed.', date:'2026-06-10', verified:true },
+      { name:'Jason T.',  rating:5, title:'No sugar — you\'d never know!', comment:'I expected it to be bland without sugar. Was completely wrong. Naturally sweet.', date:'2026-05-28', verified:true },
+      { name:'Mei Lin C.',rating:5, title:'Addictive!',               comment:'I ordered 3 packs because I know I\'ll finish one in a day. That good.', date:'2026-04-19', verified:true },
+    ],
+    13: [
+      { name:'Aisyah R.', rating:5, title:'My skin is glowing!',     comment:'After two weeks of use my skin tone is visibly more even. Love the mild tingle.', date:'2026-06-05', verified:true },
+      { name:'Clara W.',  rating:4, title:'Gentle and effective',     comment:'Great for sensitive skin. Doesn\'t irritate but still exfoliates well.', date:'2026-05-22', verified:true },
+    ],
+  };
+
+  /* ═══════════════════════════════════
+     CART
+  ═══════════════════════════════════ */
+  let cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+
+  function saveCart() {
+    localStorage.setItem('pinenas_cart', JSON.stringify(cart));
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+  }
+
+  function addToCartFromDetail() {
+    const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+    const p = getCurrentProduct();
+    if (!p) return;
+    const existing = cart.find(i => i.id === p.id);
+    if (existing) existing.qty += qty;
+    else cart.push({ id:p.id, name:p.name, price:p.price, qty });
+    saveCart();
+    document.getElementById('toastMsg').textContent = `🍍 ${p.name} (×${qty}) added to cart!`;
+    new bootstrap.Toast(document.getElementById('cartToast'), { delay: 2500 }).show();
+  }
+
+  function addRelatedToCart(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    const existing = cart.find(i => i.id === id);
+    if (existing) existing.qty++;
+    else cart.push({ id:p.id, name:p.name, price:p.price, qty:1 });
+    saveCart();
+    document.getElementById('toastMsg').textContent = `🍍 ${p.name} added to cart!`;
+    new bootstrap.Toast(document.getElementById('cartToast'), { delay: 2500 }).show();
+  }
+
+  function changeQty(delta) {
+    const input = document.getElementById('qtyInput');
+    const val = Math.max(1, Math.min(99, (parseInt(input.value)||1) + delta));
+    input.value = val;
+  }
+
+  /* ═══════════════════════════════════
+     WISHLIST
+  ═══════════════════════════════════ */
+  let wishlist = JSON.parse(localStorage.getItem('pinenas_wishlist') || '[]');
+
+  function toggleWishlist() {
+    const p = getCurrentProduct();
+    if (!p) return;
+    const idx = wishlist.indexOf(p.id);
+    if (idx === -1) { wishlist.push(p.id); }
+    else { wishlist.splice(idx, 1); }
+    localStorage.setItem('pinenas_wishlist', JSON.stringify(wishlist));
+    updateWishlistIcon(p.id);
+  }
+
+  function updateWishlistIcon(id) {
+    const icon = document.getElementById('wishlistIcon');
+    if (wishlist.includes(id)) {
+      icon.className = 'bi bi-heart-fill';
+      icon.style.color = '#D62B2B';
+    } else {
+      icon.className = 'bi bi-heart';
+      icon.style.color = '';
+    }
+  }
+
+  /* ═══════════════════════════════════
+     REVIEWS
+  ═══════════════════════════════════ */
+  let currentReviews = [];
+
+  function loadReviews(productId) {
+    const stored = JSON.parse(localStorage.getItem(`pinenas_reviews_${productId}`) || '[]');
+    const seed   = SEED_REVIEWS[productId] || [];
+    currentReviews = [...seed, ...stored];
+  }
+
+  function saveReview(productId, review) {
+    const stored = JSON.parse(localStorage.getItem(`pinenas_reviews_${productId}`) || '[]');
+    stored.unshift(review);
+    localStorage.setItem(`pinenas_reviews_${productId}`, JSON.stringify(stored));
+    loadReviews(productId);
+    renderReviews();
+  }
+
+  function renderStars(rating, size='') {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5 ? 1 : 0;
+    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
+  }
+
+  function renderReviews() {
+    const total = currentReviews.length;
+
+    // Badge count
+    document.getElementById('reviewTabCount').textContent = total;
+
+    // Summary
+    const avg = total > 0
+      ? (currentReviews.reduce((s,r) => s + r.rating, 0) / total).toFixed(1)
+      : '—';
+    document.getElementById('bigScore').textContent = avg;
+    document.getElementById('summaryStars').textContent = avg !== '—' ? renderStars(parseFloat(avg)) : '—';
+    document.getElementById('summaryTotal').textContent = `Based on ${total} review${total !== 1 ? 's' : ''}`;
+
+    // Rating bars
+    const bars = document.getElementById('ratingBars');
+    bars.innerHTML = [5,4,3,2,1].map(star => {
+      const count = currentReviews.filter(r => r.rating === star).length;
+      const pct   = total > 0 ? Math.round((count/total)*100) : 0;
+      return `<div class="rating-bar-row">
+        <span style="width:14px;text-align:right;color:var(--muted);font-size:0.8rem;">${star}</span>
+        <i class="bi bi-star-fill" style="color:var(--gold);font-size:0.7rem;"></i>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <span class="bar-pct">${pct}%</span>
+      </div>`;
+    }).join('');
+
+    // Review cards
+    const list = document.getElementById('reviewList');
+    if (total === 0) {
+      list.innerHTML = `<div class="text-center py-3" style="color:var(--muted);font-size:0.9rem;">
+        No reviews yet. Be the first to review this product!
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = currentReviews.map(r => {
+      const initials = r.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      const stars    = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
+      const dateStr  = new Date(r.date).toLocaleDateString('en-MY', { year:'numeric', month:'short', day:'numeric' });
+      return `<div class="review-card">
+        <div class="d-flex align-items-start gap-3">
+          <div class="reviewer-avatar">${initials}</div>
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <strong style="font-size:0.92rem;">${r.name}</strong>
+              ${r.verified ? '<span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified Purchase</span>' : ''}
+              <span class="review-date ms-auto">${dateStr}</span>
+            </div>
+            <div class="d-flex align-items-center gap-1 mt-1">
+              <span class="review-stars">${stars}</span>
+            </div>
+            ${r.title ? `<strong style="font-size:0.88rem;display:block;margin-top:0.4rem;">${r.title}</strong>` : ''}
+            <p class="review-text">${r.comment}</p>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function submitReview() {
+    const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+    if (!user) return;
+
+    const starVal = document.querySelector('input[name="star"]:checked');
+    const comment = document.getElementById('reviewComment').value.trim();
+    const title   = document.getElementById('reviewTitle').value.trim();
+
+    document.getElementById('starError').style.display    = 'none';
+    document.getElementById('reviewError').style.display  = 'none';
+    document.getElementById('reviewSuccess').style.display= 'none';
+
+    if (!starVal) {
+      document.getElementById('starError').style.display = 'block'; return;
+    }
+    if (comment.length < 10) {
+      document.getElementById('reviewError').textContent = 'Please write at least 10 characters.';
+      document.getElementById('reviewError').style.display = 'block'; return;
+    }
+
+    const p = getCurrentProduct();
+    const review = {
+      name:     user.name,
+      rating:   parseInt(starVal.value),
+      title,
+      comment,
+      date:     new Date().toISOString().split('T')[0],
+      verified: false,
+    };
+
+    saveReview(p.id, review);
+
+    document.getElementById('reviewSuccess').textContent = 'Thank you! Your review has been posted.';
+    document.getElementById('reviewSuccess').style.display = 'block';
+    document.getElementById('reviewComment').value = '';
+    document.getElementById('reviewTitle').value   = '';
+    document.querySelectorAll('input[name="star"]').forEach(i => i.checked = false);
+    document.getElementById('charCount').textContent = '0 / 600';
+
+    // Switch to reviews tab
+    const tab = document.querySelector('a[href="#reviews"]');
+    new bootstrap.Tab(tab).show();
+  }
+
+  /* ═══════════════════════════════════
+     RENDER PAGE
+  ═══════════════════════════════════ */
+  let _currentProduct = null;
+  function getCurrentProduct() { return _currentProduct; }
+
+  function catLabel(cat) {
+    const map = { fresh:'Fresh Pineapple', juice:'Juices & Drinks', snacks:'Snacks & Candies',
+                  condiments:'Jams & Condiments', skincare:'Skincare', gifts:'Gift Sets' };
+    return map[cat] || cat;
+  }
+
+  function renderPage(p) {
+    _currentProduct = p;
+    const det = PRODUCT_DETAIL[p.id] || {};
+
+    document.title = `${p.name} — Pinenas`;
+    document.getElementById('breadcrumbName').textContent = p.name;
+
+    // Badges
+    let badges = '';
+    if (p.badge === 'Featured')   badges += `<span class="product-badge badge-featured">⭐ Featured</span>`;
+    if (p.badge === 'Top Seller') badges += `<span class="product-badge badge-topseller">🏆 Top Seller</span>`;
+    if (p.isNew)                  badges += `<span class="product-badge badge-new">✨ New</span>`;
+    const stock = det.stock || 'in';
+    if (stock === 'in')   badges += `<span class="product-badge badge-instock"><i class="bi bi-check-circle-fill"></i> In Stock</span>`;
+    if (stock === 'low')  badges += `<span class="product-badge badge-lowstock"><i class="bi bi-exclamation-circle-fill"></i> Low Stock</span>`;
+    if (stock === 'out')  badges += `<span class="product-badge badge-outofstock"><i class="bi bi-x-circle-fill"></i> Out of Stock</span>`;
+    document.getElementById('productBadges').innerHTML = badges;
+    document.getElementById('stockStatus').innerHTML = '';
+
+    // Text
+    document.getElementById('productTitle').textContent     = p.name;
+    document.getElementById('productCatLink').textContent   = catLabel(p.cat);
+    document.getElementById('productCatLink').href          = `products.html?cat=${p.cat}`;
+    document.getElementById('productShortDesc').textContent = det.shortDesc || '';
+
+    // Stars
+    document.getElementById('starsDisplay').textContent  = renderStars(p.rating);
+    document.getElementById('ratingScore').textContent   = p.rating.toFixed(1);
+    document.getElementById('reviewCountLink').textContent = `${p.reviews} review${p.reviews !== 1 ? 's' : ''}`;
+
+    // Price
+    document.getElementById('priceMain').textContent = `RM ${p.price.toFixed(2)}`;
+
+    // Meta
+    document.getElementById('metaSku').textContent    = det.sku    || `P-${p.id}`;
+    document.getElementById('metaCat').textContent    = catLabel(p.cat);
+    document.getElementById('metaWeight').textContent = det.weight || '—';
+    document.getElementById('dtSku').textContent      = det.sku    || `P-${p.id}`;
+    document.getElementById('dtCat').textContent      = catLabel(p.cat);
+    document.getElementById('dtWeight').textContent   = det.weight || '—';
+    document.getElementById('dtStorage').textContent  = det.storage || '—';
+    document.getElementById('dtAllergens').textContent= det.allergens || 'None';
+    document.getElementById('dtShelfLife').textContent= det.shelfLife || '—';
+
+    // Description
+    document.getElementById('descriptionContent').innerHTML =
+      det.desc || `<p>${det.shortDesc || 'No description available.'}</p>`;
+
+    // Product image
+    document.getElementById('imgMain').innerHTML = `<img src="images/${p.img}" alt="${p.name}">`;
+    document.querySelectorAll('.img-thumb').forEach((t) => {
+      t.innerHTML = `<img src="images/${p.img}" alt="${p.name}">`;
+      t.onclick = () => switchThumb(t, `images/${p.img}`, p.name);
+    });
+
+    // Wishlist icon
+    updateWishlistIcon(p.id);
+
+    // Reviews
+    loadReviews(p.id);
+    renderReviews();
+
+    // Login gate for review form
+    const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+    document.getElementById('reviewLoginGate').style.display = user ? 'none' : 'block';
+    document.getElementById('reviewForm').style.display      = user ? 'block' : 'none';
+
+    // Related products (same category, exclude current)
+    const related = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id).slice(0,4);
+    if (related.length > 0) {
+      document.getElementById('relatedSection').style.display = 'block';
+      document.getElementById('relatedGrid').innerHTML = related.map(r => `
+        <div class="col">
+          <div class="product-card">
+            <div class="img-wrap"><img src="images/${r.img}" alt="${r.name}" style="max-height:140px;max-width:80%;object-fit:contain;"></div>
+            <div class="card-body">
+              <div class="p-cat">${catLabel(r.cat)}</div>
+              <a href="product-detail.html?id=${r.id}" class="p-name">${r.name}</a>
+              <div class="p-stars mb-1">${renderStars(r.rating)} <span style="font-size:0.72rem;color:var(--muted);">(${r.reviews})</span></div>
+              <div class="d-flex justify-content-between align-items-center mt-auto">
+                <span class="p-price">RM ${r.price.toFixed(2)}</span>
+                <button class="btn-add" onclick="addRelatedToCart(${r.id})"><i class="bi bi-bag-plus"></i> Add</button>
+              </div>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    // Show page
+    document.getElementById('productDetail').style.display = 'block';
+  }
+
+  /* ═══════════════════════════════════
+     INIT
+  ═══════════════════════════════════ */
+  function init() {
+    // Cart badge
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+    // Char counter for review textarea
+    document.getElementById('reviewComment').addEventListener('input', function() {
+      document.getElementById('charCount').textContent = `${this.value.length} / 600`;
+    });
+
+    // Load product from URL param
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get('id'));
+    const product = PRODUCTS.find(p => p.id === id);
+
+    if (!product) {
+      document.getElementById('notFound').style.display = 'block';
+      return;
+    }
+    renderPage(product);
+
+    // Scroll to reviews if hash
+    if (window.location.hash === '#reviews') {
+      setTimeout(() => {
+        const tab = document.querySelector('a[href="#reviews"]');
+        if (tab) new bootstrap.Tab(tab).show();
+      }, 300);
+    }
+  }
+
+  function switchThumb(el, imgSrc, name) {
+    document.querySelectorAll('.img-thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('imgMain').innerHTML = `<img src="${imgSrc}" alt="${name || ''}">`;
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      document.getElementById('toastMsg').textContent = '🔗 Link copied to clipboard!';
+      new bootstrap.Toast(document.getElementById('cartToast'), { delay: 2000 }).show();
+    });
+  }
+
+  init();
+  </script>
+
+
+  <!-- ═ Live buyer notification ═ -->
+  <div class="live-notif" id="live-notif">
+    <div class="notif-avatar">A</div>
+    <div>
+      <div><b class="notif-name">Amirah R.</b> <span class="notif-product">just bought Pineapple Jam</span></div>
+      <div class="notif-sub"><span class="notif-dot" style="display:inline-block;width:7px;height:7px;background:#27ae60;border-radius:50;margin-right:4px;vertical-align:middle;"></span><span class="notif-time">2 min ago</span></div>
+    </div>
+  </div>
+
+  <!-- ═ Order success overlay ═ -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-card">
+      <div class="confetti-strip"></div>
+      <div class="tick-circle">✓</div>
+      <h3>Order Placed!</h3>
+      <p>Thank you, <b class="order-user">Customer</b>!<br>Your pineapple goodness is on its way 🍍</p>
+      <div class="order-id">Order ID: <span class="order-id-val">PN-XXXXXX</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);">Estimated delivery: <b>2–3 business days</b></p>
+      <div class="order-progress"><div class="order-progress-bar"></div></div>
+      <div class="order-dismiss">Auto-dismissing…</div>
+    </div>
+  </div>
+
+  <!-- ═ Confetti canvas ═ -->
+  <canvas id="confetti-canvas"></canvas>
+
+
+  <!-- ═══ BOMBASTIC FEATURES JS ═══ -->
+  <script>
+  // ── Flash sale countdown ──
+  function initFlashTimer() {
+    const el = document.getElementById('flash-timer');
+    if (!el) return;
+    const end = Date.now() + (3*3600 + 47*60 + 12)*1000;
+    setInterval(() => {
+      const left = Math.max(0, end - Date.now());
+      const h = String(Math.floor(left/3600000)).padStart(2,'0');
+      const m = String(Math.floor((left%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+
+  // ── Scroll reveal ──
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+  }
+
+  // ── Floating cart badge ──
+  function updateFloatBadge() {
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const total = cart.reduce((s,i) => s + (i.qty||1), 0);
+    const badge = document.getElementById('float-badge');
+    if (badge) { badge.textContent = total; badge.style.display = total ? 'flex' : 'none'; }
+  }
+
+  // ── Live buyer notifications ──
+  const LIVE_BUYERS = [
+    { name:'Amirah R.', product:'Pineapple Jam (500g)', time:'2 min ago' },
+    { name:'Hafiz M.',  product:'Fresh Pineapple Slices', time:'5 min ago' },
+    { name:'Nurul A.',  product:'Pineapple Enzyme Drink', time:'8 min ago' },
+    { name:'Syafiq K.', product:'Dried Pineapple Rings', time:'11 min ago' },
+    { name:'Liyana T.', product:'Pineapple Skincare Set', time:'14 min ago' },
+  ];
+  let liveBuyerIdx = 0;
+  function showLiveNotif() {
+    const notif = document.getElementById('live-notif');
+    if (!notif) return;
+    const b = LIVE_BUYERS[liveBuyerIdx % LIVE_BUYERS.length];
+    liveBuyerIdx++;
+    notif.querySelector('.notif-name').textContent = b.name;
+    notif.querySelector('.notif-product').textContent = `just bought ${b.product}`;
+    notif.querySelector('.notif-time').textContent = b.time;
+    notif.querySelector('.notif-avatar').textContent = b.name[0];
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+  function initLiveNotifs() {
+    setTimeout(() => { showLiveNotif(); setInterval(showLiveNotif, 9000); }, 3500);
+  }
+
+  // ── Confetti ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length:120}, () => ({
+      x: Math.random()*canvas.width, y: -20,
+      r: 6 + Math.random()*8,
+      color: ['#F5A623','#2D6A4F','#27ae60','#3498db','#e74c3c','#9b59b6'][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*4, vy: 3+Math.random()*4,
+      angle: Math.random()*360, va: (Math.random()-0.5)*6,
+      shape: Math.random()>0.5?'rect':'circle'
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle = p.color;
+        if (p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        p.x += p.vx; p.y += p.vy * 0.98; p.angle += p.va;
+      });
+      if (pieces.some(p => p.y < canvas.height)) frame = requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { if(frame) cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 3500);
+  }
+
+  // ── Order success popup ──
+  function showOrderSuccess(userName) {
+    const overlay = document.getElementById('order-success-overlay');
+    if (!overlay) return;
+    const orderId = 'PN-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    overlay.querySelector('.order-id-val').textContent = orderId;
+    overlay.querySelector('.order-user').textContent = userName || 'Customer';
+    overlay.classList.add('show');
+    launchConfetti();
+    // Auto-dismiss progress bar
+    const bar = overlay.querySelector('.order-progress-bar');
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 1;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          // Clear cart after popup gone
+          localStorage.removeItem('pinenas_cart');
+          updateFloatBadge();
+          if (typeof render === 'function') render();
+        }, 300);
+      }
+    }, 45);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initFlashTimer();
+    initReveal();
+    updateFloatBadge();
+    initLiveNotifs();
+    window.addEventListener('storage', updateFloatBadge);
+  });
+  </script>
+
+</body>
+</html>

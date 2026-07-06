@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:        #F5A623;
+      --gold-dark:   #C87E0E;
+      --green:       #2D6A4F;
+      --green-light: #52B788;
+      --cream:       #FFFBF2;
+      --charcoal:    #1C1C1C;
+      --muted:       #6B6B6B;
+      --danger:      #D62B2B;
+      --radius:      14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); }
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+
+    /* ── Navbar ── */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; position: sticky; top: 0; z-index: 1030; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Search hero bar ── */
+    .search-hero {
+      background: linear-gradient(135deg, var(--green) 0%, #1B4332 100%);
+      padding: 2.5rem 0 2rem;
+    }
+    .search-hero h1 { color: #fff; font-size: 1.7rem; margin-bottom: 1.2rem; }
+    .search-hero h1 span { color: var(--gold); }
+
+    .big-search-wrap {
+      display: flex;
+      max-width: 620px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .big-search-input {
+      flex: 1;
+      border: none;
+      padding: 0.9rem 1.3rem;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--charcoal);
+      outline: none;
+    }
+    .big-search-btn {
+      background: var(--gold);
+      border: none;
+      padding: 0 1.4rem;
+      font-size: 1.1rem;
+      color: var(--charcoal);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.2s;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .big-search-btn:hover { background: var(--gold-dark); color: #fff; }
+
+    /* Popular tags */
+    .popular-tags { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .popular-tag {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 0.25rem 0.8rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      border: none;
+    }
+    .popular-tag:hover { background: var(--gold); color: var(--charcoal); }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb-bar { background: #fff; border-bottom: 1px solid #F0EDE6; padding: 0.65rem 0; }
+    .breadcrumb { margin: 0; font-size: 0.82rem; }
+    .breadcrumb-item a { color: var(--green); text-decoration: none; }
+    .breadcrumb-item.active { color: var(--muted); }
+
+    /* ── Toolbar ── */
+    .results-toolbar {
+      background: #fff;
+      border: 1px solid #F0EDE6;
+      border-radius: var(--radius);
+      padding: 0.75rem 1.1rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+    .results-count { font-size: 0.88rem; color: var(--muted); }
+    .results-count strong { color: var(--charcoal); }
+
+    .sort-select {
+      border: 1px solid #E0DDD6; border-radius: 8px;
+      padding: 0.35rem 2rem 0.35rem 0.75rem; font-size: 0.84rem;
+      font-family: 'DM Sans', sans-serif; color: var(--charcoal);
+      background: var(--cream); cursor: pointer; outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236B6B6B'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.6rem center;
+    }
+
+    /* Category quick filter chips */
+    .cat-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem; }
+    .cat-chip {
+      background: #fff; border: 1.5px solid #E0DDD6; border-radius: 20px;
+      padding: 0.3rem 0.9rem; font-size: 0.82rem; font-weight: 600;
+      color: var(--charcoal); cursor: pointer; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .cat-chip:hover  { border-color: var(--green); color: var(--green); }
+    .cat-chip.active { background: var(--green); border-color: var(--green); color: #fff; }
+
+    /* ── Product cards ── */
+    .product-card {
+      background: #fff; border-radius: var(--radius);
+      border: 1px solid #F0EDE6; overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s; height: 100%;
+      display: flex; flex-direction: column;
+    }
+    .product-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.10); transform: translateY(-4px); }
+    .product-card .img-wrap {
+      background: #F9F5EE; height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem; position: relative; flex-shrink: 0;
+    }
+    .badge-tag {
+      position: absolute; top: 10px; left: 10px;
+      background: var(--gold); color: var(--charcoal);
+      font-size: 0.68rem; font-weight: 700;
+      padding: 0.18rem 0.55rem; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .badge-tag.ts  { background: var(--green); color: #fff; }
+    .badge-tag.new { background: #9B5DE5; color: #fff; }
+    .card-body { padding: 1rem; display: flex; flex-direction: column; flex: 1; }
+    .p-cat  { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.15rem; }
+    .p-name { font-weight: 600; font-size: 0.9rem; text-decoration: none; color: var(--charcoal); display: block; margin-bottom: 0.4rem; line-height: 1.3; }
+    .p-name:hover { color: var(--green); }
+    .stars  { color: var(--gold); font-size: 0.8rem; }
+    .r-cnt  { font-size: 0.72rem; color: var(--muted); }
+    .price  { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--green); }
+    .btn-add {
+      background: var(--green); color: #fff; border: none;
+      border-radius: 8px; padding: 0.38rem 0.85rem;
+      font-size: 0.81rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-add:hover { background: var(--gold-dark); color: #fff; }
+
+    /* Highlighted search term */
+    .hl { background: #FFF3C4; border-radius: 3px; padding: 0 2px; font-weight: 700; color: var(--charcoal); }
+
+    /* ── Empty / no results ── */
+    .no-results {
+      text-align: center; padding: 4rem 2rem; color: var(--muted);
+    }
+    .no-results .nr-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .no-results h4 { font-size: 1.15rem; color: var(--charcoal); margin-bottom: 0.4rem; }
+    .no-results p  { font-size: 0.9rem; max-width: 360px; margin: 0 auto 1.5rem; }
+
+    /* ── Did you mean ── */
+    .did-you-mean {
+      background: #EAF4EE; border-radius: 10px;
+      padding: 0.7rem 1rem; margin-bottom: 1.2rem;
+      font-size: 0.88rem; color: var(--green);
+      display: none;
+    }
+    .did-you-mean a { color: var(--green); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+    /* ── Trending searches ── */
+    .trending-card {
+      background: #fff; border-radius: var(--radius);
+      border: 1px solid #F0EDE6; padding: 1.3rem; margin-top: 2rem;
+    }
+    .trending-card h5 { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; }
+    .trending-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0; border-bottom: 1px solid #F8F5EF;
+      font-size: 0.86rem; cursor: pointer; transition: color 0.15s;
+      color: var(--charcoal);
+    }
+    .trending-item:last-child { border-bottom: none; }
+    .trending-item:hover { color: var(--green); }
+    .trending-num { font-weight: 700; color: var(--gold); width: 20px; text-align: right; font-size: 0.8rem; }
+
+    /* ── Recent searches ── */
+    .recent-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: #F9F5EE; border-radius: 20px;
+      padding: 0.25rem 0.75rem; font-size: 0.8rem;
+      cursor: pointer; border: 1px solid #F0EDE6;
+      transition: background 0.15s; color: var(--charcoal);
+    }
+    .recent-pill:hover { background: #EAF4EE; color: var(--green); }
+    .recent-pill .rm { color: var(--muted); font-size: 0.7rem; margin-left: 0.1rem; }
+    .recent-pill .rm:hover { color: var(--danger); }
+
+    /* ── Chat FAB ── */
+    .chat-fab { position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 1050; width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; border: none; box-shadow: 0 4px 16px rgba(45,106,79,0.45); font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+    .chat-fab:hover { background: var(--green-light); transform: scale(1.08); }
+
+    /* ── Footer ── */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 3rem 0 1.5rem; font-size: 0.88rem; margin-top: 3rem; }
+    .pinenas-footer .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+    .pinenas-footer h6 { color: #fff; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; margin-bottom: 0.35rem; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex !important; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.95rem; margin-right: 0.35rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+
+    .toast-container { z-index: 1055; }
+  </style>
+
+  <!-- ═══ BOMBASTIC FEATURES CSS ═══ -->
+  <style>
+  /* ── Announcement ticker ── */
+  .announce-bar {
+    background: linear-gradient(90deg, #1a3a28, #2D6A4F, #1a3a28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .announce-track span { padding: 0 3rem; color: var(--gold); }
+  .announce-track span b { color: #fff; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── Flash sale ribbon ── */
+  .flash-banner {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: #fff;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+  .flash-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+    animation: sheen 2.5s ease-in-out infinite;
+  }
+  @keyframes sheen { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+  .flash-timer { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.12em; color: #FFD700; }
+
+  /* ── Scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-left.visible  { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── "Live buyers" notification ── */
+  .live-notif {
+    position: fixed; bottom: 7rem; left: 1.2rem;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+    max-width: 270px; z-index: 9998;
+    transform: translateX(-130%);
+    transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .live-notif.show { transform: translateX(0); }
+  .live-notif .notif-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .live-notif .notif-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .live-notif .notif-dot { width:8px; height:8px; background:#27ae60; border-radius:50%; flex-shrink:0; animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  /* ── Success order popup ── */
+  .order-success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .order-success-overlay.show { opacity: 1; pointer-events: all; }
+  .order-success-card {
+    background: #fff; border-radius: 24px;
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .order-success-overlay.show .order-success-card { transform: scale(1); }
+  .order-success-card .tick-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.3rem; font-size: 2.2rem; color: #fff;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+    animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+  }
+  @keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .order-success-card h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color: var(--charcoal); margin-bottom:0.5rem; }
+  .order-success-card p  { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+  .order-success-card .order-id { font-family:monospace; background:#f4f4f4; border-radius:8px; padding:0.3rem 0.8rem; font-size:0.85rem; font-weight:700; color:var(--green); display:inline-block; margin:0.6rem 0; }
+  .order-success-card .confetti-strip { position:absolute; top:0; left:0; right:0; height:6px; background: linear-gradient(90deg,#F5A623,#27ae60,#3498db,#e74c3c,#F5A623); }
+  .order-progress { width:100%; background:#eee; border-radius:100px; height:6px; margin:1.1rem 0 0.4rem; overflow:hidden; }
+  .order-progress-bar { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:100px; width:0%; transition:width 0.1s linear; }
+  .order-dismiss { font-size:0.75rem; color:var(--muted); margin-top:0.8rem; }
+
+  /* ── Product card hover glow ── */
+  .prod-card { transition: transform 0.22s, box-shadow 0.22s; }
+  .prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px rgba(45,106,79,0.18) !important; }
+
+  /* ── Sparkle badge on cards ── */
+  .badge-hot {
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; font-size:0.65rem; font-weight:800;
+    padding:0.2rem 0.55rem; border-radius:100px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+  @keyframes badge-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.5)} 50%{box-shadow:0 0 0 6px rgba(231,76,60,0)} }
+
+  /* ── Confetti canvas ── */
+  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:999998; }
+  </style>
+
+</head>
+<body>
+
+  <!-- ═ Announcement ticker ═ -->
+  <div class="announce-bar">
+    <div class="announce-track">
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+      <span>🚚 <b>FREE SHIPPING</b> on orders above RM80</span>
+      <span>🌿 <b>100% ORGANIC</b> — Certified Farm-to-Door</span>
+      <span>⭐ Rated <b>4.9/5</b> by 2,400+ happy customers</span>
+      <span>🎁 Use code <b>PINE10</b> for 10% off your first order</span>
+    </div>
+  </div>
+
+  <!-- ═ Flash sale banner ═ -->
+  <div class="flash-banner">
+    🔥 FLASH SALE ENDS IN &nbsp; <span class="flash-timer" id="flash-timer">03:47:12</span> &nbsp; — Up to <b>30% OFF</b> selected products!
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="products.html?cat=juice">🥤 Juices &amp; Drinks</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=snacks">🍫 Snacks &amp; Candies</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=fresh"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Fresh Pineapple</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=skincare">🌿 Skincare</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=condiments">🫙 Jams &amp; Condiments</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-1 ms-auto">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="account.html" class="nav-icon-btn" aria-label="My Account" id="accountBtn">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════
+       SEARCH HERO
+  ══════════════════════════════════ -->
+  <div class="search-hero">
+    <div class="container">
+      <h1 id="heroHeadline">Search <span>Pinenas</span></h1>
+      <div class="big-search-wrap">
+        <input class="big-search-input" type="search" id="mainSearchInput"
+               placeholder="Search products, categories…"
+               autocomplete="off" />
+        <button class="big-search-btn" onclick="doSearch()">
+          <i class="bi bi-search"></i> Search
+        </button>
+      </div>
+      <!-- Popular / recent tags rendered below -->
+      <div class="popular-tags" id="popularTags"></div>
+    </div>
+  </div>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active" id="bcLabel">Search</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════ -->
+  <div class="container py-4">
+
+    <!-- "Did you mean" suggestion -->
+    <div class="did-you-mean" id="didYouMean">
+      Did you mean: <a id="didYouMeanLink"></a>?
+    </div>
+
+    <!-- Results section (shown when query exists) -->
+    <div id="resultsSection" style="display:none;">
+
+      <!-- Category chips -->
+      <div class="cat-chips" id="catChips"></div>
+
+      <!-- Toolbar -->
+      <div class="results-toolbar">
+        <span class="results-count" id="resultsCount"></span>
+        <select class="sort-select ms-auto" id="sortSelect" onchange="renderResults()">
+          <option value="relevance">Sort: Relevance</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+          <option value="reviews">Most Reviewed</option>
+        </select>
+      </div>
+
+      <!-- Results grid -->
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3" id="resultsGrid"></div>
+
+      <!-- No results -->
+      <div class="no-results" id="noResults" style="display:none;">
+        <div class="nr-icon">🔍</div>
+        <h4 id="noResultsTitle">No results found</h4>
+        <p id="noResultsMsg">We couldn't find anything matching your search.</p>
+        <a href="products.html" style="display:inline-block;background:var(--green);color:#fff;border-radius:10px;padding:0.65rem 1.8rem;font-weight:700;font-size:0.9rem;text-decoration:none;margin-bottom:1rem;">
+          Browse All Products
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Default state (no query yet) -->
+    <div id="defaultSection">
+
+      <!-- Recent searches -->
+      <div id="recentSearchesWrap" style="display:none;margin-bottom:2rem;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.6rem;">
+          Recent Searches
+        </div>
+        <div id="recentSearchesList" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Trending searches -->
+        <div class="col-md-4">
+          <div class="trending-card">
+            <h5>🔥 Trending Searches</h5>
+            <div id="trendingList"></div>
+          </div>
+        </div>
+
+        <!-- Popular categories -->
+        <div class="col-md-8">
+          <div class="trending-card">
+            <h5>🍍 Popular Categories</h5>
+            <div class="row g-3" id="popularCatsGrid"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="footer-brand mb-2"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo-footer"><span class="brand-text-footer">Pinenas</span></div>
+          <p style="font-size:0.84rem;max-width:270px;">Premium pineapple products, natural and delivered to your door.</p>
+          <div class="mt-3">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr"  class="social-icon" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9"   class="social-icon" target="_blank"><i class="bi bi-tiktok"></i></a>
+            <a href="https://twitter.com/pinenas"   class="social-icon" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://wa.me/60123456789"     class="social-icon" target="_blank"><i class="bi bi-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Shop</h6>
+          <a href="products.html">All Products</a>
+          <a href="products.html?featured=1">Featured</a>
+          <a href="products.html?topseller=1">Top Sellers</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Account</h6>
+          <a href="account.html">My Account</a>
+          <a href="cart.html">My Cart</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Info</h6>
+          <a href="#">About</a>
+          <a href="#">Delivery</a>
+          <a href="#">Returns</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Contact</h6>
+          <a href="mailto:hello@pinenas.com"><i class="bi bi-envelope me-1"></i>hello@pinenas.com</a>
+          <a href="tel:+60123456789"><i class="bi bi-telephone me-1"></i>+60 12-345 6789</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI Chat FAB -->
+  <button class="chat-fab" onclick="window.location.href='index.html'" aria-label="AI Chat">
+    <i class="bi bi-chat-dots-fill"></i>
+  </button>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+    <div id="cartToast" class="toast align-items-center text-bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg">Added to cart!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /* ═══════════════════════════════════
+     PRODUCT DATA
+  ═══════════════════════════════════ */
+  const PRODUCTS = [
+    { id:1, img:'whole_sweet_pineapple.png',  name:'Whole Sweet Gold Pineapple',          cat:'fresh',      emoji:'🍍', price:12.90, rating:5.0, reviews:48,  featured:false,  topseller:false, isNew:true,
+      tags:['fresh','sweet','whole','pineapple','fruit','natural'] },
+    { id:2, img:'pre_cut_pineapple_chunk.png',  name:'Pre-Cut Pineapple Chunks 400g',       cat:'fresh',      emoji:'🍍', price:7.90,  rating:4.5, reviews:59,  featured:false, topseller:true,  isNew:false,
+      tags:['fresh','chunks','cut','ready','pineapple','snack'] },
+    { id:3, img:'Pineapple_Slices_in_Syrup_Description.png',  name:'Pineapple Slices in Syrup 300g',      cat:'fresh',      emoji:'🍍', price:5.50,  rating:4.2, reviews:22,  featured:false, topseller:false, isNew:true,
+      tags:['slices','syrup','canned','baking','pineapple'] },
+    { id:4, img:'Cold-Pressed_Pineapple_Juice_500ml.png',  name:'Cold-Pressed Pineapple Juice 500ml',  cat:'juice',      emoji:'🥤', price:8.50,  rating:5.0, reviews:63,  featured:false,  topseller:false, isNew:true,
+      tags:['juice','cold pressed','drink','no sugar','vitamin','healthy'] },
+    { id:5, img:'Pineapple_Coconut_Sparkling_Water.png',  name:'Pineapple Coconut Sparkling Water',   cat:'juice',      emoji:'🧃', price:6.50,  rating:5.0, reviews:87,  featured:false, topseller:true,  isNew:false,
+      tags:['sparkling','coconut','fizzy','zero sugar','drink','refreshing'] },
+    { id:6, img:'Pineapple_Ginger_Wellness_Shot_60ml.png',  name:'Pineapple Ginger Wellness Shot 60ml', cat:'juice',      emoji:'🥃', price:4.90,  rating:4.6, reviews:31,  featured:false, topseller:false, isNew:true,
+      tags:['wellness','shot','ginger','turmeric','health','immune'] },
+    { id:7, img:'Pineapple_Iced_Tea_1L_1.png',  name:'Pineapple Iced Tea 1L',               cat:'juice',      emoji:'🫖', price:9.90,  rating:4.3, reviews:18,  featured:false, topseller:false, isNew:false,
+      tags:['iced tea','drink','tea','lemon','refreshing'] },
+    { id:8, img:'Dry_Pineapple_Rings_No_sugar.png',  name:'Dried Pineapple Rings (No Sugar)',    cat:'snacks',     emoji:'🍫', price:9.90,  rating:5.0, reviews:112, featured:false, topseller:true,  isNew:false,
+      tags:['dried','rings','no sugar','healthy snack','fibre','vegan'] },
+    { id:9, img:'pineapple_chili_candy.png',  name:'Pineapple Chilli Candy',              cat:'snacks',     emoji:'🍬', price:4.50,  rating:4.4, reviews:44,  featured:false, topseller:false, isNew:false,
+      tags:['candy','chilli','spicy','sweet','asam','traditional'] },
+    { id:10, img:'Dark_chocolate_bar_80g.png', name:'Pineapple Dark Chocolate Bar 80g',    cat:'snacks',     emoji:'🍫', price:13.90, rating:4.7, reviews:27,  featured:false, topseller:false, isNew:true,
+      tags:['chocolate','dark chocolate','bar','sea salt','gourmet'] },
+    { id:11, img:'Artisan_Pineapple_Jam_250g.png', name:'Artisan Pineapple Jam 250g',          cat:'condiments', emoji:'🫙', price:14.00, rating:4.5, reviews:29,  featured:false,  topseller:false, isNew:true,
+      tags:['jam','spread','artisan','toast','breakfast','natural'] },
+    { id:12, img:'Pineapple_Sambal_Sauce_200ml.png', name:'Pineapple Sambal Sauce 200ml',        cat:'condiments', emoji:'🌶️', price:11.00, rating:4.8, reviews:36,  featured:false, topseller:false, isNew:false,
+      tags:['sambal','sauce','spicy','malaysian','condiment','cooking'] },
+    { id:13, img:'Pineapple_Enzyme_Face_Scrub.png', name:'Pineapple Enzyme Face Scrub',         cat:'skincare',   emoji:'🌿', price:32.00, rating:5.0, reviews:41,  featured:false,  topseller:false, isNew:true,
+      tags:['skincare','face scrub','exfoliant','enzyme','bromelain','glow'] },
+    { id:14, img:'Pineapple_Vitamin_C_Serum_30ml.png', name:'Pineapple Vitamin C Serum 30ml',      cat:'skincare',   emoji:'💧', price:48.00, rating:4.6, reviews:19,  featured:false, topseller:false, isNew:true,
+      tags:['serum','vitamin c','brightening','skincare','niacinamide'] },
+    { id:15, img:'Tropical_Treat_gift_box.png', name:'Tropical Treat Gift Box',             cat:'gifts',      emoji:'🎁', price:55.00, rating:5.0, reviews:74,  featured:false, topseller:true,  isNew:false,
+      tags:['gift','box','set','raya','birthday','hamper','present'] },
+    { id:16, img:'Pineapple_Lovers_Bundle.png', name:'Pineapple Lovers Bundle',             cat:'gifts',      emoji:'🎀', price:78.00, rating:4.9, reviews:33,  featured:false, topseller:false, isNew:true,
+      tags:['bundle','set','gift','value','lovers'] },
+    { id:17, img:'PineNas_Concentrated_Pineapple_Syrup.png', name:'PineNas Concentrated Pineapple Syrup', cat:'condiments', emoji:'🍯', price:16.90, rating:4.8, reviews:12,  featured:true,  topseller:false, isNew:false,
+      tags:['syrup','concentrate','condiment','drinks','dessert'] },
+    { id:18, img:'PineNas_Pineapple-flavoured_Aromatics.png', name:'PineNas Pineapple-flavoured Aromatics', cat:'gifts', emoji:'🌸', price:24.90, rating:4.7, reviews:9,  featured:true,  topseller:false, isNew:false,
+      tags:['aromatics','fragrance','home','scent','gift'] },
+    { id:19, img:'PineNas_Pineapple-based_Supplement.png', name:'PineNas Pineapple-based Supplement', cat:'skincare', emoji:'💊', price:39.90, rating:4.9, reviews:15,  featured:true,  topseller:false, isNew:false,
+      tags:['supplement','bromelain','wellness','health','capsule'] },
+    { id:20, img:'PineNas_Pineapple-flavoured_Lip_Balm.png', name:'PineNas Pineapple-flavoured Lip Balm', cat:'skincare', emoji:'💄', price:9.90, rating:4.6, reviews:21,  featured:true,  topseller:false, isNew:false,
+      tags:['lip balm','skincare','moisturising','beauty'] },
+    { id:21, img:'PineNas_Canned_Pineapple_Chunks.png', name:'PineNas Canned Pineapple Chunks', cat:'fresh', emoji:'🥫', price:6.90, rating:4.5, reviews:17,  featured:true,  topseller:false, isNew:false,
+      tags:['canned','chunks','convenient','fresh','pantry'] },
+  ];
+
+  const CAT_LABELS = {
+    fresh:'Fresh Pineapple', juice:'Juices & Drinks', snacks:'Snacks & Candies',
+    condiments:'Jams & Condiments', skincare:'Skincare', gifts:'Gift Sets',
+  };
+
+  const CAT_EMOJIS = {
+    fresh:'🍍', juice:'🥤', snacks:'🍫', condiments:'🫙', skincare:'🌿', gifts:'🎁',
+  };
+
+  const TRENDING = [
+    'pineapple juice', 'gift box', 'dried pineapple', 'face scrub', 'no sugar',
+    'sambal', 'vitamin c', 'sparkling water', 'jam', 'wellness shot',
+  ];
+
+  /* ═══════════════════════════════════
+     STATE
+  ═══════════════════════════════════ */
+  let currentQuery   = '';
+  let activeCat      = 'all';
+  let filteredResults= [];
+
+  /* ═══════════════════════════════════
+     CART
+  ═══════════════════════════════════ */
+  let cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+
+  function saveCart() {
+    localStorage.setItem('pinenas_cart', JSON.stringify(cart));
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+  }
+
+  function addToCart(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    const ex = cart.find(i => i.id === id);
+    if (ex) ex.qty++;
+    else cart.push({ id:p.id, name:p.name, price:p.price, qty:1 });
+    saveCart();
+    document.getElementById('toastMsg').textContent = `🍍 ${p.name} added to cart!`;
+    new bootstrap.Toast(document.getElementById('cartToast'), { delay:2500 }).show();
+  }
+
+  /* ═══════════════════════════════════
+     SEARCH LOGIC
+  ═══════════════════════════════════ */
+  function score(p, q) {
+    const lq = q.toLowerCase();
+    let s = 0;
+    if (p.name.toLowerCase().includes(lq))  s += 10;
+    if (p.cat === lq)                        s += 8;
+    if (CAT_LABELS[p.cat]?.toLowerCase().includes(lq)) s += 6;
+    p.tags?.forEach(t => { if (t.includes(lq)) s += 3; });
+    // Partial word match
+    lq.split(/\s+/).forEach(word => {
+      if (p.name.toLowerCase().includes(word)) s += 2;
+      p.tags?.forEach(t => { if (t.includes(word)) s += 1; });
+    });
+    return s;
+  }
+
+  function search(q) {
+    if (!q.trim()) return [];
+    return PRODUCTS
+      .map(p => ({ ...p, _score: score(p, q) }))
+      .filter(p => p._score > 0)
+      .sort((a,b) => b._score - a._score);
+  }
+
+  /* Closest suggestion for "did you mean" */
+  function getSuggestion(q) {
+    const words = PRODUCTS.flatMap(p => [p.name, ...p.tags]);
+    const lq = q.toLowerCase();
+    for (const w of words) {
+      if (w !== lq && levenshtein(lq, w.toLowerCase()) <= 2 && w.length > 3) return w;
+    }
+    return null;
+  }
+
+  function levenshtein(a, b) {
+    const dp = Array.from({ length: a.length+1 }, (_,i) => Array.from({ length: b.length+1 }, (_,j) => i||j));
+    for (let i=1; i<=a.length; i++) for (let j=1; j<=b.length; j++) {
+      dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+    return dp[a.length][b.length];
+  }
+
+  /* ═══════════════════════════════════
+     RENDER
+  ═══════════════════════════════════ */
+  function renderResults() {
+    const sort = document.getElementById('sortSelect')?.value || 'relevance';
+    let list = activeCat === 'all'
+      ? [...filteredResults]
+      : filteredResults.filter(p => p.cat === activeCat);
+
+    if (sort === 'price-asc')  list.sort((a,b) => a.price - b.price);
+    if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+    if (sort === 'rating')     list.sort((a,b) => b.rating - a.rating);
+    if (sort === 'reviews')    list.sort((a,b) => b.reviews - a.reviews);
+
+    const grid    = document.getElementById('resultsGrid');
+    const noRes   = document.getElementById('noResults');
+    const count   = document.getElementById('resultsCount');
+
+    count.innerHTML = list.length > 0
+      ? `<strong>${list.length}</strong> result${list.length!==1?'s':''} for "<strong>${escHtml(currentQuery)}</strong>"`
+      : '';
+
+    if (!list.length) {
+      grid.innerHTML = '';
+      noRes.style.display = 'block';
+      document.getElementById('noResultsTitle').textContent = `No results for "${currentQuery}"`;
+      document.getElementById('noResultsMsg').textContent   = 'Try different keywords, check spelling, or browse all products below.';
+      return;
+    }
+    noRes.style.display = 'none';
+
+    grid.innerHTML = list.map(p => {
+      const highlighted = highlightText(p.name, currentQuery);
+      let badge = '';
+      if (p.featured)   badge = `<span class="badge-tag">Featured</span>`;
+      if (p.topseller)  badge = `<span class="badge-tag ts">Top Seller</span>`;
+      if (p.isNew)      badge = `<span class="badge-tag new">New</span>`;
+      const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating%1>=0.5?'½':'') + '☆'.repeat(5-Math.ceil(p.rating));
+
+      return `<div class="col">
+        <div class="product-card">
+          <div class="img-wrap">
+            <a href="product-detail.html?id=${p.id}" style="text-decoration:none;display:block;"><img src="images/${p.img}" alt="${p.name}" style="max-height:140px;max-width:80%;object-fit:contain;"></a>
+            ${badge}
+          </div>
+          <div class="card-body">
+            <div class="p-cat">${CAT_LABELS[p.cat]}</div>
+            <a href="product-detail.html?id=${p.id}" class="p-name">${highlighted}</a>
+            <div class="d-flex align-items-center gap-1 mb-2">
+              <span class="stars">${stars}</span>
+              <span class="r-cnt">(${p.reviews})</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="price">RM ${p.price.toFixed(2)}</span>
+              <button class="btn-add" onclick="addToCart(${p.id})">
+                <i class="bi bi-bag-plus"></i> Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function highlightText(text, query) {
+    if (!query.trim()) return escHtml(text);
+    const escaped = escHtml(text);
+    const escQuery = escHtml(query).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    return escaped.replace(new RegExp(`(${escQuery})`, 'gi'), '<span class="hl">$1</span>');
+  }
+
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function renderCatChips() {
+    const cats = ['all', ...new Set(filteredResults.map(p => p.cat))];
+    const chips = document.getElementById('catChips');
+    chips.innerHTML = cats.map(c => {
+      const label = c === 'all' ? '🌟 All' : `${CAT_EMOJIS[c]||''} ${CAT_LABELS[c]||c}`;
+      const count = c === 'all' ? filteredResults.length : filteredResults.filter(p=>p.cat===c).length;
+      return `<button class="cat-chip ${c===activeCat?'active':''}" onclick="setActiveCat('${c}')">
+        ${label} <span style="opacity:0.7;font-size:0.75rem;">${count}</span>
+      </button>`;
+    }).join('');
+  }
+
+  function setActiveCat(cat) {
+    activeCat = cat;
+    renderCatChips();
+    renderResults();
+  }
+
+  /* ═══════════════════════════════════
+     SEARCH ENTRY POINTS
+  ═══════════════════════════════════ */
+  function doSearch(q) {
+    const val = q || document.getElementById('mainSearchInput').value.trim();
+    if (!val) return;
+
+    currentQuery = val;
+    activeCat    = 'all';
+
+    // Update URL
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', val);
+    window.history.pushState({}, '', url);
+
+    // Save recent
+    saveRecent(val);
+
+    // Search
+    filteredResults = search(val);
+
+    // Update UI
+    document.getElementById('mainSearchInput').value = val;
+    document.getElementById('heroHeadline').innerHTML = `Results for <span>"${escHtml(val)}"</span>`;
+    document.getElementById('bcLabel').textContent    = `Search: "${val}"`;
+    document.title = `"${val}" — Pinenas Search`;
+
+    document.getElementById('defaultSection').style.display  = 'none';
+    document.getElementById('resultsSection').style.display  = 'block';
+
+    // Did you mean
+    const dym = document.getElementById('didYouMean');
+    if (!filteredResults.length) {
+      const sug = getSuggestion(val);
+      if (sug) {
+        document.getElementById('didYouMeanLink').textContent = sug;
+        document.getElementById('didYouMeanLink').onclick = () => doSearch(sug);
+        dym.style.display = 'block';
+      } else { dym.style.display = 'none'; }
+    } else { dym.style.display = 'none'; }
+
+    renderCatChips();
+    renderResults();
+  }
+
+  /* ═══════════════════════════════════
+     RECENT SEARCHES
+  ═══════════════════════════════════ */
+  function saveRecent(q) {
+    let recent = JSON.parse(localStorage.getItem('pinenas_recent_searches') || '[]');
+    recent = [q, ...recent.filter(r => r.toLowerCase() !== q.toLowerCase())].slice(0, 8);
+    localStorage.setItem('pinenas_recent_searches', JSON.stringify(recent));
+  }
+
+  function renderRecent() {
+    const recent = JSON.parse(localStorage.getItem('pinenas_recent_searches') || '[]');
+    const wrap = document.getElementById('recentSearchesWrap');
+    const list = document.getElementById('recentSearchesList');
+    if (!recent.length) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    list.innerHTML = recent.map(r => `
+      <span class="recent-pill" onclick="doSearch('${escHtml(r)}')">
+        <i class="bi bi-clock-history" style="font-size:0.75rem;color:var(--muted);"></i>
+        ${escHtml(r)}
+        <span class="rm" onclick="event.stopPropagation();removeRecent('${escHtml(r)}')" title="Remove">×</span>
+      </span>`).join('');
+  }
+
+  function removeRecent(q) {
+    let recent = JSON.parse(localStorage.getItem('pinenas_recent_searches') || '[]');
+    recent = recent.filter(r => r !== q);
+    localStorage.setItem('pinenas_recent_searches', JSON.stringify(recent));
+    renderRecent();
+  }
+
+  /* ═══════════════════════════════════
+     DEFAULT STATE
+  ═══════════════════════════════════ */
+  function renderDefaultState() {
+    // Trending
+    const tList = document.getElementById('trendingList');
+    tList.innerHTML = TRENDING.map((t,i) => `
+      <div class="trending-item" onclick="doSearch('${t}')">
+        <span class="trending-num">${i+1}</span>
+        <i class="bi bi-search" style="color:var(--muted);font-size:0.85rem;"></i>
+        ${t}
+        <i class="bi bi-arrow-up-right ms-auto" style="color:var(--muted);font-size:0.8rem;"></i>
+      </div>`).join('');
+
+    // Popular categories grid
+    const pCats = document.getElementById('popularCatsGrid');
+    pCats.innerHTML = Object.entries(CAT_LABELS).map(([k,v]) => `
+      <div class="col-6 col-md-4">
+        <div onclick="window.location.href='products.html?cat=${k}'"
+             style="background:var(--cream);border-radius:10px;padding:0.9rem;cursor:pointer;text-align:center;border:1px solid #F0EDE6;transition:border-color 0.15s;"
+             onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='#F0EDE6'">
+          <div style="font-size:2rem;margin-bottom:0.3rem;">${CAT_EMOJIS[k]}</div>
+          <div style="font-size:0.84rem;font-weight:600;">${v}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.1rem;">
+            ${PRODUCTS.filter(p=>p.cat===k).length} products
+          </div>
+        </div>
+      </div>`).join('');
+
+    // Popular tag buttons in hero
+    const tagWrap = document.getElementById('popularTags');
+    tagWrap.innerHTML = `<span style="font-size:0.78rem;color:rgba(255,255,255,0.5);">Popular:</span>` +
+      TRENDING.slice(0,6).map(t =>
+        `<button class="popular-tag" onclick="doSearch('${t}')">${t}</button>`
+      ).join('');
+
+    renderRecent();
+  }
+
+  /* ═══════════════════════════════════
+     INIT
+  ═══════════════════════════════════ */
+  (function init() {
+    // Cart badge
+    document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+    // Auth
+    const user = JSON.parse(localStorage.getItem('pinenas_user') || 'null');
+    if (user) document.getElementById('accountBtn').href = 'account.html';
+
+    // Default state
+    renderDefaultState();
+
+    // Check URL params
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) {
+      doSearch(q);
+    } else {
+      document.getElementById('defaultSection').style.display = 'block';
+      document.getElementById('resultsSection').style.display = 'none';
+    }
+
+    // Search input: Enter key
+    document.getElementById('mainSearchInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    // Live search as user types (debounced)
+    let debounce;
+    document.getElementById('mainSearchInput').addEventListener('input', e => {
+      clearTimeout(debounce);
+      const val = e.target.value.trim();
+      if (!val) {
+        document.getElementById('defaultSection').style.display = 'block';
+        document.getElementById('resultsSection').style.display = 'none';
+        document.getElementById('heroHeadline').innerHTML = `Search <span>Pinenas</span>`;
+        document.getElementById('bcLabel').textContent    = 'Search';
+        document.getElementById('didYouMean').style.display = 'none';
+        renderDefaultState();
+        return;
+      }
+      debounce = setTimeout(() => doSearch(val), 350);
+    });
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', () => {
+      const p = new URLSearchParams(window.location.search).get('q');
+      if (p) doSearch(p);
+    });
+  })();
+  </script>
+
+
+  <!-- ═ Live buyer notification ═ -->
+  <div class="live-notif" id="live-notif">
+    <div class="notif-avatar">A</div>
+    <div>
+      <div><b class="notif-name">Amirah R.</b> <span class="notif-product">just bought Pineapple Jam</span></div>
+      <div class="notif-sub"><span class="notif-dot" style="display:inline-block;width:7px;height:7px;background:#27ae60;border-radius:50;margin-right:4px;vertical-align:middle;"></span><span class="notif-time">2 min ago</span></div>
+    </div>
+  </div>
+
+  <!-- ═ Order success overlay ═ -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-card">
+      <div class="confetti-strip"></div>
+      <div class="tick-circle">✓</div>
+      <h3>Order Placed!</h3>
+      <p>Thank you, <b class="order-user">Customer</b>!<br>Your pineapple goodness is on its way 🍍</p>
+      <div class="order-id">Order ID: <span class="order-id-val">PN-XXXXXX</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);">Estimated delivery: <b>2–3 business days</b></p>
+      <div class="order-progress"><div class="order-progress-bar"></div></div>
+      <div class="order-dismiss">Auto-dismissing…</div>
+    </div>
+  </div>
+
+  <!-- ═ Confetti canvas ═ -->
+  <canvas id="confetti-canvas"></canvas>
+
+
+  <!-- ═══ BOMBASTIC FEATURES JS ═══ -->
+  <script>
+  // ── Flash sale countdown ──
+  function initFlashTimer() {
+    const el = document.getElementById('flash-timer');
+    if (!el) return;
+    const end = Date.now() + (3*3600 + 47*60 + 12)*1000;
+    setInterval(() => {
+      const left = Math.max(0, end - Date.now());
+      const h = String(Math.floor(left/3600000)).padStart(2,'0');
+      const m = String(Math.floor((left%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+
+  // ── Scroll reveal ──
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+  }
+
+  // ── Floating cart badge ──
+  function updateFloatBadge() {
+    const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+    const total = cart.reduce((s,i) => s + (i.qty||1), 0);
+    const badge = document.getElementById('float-badge');
+    if (badge) { badge.textContent = total; badge.style.display = total ? 'flex' : 'none'; }
+  }
+
+  // ── Live buyer notifications ──
+  const LIVE_BUYERS = [
+    { name:'Amirah R.', product:'Pineapple Jam (500g)', time:'2 min ago' },
+    { name:'Hafiz M.',  product:'Fresh Pineapple Slices', time:'5 min ago' },
+    { name:'Nurul A.',  product:'Pineapple Enzyme Drink', time:'8 min ago' },
+    { name:'Syafiq K.', product:'Dried Pineapple Rings', time:'11 min ago' },
+    { name:'Liyana T.', product:'Pineapple Skincare Set', time:'14 min ago' },
+  ];
+  let liveBuyerIdx = 0;
+  function showLiveNotif() {
+    const notif = document.getElementById('live-notif');
+    if (!notif) return;
+    const b = LIVE_BUYERS[liveBuyerIdx % LIVE_BUYERS.length];
+    liveBuyerIdx++;
+    notif.querySelector('.notif-name').textContent = b.name;
+    notif.querySelector('.notif-product').textContent = `just bought ${b.product}`;
+    notif.querySelector('.notif-time').textContent = b.time;
+    notif.querySelector('.notif-avatar').textContent = b.name[0];
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+  function initLiveNotifs() {
+    setTimeout(() => { showLiveNotif(); setInterval(showLiveNotif, 9000); }, 3500);
+  }
+
+  // ── Confetti ──
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({length:120}, () => ({
+      x: Math.random()*canvas.width, y: -20,
+      r: 6 + Math.random()*8,
+      color: ['#F5A623','#2D6A4F','#27ae60','#3498db','#e74c3c','#9b59b6'][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*4, vy: 3+Math.random()*4,
+      angle: Math.random()*360, va: (Math.random()-0.5)*6,
+      shape: Math.random()>0.5?'rect':'circle'
+    }));
+    let frame;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle = p.color;
+        if (p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        p.x += p.vx; p.y += p.vy * 0.98; p.angle += p.va;
+      });
+      if (pieces.some(p => p.y < canvas.height)) frame = requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+    draw();
+    setTimeout(() => { if(frame) cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 3500);
+  }
+
+  // ── Order success popup ──
+  function showOrderSuccess(userName) {
+    const overlay = document.getElementById('order-success-overlay');
+    if (!overlay) return;
+    const orderId = 'PN-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    overlay.querySelector('.order-id-val').textContent = orderId;
+    overlay.querySelector('.order-user').textContent = userName || 'Customer';
+    overlay.classList.add('show');
+    launchConfetti();
+    // Auto-dismiss progress bar
+    const bar = overlay.querySelector('.order-progress-bar');
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += 1;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          // Clear cart after popup gone
+          localStorage.removeItem('pinenas_cart');
+          updateFloatBadge();
+          if (typeof render === 'function') render();
+        }, 300);
+      }
+    }, 45);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initFlashTimer();
+    initReveal();
+    updateFloatBadge();
+    initLiveNotifs();
+    window.addEventListener('storage', updateFloatBadge);
+  });
+  </script>
+
+</body>
+</html>

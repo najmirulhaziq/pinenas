@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery Info — Pinenas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold: #F5A623; --gold-dark: #C87E0E; --green: #2D6A4F; --green-light: #52B788;
+      --cream: #FFFBF2; --charcoal: #1C1C1C; --muted: #6B6B6B; --radius: 14px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* Navbar */
+    .pinenas-nav { background: var(--green); padding: 0.75rem 0; position: sticky; top: 0; z-index: 1030; }
+    .pinenas-nav .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold) !important; }
+    .brand-logo { height: 48px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .brand-logo-footer { height: 40px; width: auto; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+    .pinenas-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.92rem; padding: 0.4rem 0.9rem !important; transition: color 0.2s; }
+    .pinenas-nav .nav-link:hover { color: var(--gold) !important; }
+    .search-form .form-control { border-radius: 30px 0 0 30px; border: none; background: rgba(255,255,255,0.15); color: #fff; padding: 0.45rem 1rem; font-size: 0.88rem; width: 200px; }
+    .search-form .form-control::placeholder { color: rgba(255,255,255,0.6); }
+    .search-form .form-control:focus { background: rgba(255,255,255,0.25); box-shadow: none; color: #fff; }
+    .search-form .btn-search { border-radius: 0 30px 30px 0; background: var(--gold); border: none; color: var(--charcoal); padding: 0.45rem 1rem; }
+    .search-form .btn-search:hover { background: var(--gold-dark); color: #fff; }
+    .nav-icon-btn { color: rgba(255,255,255,0.85); font-size: 1.25rem; position: relative; background: none; border: none; padding: 0.3rem 0.5rem; line-height: 1; text-decoration: none; transition: color 0.2s; }
+    .nav-icon-btn:hover { color: var(--gold); }
+    .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--gold); color: var(--charcoal); font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* Page header */
+    .page-header { background: linear-gradient(135deg, var(--green) 0%, #1B4332 100%); padding: 2.5rem 0 2rem; }
+    .page-header h1 { color: #fff; font-size: 2rem; margin-bottom: 0.2rem; }
+    .breadcrumb-item, .breadcrumb-item a { color: rgba(255,255,255,0.6); font-size: 0.82rem; text-decoration: none; }
+    .breadcrumb-item.active { color: var(--gold); }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.35); }
+
+    /* Content */
+    .delivery-card { background: #fff; border: 1px solid #F0EDE6; border-radius: var(--radius); padding: 1.6rem; height: 100%; }
+    .delivery-card .d-icon { font-size: 1.8rem; color: var(--green); margin-bottom: 0.6rem; }
+    .delivery-card h5 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .delivery-card p { font-size: 0.88rem; color: var(--muted); margin: 0; }
+
+    .rate-table { background: #fff; border: 1px solid #F0EDE6; border-radius: var(--radius); overflow: hidden; }
+    .rate-table table { margin: 0; }
+    .rate-table th { background: var(--green); color: #fff; font-size: 0.82rem; font-weight: 600; border: none; padding: 0.9rem 1.2rem; }
+    .rate-table td { font-size: 0.88rem; padding: 0.9rem 1.2rem; border-color: #F0EDE6; vertical-align: middle; }
+
+    .accordion-button { font-weight: 600; font-size: 0.92rem; }
+    .accordion-button:not(.collapsed) { background: rgba(45,106,79,0.06); color: var(--green); box-shadow: none; }
+    .accordion-button:focus { box-shadow: none; }
+    .accordion-item { border-color: #F0EDE6; }
+
+    /* Footer */
+    .pinenas-footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 3rem 0 1.5rem; font-size: 0.88rem; margin-top: 3rem; }
+    .pinenas-footer .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+    .pinenas-footer h6 { color: #fff; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .pinenas-footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; margin-bottom: 0.35rem; transition: color 0.2s; }
+    .pinenas-footer a:hover { color: var(--gold); }
+    .social-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); display: inline-flex !important; align-items: center; justify-content: center; color: rgba(255,255,255,0.7) !important; font-size: 0.95rem; margin-right: 0.35rem; transition: background 0.2s, color 0.2s !important; text-decoration: none !important; }
+    .social-icon:hover { background: var(--gold); color: var(--charcoal) !important; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2rem; padding-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="pinenas-nav navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo"><span class="brand-text">Pinenas</span></a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list" style="font-size:1.5rem;"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-2">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="products.html?cat=juice">🥤 Juices &amp; Drinks</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=snacks">🍫 Snacks &amp; Candies</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=fresh"><img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> Fresh Pineapple</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=skincare">🌿 Skincare</a></li>
+              <li><a class="dropdown-item" href="products.html?cat=condiments">🫙 Jams &amp; Condiments</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="products.html?featured=1">Featured</a></li>
+        </ul>
+        <form class="search-form d-flex me-3" action="search.html" method="get">
+          <input class="form-control" type="search" name="q" placeholder="Search products…" />
+          <button class="btn-search" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+        <div class="d-flex align-items-center gap-1">
+          <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+          <a href="account.html" class="nav-icon-btn" aria-label="My Account" id="accountBtn">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Delivery Info</li>
+        </ol>
+      </nav>
+      <h1>Delivery Info</h1>
+      <p style="color:rgba(255,255,255,0.65);font-size:0.88rem;margin:0;">Everything you need to know about getting your order</p>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="container py-5">
+
+    <!-- Highlights -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4">
+        <div class="delivery-card">
+          <div class="d-icon"><i class="bi bi-truck"></i></div>
+          <h5>Free Delivery ≥ RM 60</h5>
+          <p>Spend RM 60 or more in a single order and delivery is on us, anywhere in Peninsular Malaysia.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="delivery-card">
+          <div class="d-icon"><i class="bi bi-clock-history"></i></div>
+          <h5>1–3 Working Days</h5>
+          <p>Most orders are packed within 24 hours and delivered within 1–3 working days of dispatch.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="delivery-card">
+          <div class="d-icon"><i class="bi bi-box-seam"></i></div>
+          <h5>Chilled Packaging</h5>
+          <p>Fresh and chilled items are packed with ice gel and insulation to keep them cold in transit.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rates table -->
+    <h4 class="mb-3">Delivery Rates</h4>
+    <div class="rate-table mb-5">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Standard Delivery</th>
+            <th>Estimated Time</th>
+            <th>Free Delivery Threshold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>West Malaysia (Peninsular)</td>
+            <td>RM 5.00</td>
+            <td>1–3 working days</td>
+            <td>Orders ≥ RM 60</td>
+          </tr>
+          <tr>
+            <td>East Malaysia (Sabah &amp; Sarawak)</td>
+            <td>RM 12.00</td>
+            <td>3–6 working days</td>
+            <td>Orders ≥ RM 100</td>
+          </tr>
+          <tr>
+            <td>Klang Valley (Same-Day)</td>
+            <td>RM 9.90</td>
+            <td>Same day, if ordered before 12pm</td>
+            <td>Not eligible for free delivery</td>
+          </tr>
+          <tr>
+            <td>International</td>
+            <td>Calculated at checkout</td>
+            <td>7–14 working days</td>
+            <td>Not available</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FAQ -->
+    <h4 class="mb-3">Delivery FAQ</h4>
+    <div class="accordion mb-4" id="deliveryFaq">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+            How do I track my order?
+          </button>
+        </h2>
+        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#deliveryFaq">
+          <div class="accordion-body" style="font-size:0.9rem;color:var(--muted);">
+            Once your order is dispatched, you'll receive a tracking link by email and SMS. You can also check
+            your order status anytime under <a href="account.html">My Account</a> &rarr; Order History.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+            Can I change my delivery address after ordering?
+          </button>
+        </h2>
+        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#deliveryFaq">
+          <div class="accordion-body" style="font-size:0.9rem;color:var(--muted);">
+            Address changes are possible only before your order is dispatched. Contact us as soon as possible
+            at <a href="mailto:hello@pinenas.com" style="display:inline;">hello@pinenas.com</a> or call +60 12-345 6789.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+            Do you deliver on weekends and public holidays?
+          </button>
+        </h2>
+        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#deliveryFaq">
+          <div class="accordion-body" style="font-size:0.9rem;color:var(--muted);">
+            Our courier partners deliver Monday to Saturday. Orders placed on Sundays or public holidays
+            will be processed on the next working day.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+            What if my order arrives damaged?
+          </button>
+        </h2>
+        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#deliveryFaq">
+          <div class="accordion-body" style="font-size:0.9rem;color:var(--muted);">
+            We're sorry if that happens! Please refer to our <a href="policy.html">Returns Policy</a> for
+            how to request a replacement or refund.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="pinenas-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="footer-brand mb-2"><img src="images/logo_for_header_footer.png" alt="Pinenas" class="brand-logo-footer"><span class="brand-text-footer">Pinenas</span></div>
+          <p style="font-size:0.84rem;max-width:270px;">Premium pineapple products, natural and delivered to your door.</p>
+          <div class="mt-3">
+            <a href="https://www.facebook.com/share/1b72fqJ4Nm/?mibextid=wwXIfr" class="social-icon" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/pinenasofc?igsh=MWpua29xd3hpcWhiaQ==" class="social-icon" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.tiktok.com/@pinenas0?_r=1&_t=ZS-97nXXdCD5W9" class="social-icon" target="_blank" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+            <a href="https://www.twitter.com/pinenas" class="social-icon" target="_blank" aria-label="X"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://wa.me/60123456789" class="social-icon" target="_blank" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Shop</h6>
+          <a href="products.html">All Products</a>
+          <a href="products.html?featured=1">Featured</a>
+          <a href="products.html?topseller=1">Top Sellers</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Account</h6>
+          <a href="account.html">My Account</a>
+          <a href="cart.html">My Cart</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Info</h6>
+          <a href="about.html">About</a>
+          <a href="delivery.html">Delivery</a>
+          <a href="policy.html">Returns</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6>Contact</h6>
+          <a href="mailto:hello@pinenas.com"><i class="bi bi-envelope me-1"></i>hello@pinenas.com</a>
+          <a href="tel:+60123456789"><i class="bi bi-telephone me-1"></i>+60 12-345 6789</a>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2">
+        <span>&copy; 2026 Pinenas Sdn Bhd. All rights reserved.</span>
+        <span>Made with <img src="images/logo_for_header_footer.png" alt="Pinenas" style="height:22px;width:auto;vertical-align:middle;display:inline-block;"> in Malaysia</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cart = JSON.parse(localStorage.getItem('pinenas_cart') || '[]');
+      const qty = cart.reduce((s,i) => s + i.qty, 0);
+      document.getElementById('cartCount').textContent = qty;
+    });
+  </script>
+</body>
+</html>
